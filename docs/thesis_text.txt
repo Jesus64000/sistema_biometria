@@ -1,0 +1,833 @@
+REPUBLICA BOLIVARIANA DE VENEZUELAMINISTERIO DEL PODER POPULAR PARA LA EDUCACION UNIVERSITARIAINSTITUTO UNIVERSITARIO POLITECNICO “SANTIAGO MARIÑO”EXTENSION COL-CABIMAS
+
+BIOMETRÍA FACIAL PARA LA GESTIÓN ADMINISTRATIVA Y DE ACCESO DE LOS USUARIOS EN LOS CENTROS 
+
+DEPORTIVOS DEL MUNICIPIO CABIMAS 
+
+Propuesta de trabajo de grado como requisito parcial para optar al título Ingeniero de Sistemas
+
+Autor: Br. Luis Ramos
+
+Tutor Académico: 
+
+Cabimas, abril 2026
+
+INSTITUTO UNIVERSITARIO POLITECNICO “SANTIAGO MARIÑO”EXTENSION COL-CABIMAS
+
+BIOMETRÍA FACIAL PARA LA GESTIÓN ADMINISTRATIVA Y DE ACCESO DE LOS USUARIOS EN LOS CENTROS 
+
+DEPORTIVOS DEL MUNICIPIO CABIMAS 
+
+Autor: Luis Ramos
+
+Cabimas, abril 2026
+
+BIOMETRÍA FACIAL PARA LA GESTIÓN ADMINISTRATIVA Y DE ACCESO DE LOS USUARIOS EN LOS CENTROS DEPORTIVOS DEL MUNICIPIO CABIMAS 
+
+INSTITUTO UNIVERSITARIO POLITÉCNICO SANTIAGO MARIÑO
+
+VERSIÓN 01
+
+Página 1  de 1
+
+APROBACIÓN DEL TUTOR PARA LA DEFENSA DEL PI
+
+MPSO; DOCENCIA
+
+EXTENSIÓN / AMPLIACIÓN: Extensión Costa Oriental del Lago - Cabimas
+
+APROBACIÓN DEL TUTOR (A) PARA LA DEFENSA DEL 
+
+PROYECTO DE INVESTIGACIÓN
+
+Yo, 
+
+Titular de la cédula de identidad N° V-xx.xxx.xxx
+
+En mi carácter de tutor del Proyecto de Investigación titulado: BIOMETRÍA FACIAL PARA LA GESTIÓN ADMINISTRATIVA Y DE ACCESO DE LOS USUARIOS EN LOS CENTROS DEPORTIVOS DEL MUNICIPIO CABIMAS 
+
+Presentado por el ciudadano: Luis Ramos
+
+Titular de la cédula de identidad N° V-xx.xxx.xxx considero que dicho trabajo reúne los requisitos y méritos suficientes para ser sometido a DEFENSA y ser evaluado por parte del Jurado Examinador que le sea designado. 
+
+En la ciudad de Cabimas a los           días del mes de abril de 2026.
+
+____________________
+
+Firma del Tutor
+
+ÍNDICE
+
+ÍNDICEv
+
+LISTA DE CUADROSviii
+
+RESUMENix
+
+INTRODUCCIÓN1
+
+EL PROBLEMA3
+
+Idea General3
+
+Origen del Estudio4
+
+Planteamiento del Problema5
+
+Campo de Trabajo o Línea de Investigación9
+
+Objetivos de la Investigación9
+
+Objetivo General9
+
+Objetivos Específicos9
+
+Justificación de la Investigación10
+
+Alcance y Propósito o Finalidad de la Investigación11
+
+MARCO REFERENCIAL14
+
+Teoría Genérica Explicativa14
+
+Teoría General de sistemas15
+
+Sistemas de Control de Acceso15
+
+Elementos de un sistema de control de acceso16
+
+Tipos de sistemas de control de acceso17
+
+Biometría18
+
+Algoritmos de geometría facial18
+
+Reconocimiento Facial19
+
+Privacidad de la Información en Sistemas de Acceso19
+
+Inteligencia de Negocio20
+
+Control de Acceso Basado en Roles (RBAC)20
+
+Vision por computadora20
+
+Antecedentes de campo21
+
+Estudio del arte y la tecnología23
+
+Reseña histórica23
+
+Teorías genéricas ingenieriles25
+
+Programación Extrema (XP)25
+
+Requerimientos del sistema26
+
+Requerimientos Funcionales26
+
+Requerimientos No Funcionales27
+
+Arquitectura Cliente-Servidor27
+
+JavaScript28
+
+React.js28
+
+Node.js29
+
+Python29
+
+API REST30
+
+MySQL30
+
+Pruebas de Software31
+
+Pruebas Unitarias31
+
+Pruebas de Integración32
+
+Términos básicos32
+
+MARCO METODOLÓGICO35
+
+Modalidad de la Investigación35
+
+Tipo de Investigación36
+
+Método de Investigación36
+
+Técnicas e Instrumentos para la Recolección de Información37
+
+Observación Directa37
+
+Entrevistas No Estructuradas38
+
+Técnicas de Análisis para el Tratamiento de la Información38
+
+Propuesta Metodológica para el Desarrollo de la plataforma39
+
+Herramientas a Aplicar40
+
+REFERENCIAS BIBLIOGRÁFICAS42
+
+ANEXOS46
+
+ANEXOS A ANTECEDENTES47
+
+LISTA DE CUADROS
+
+Cuadro 1. Herramientas a Aplicar….41
+
+REPÚBLICA BOLIVARIANA DE VENEZUELA
+
+MINISTERIO DEL PODER POPULAR PARA LA
+
+EDUCACIÓN UNIVERSITARIA
+
+INSTITUTO UNIVERSITARIO POLITÉCNICO
+
+“SANTIAGO MARIÑO”
+
+EXTENSIÓN COL – CABIMAS
+
+INGENIERIA DE SISTEMAS
+
+BIOMETRÍA FACIAL PARA LA GESTIÓN ADMINISTRATIVA Y DE ACCESO DE LOS USUARIOS EN LOS CENTROS 
+
+DEPORTIVOS DEL MUNICIPIO CABIMAS
+
+LINEA DE INVESTIGACION: 
+
+PROPUESTA DE TRABAJO DE GRADO
+
+Autor: Luis Ramos
+
+Tutor:
+
+Docente de la asignatura:
+
+Mes y Año:
+
+RESUMEN
+
+Palabras clave: 
+
+INTRODUCCIÓN 
+
+CAPÍTULO I
+
+EL PROBLEMA
+
+CAPÍTULO I
+
+EL PROBLEMA
+
+Plantear un problema de investigación consiste en definir y delimitar claramente la situación, fenómeno o necesidad técnica que se desea estudiar dentro de un contexto organizacional determinado. Según Baena (2017), el planteamiento del problema representa la fase inicial y más crítica del protocolo metodológico, ya que permite identificar de manera objetiva las deficiencias operativas que justifican la viabilidad y pertinencia del estudio. Esta estructuración precisa no solo expone las carencias actuales del entorno, sino que orienta directamente la formulación de las interrogantes y los objetivos a alcanzar, facilitando la toma de decisiones metodológicas que aseguren la validez de los resultados obtenidos durante el proceso investigativo y técnico.
+
+Idea General
+
+Esta investigación consiste en utilizar la biometría facial como herramienta tecnológica para la optimización de la gestión administrativa y el control de acceso de los usuarios en los centros deportivos ubicados en la parroquia Carmen Herrera del municipio Cabimas. El propósito central es modernizar los procesos de validación de identidad, sustituyendo los métodos convencionales basados en el suministro manual o verbal de la cédula de identidad observados en establecimientos como Extremo, Booster y Crunch por una solución automatizada de alta precisión. La propuesta busca resolver las deficiencias operativas donde el registro tradicional genera cuellos de botella y vulnera la privacidad de los datos personales al exponerlos públicamente durante el ingreso. Mediante el uso de algoritmos de visión artificial, se pretende establecer un estándar de seguridad que garantice la exclusividad del servicio y un flujo de entrada ágil, seguro y libre de contacto físico.
+
+Origen del Estudio
+
+La gestión de seguridad y el control de acceso en recintos privados han experimentado una profunda transformación tecnológica en la última década. Inicialmente, la administración del ingreso dependía de elementos físicos transferibles, como llaves, tarjetas magnéticas o carnets impresos. Si bien estos métodos convencionales cumplían una función básica de restricción, presentaban debilidades estructurales inherentes: podían ser extraviados, robados o prestados fácilmente a terceros. Esta dependencia hacia objetos externos impedía tener un control certero sobre la identidad real del usuario, comprometiendo la exclusividad y rentabilidad de los establecimientos de forma constante.
+
+El punto de inflexión tecnológico ocurrió con la democratización de la inteligencia artificial y el avance de la visión por computadora. Estas disciplinas informáticas permitieron trasladar la validación de identidad desde un objeto físico o un dato memorizado hacia la biometría automatizada, es decir, validar directamente los rasgos inalterables del usuario. Tecnologías como el reconocimiento facial comenzaron a implementarse a gran escala en múltiples sectores, demostrando ser altamente efectivas para erradicar el fraude, proteger la información y agilizar el tránsito de personas en fracciones de segundo, estableciendo un nuevo estándar global sin contacto.
+
+Sin embargo, en el sector deportivo del municipio Cabimas, la adopción de estas tecnologías es incipiente. Los centros ubicados en la parroquia Carmen Herrera, tales como Extremo, Booster y Crunch, aún operan con protocolos obsoletos, basando su control de acceso en el dictado verbal o el registro manual de la cédula de identidad. Esta realidad genera cuellos de botella en las recepciones, expone datos personales de los clientes y facilita el ingreso no autorizado. En consecuencia, el origen de esta investigación radica en la necesidad imperante de cerrar esta brecha tecnológica local, evaluando la implementación de la biometría facial para optimizar la gestión administrativa en el entorno deportivo de la ciudad.
+
+Planteamiento del Problema
+
+En la era digital contemporánea, la transformación tecnológica ha modificado sustancialmente la operatividad de las organizaciones, impulsando la adopción de herramientas informáticas para la optimización de procesos y el fortalecimiento de la seguridad. A nivel mundial, la industria del fitness ha experimentado un crecimiento exponencial, donde la integración de la biometría facial se ha convertido en un estándar técnico. Según Cruz (2021), la visión por computadora y la integración de sensores inteligentes han permitido a los sistemas interpretar el entorno de forma autónoma, permitiendo que los establecimientos modernos migren de los tradicionales carnets a plataformas biométricas para centralizar y automatizar la gestión administrativa.
+
+Por su parte, al analizar el contexto latinoamericano, si bien históricamente ha existido una marcada brecha tecnológica, el escenario actual muestra una transformación inminente. La necesidad de modernización ha impulsado a los centros deportivos de la región a buscar alternativas innovadoras. En este sentido, Machado y Dantas (2025) señalan que la adopción de arquitecturas modernas es fundamental para el diseño de sistemas escalables, permitiendo a las empresas locales elevar sus estándares de servicio frente a las grandes franquicias internacionales.
+
+Centrándonos en el ámbito nacional, la República Bolivariana de Venezuela presenta un escenario particular. A pesar de los desafíos económicos, la industria del acondicionamiento físico ha demostrado resiliencia. Al respecto, Viteri-Cevallos y Murillo-Párraga (2021) destacan que transformar datos operativos en métricas visuales es vital para la toma de decisiones estratégicas, obligando a las empresas venezolanas a optimizar sus recursos migrando de procesos semi-manuales hacia soluciones automatizadas que aseguren un control financiero riguroso.
+
+No obstante, a pesar de esta evidente necesidad, la integración de tecnologías avanzadas aún es limitada en el país. Dentro de este escenario, en el estado Zulia, y específicamente en ciudades como Cabimas, una proporción significativa de establecimientos gestiona sus operaciones mediante sistemas informáticos obsoletos donde el registro depende de la interacción humana. Como lo advierten Mar Cornelio et al. (2024), la dependencia de sistemas rudimentarios y manuales genera altos niveles de incertidumbre y vulnerabilidad en la verificación de identidad, lo que genera un déficit crítico en la administración interna.
+
+Esta problemática se refleja en los centros deportivos de la parroquia Carmen Herrera, tales como los establecimientos ExtremoGym, Booster y CrunchGym, donde el protocolo consiste en la digitación manual de la cédula de identidad en la recepción. Esta dinámica desencadena diversos cuellos de botella, evidenciados en la aglomeración de clientes durante las horas de mayor afluencia debido al tiempo que toma la transcripción humana y a los constantes retrasos por errores de tipeo en el sistema. Simultáneamente, esta práctica genera brechas críticas de seguridad y fraude, facilitando la suplantación de identidad al permitir que individuos no autorizados o insolventes logren ingresar colocando el número de cédula de un socio que posee una membresía activa. 
+
+Sumado a esto, el protocolo vulnera la privacidad de los clientes al obligarlos a exponer sus datos ante terceros. Sobre este punto, Piedra Alegría (2023) enfatiza que los modelos que exponen datos personales verbalmente en público faltan a la ética de la información, haciendo necesaria una autenticación transparente. Con esto surge como propuesta la biometría facial para el control de acceso.
+
+Bajo este enfoque, la propuesta consiste en un sistema que capturará y analizará la fisonomía del usuario en tiempo real al momento del ingreso, contrastando instantáneamente los vectores biométricos obtenidos con los perfiles almacenados en la base de datos. El software validará de forma automatizada la identidad del individuo junto a la vigencia de su membresía y estatus de solvencia, emitiendo una notificación visual inmediata en la interfaz de recepción para autorizar o restringir el paso. Adicionalmente, la plataforma centralizará la gestión administrativa, facilitando el registro de nuevos socios y la generación automática de reportes gerenciales sobre patrones de asistencia y horas de mayor afluencia, logrando así un modelo de control moderno, seguro y eficiente.
+
+Para materializar esta solución, se utilizará la metodología ágil Programación Extrema (XP) para el desarrollo del sistema. El procesamiento de la biometría facial será delegado a scripts desarrollados en Python, aprovechando su robustez matemática y librerías de visión artificial para la extracción precisa de vectores geométricos. Este núcleo biométrico se integrará con una arquitectura web modular para la gestión administrativa: se empleará React.js en la capa de presentación (Frontend) para garantizar interfaces de usuario dinámicas en el panel de control, Node.js en el servidor (Backend) para la orquestación de las reglas de negocio, y MySQL para la gestión estructurada de los pagos y expedientes.
+
+Esta combinación tecnológica permitirá un ecosistema escalable y de alto rendimiento, donde la biometría facial actúa como el motor principal de validación. La automatización del acceso no solo liberará al personal de recepción de tareas administrativas repetitivas, sino que garantizará la exclusividad de las instalaciones y la protección de los datos. Además, dotará a la gerencia de herramientas analíticas para optimizar sus estrategias. Con base en todo lo expuesto, surge la siguiente interrogante, ¿Cuáles son los elementos técnicos necesarios para el desarrollo de una la biometría facial para la gestión administrativa y acceso de los usuarios en los centros deportivos de la parroquia Carmen Herrera del municipio Cabimas?
+
+Campo de Trabajo o Línea de Investigación
+
+La presente investigación tiene como objetivo desarrollar un sistema de biometría facial para la optimización de la gestión administrativa y el control de acceso de los usuarios en los centros deportivos. Este estudio se ejecutará en un lapso de tiempo comprendido entre abril de 2026 y junio de 2026. En tal sentido, y de acuerdo con el dictamen de la comisión técnica del Instituto Universitario Politécnico "Santiago Mariño", la investigación se encuentra enmarcada en la línea de investigación institucional de Cibernética. Específicamente, el proyecto se alinea con el área de Biometría, debido a que el núcleo de la plataforma propuesta utiliza algoritmos de visión artificial y redes neuronales para la validación de rasgos fisionómicos, automatizando procesos y garantizando la seguridad en el acceso.
+
+Es importante destacar que la investigación se aplica al contexto operativo de los centros deportivos ubicados en la parroquia Carmen Herrera del municipio Cabimas, tomando como casos de estudio a establecimientos como ExtremoGym, CrunchGym y Booster. Esta población ha sido seleccionada ya que es donde se ha observado la necesidad de modernización y la brecha tecnológica descrita en el planteamiento del problema. En estos recintos, la gestión administrativa y de acceso enfrenta vulnerabilidades al depender de métodos tradicionales basados en la interacción manual. El estudio se centrará en este sector para validar una solución biométrica que responda directamente a sus desafíos operativos y de seguridad.
+
+Objetivos de la Investigación
+
+Objetivo General
+
+Desarrollar una biometría facial para la gestión administrativa y el acceso de los usuarios en los centros deportivos del municipio Cabimas.
+
+Objetivos Específicos
+
+Diagnosticar los procesos actuales de gestión administrativa y acceso implementados en los centros deportivos de la parroquia Carmen Herrera del municipio Cabimas.
+
+Determinar los requerimientos necesarios para el desarrollo de un sistema de biometría facial para la optimización de la gestión administrativa y el control de acceso de los usuarios en los centros deportivos del municipio Cabimas.
+
+Diseñar la arquitectura lógica de la biometría facial para gestión administrativa y el acceso de los usuarios en los centros deportivos del municipio Cabimas.
+
+Validar la funcionalidad de la biometría mediante pruebas de software en un entorno controlado
+
+Justificación de la Investigación
+
+En el ámbito social, en la actualidad, los usuarios de centros deportivos enfrentan importantes obstáculos que limitan su comodidad y seguridad, especialmente en contextos locales como el municipio Cabimas. La obligación de dictar su documento de identidad en voz alta o interactuar con teclados compartidos genera una brecha en la protección de datos que coloca a los clientes en situación de vulnerabilidad. Esta situación social no solo afecta la confidencialidad, sino que impacta negativamente en la fluidez del servicio. Frente a esto, la plataforma biométrica propuesta pretende ofrecer una solución accesible, segura y sin contacto que ayude a mitigar estas deficiencias, protegiendo irrefutablemente la identidad del usuario.
+
+Desde una perspectiva teórico-práctica, la gestión administrativa en instalaciones deportivas enfrenta desafíos significativos debido a que, aunque existen sistemas informáticos locales, la validación de ingreso suele centrarse en procesos semi-manuales obsoletos. Esta situación conduce a altos índices de ineficiencia operativa, formación de cuellos de botella y vulnerabilidad ante accesos no autorizados. Frente a esta realidad, el sistema de biometría facial se orienta a fortalecer el control interno y erradicar el préstamo de credenciales, demostrando empíricamente cómo la automatización basada en geometría facial puede transformar positivamente la operatividad real de las organizaciones.
+
+Desde el ámbito tecnológico, el desarrollo del sistema se apoya en un conjunto de herramientas modernas y escalables que garantizan eficiencia y precisión. Entre ellas destacan React.js para interfaces administrativas dinámicas, mientras que Node.js en el backend garantiza un rendimiento eficiente en la orquestación de datos. Simultáneamente, el núcleo biométrico utiliza Python con librerías de visión artificial para la extracción de vectores geométricos, y MySQL facilitará la gestión relacional de la información. Esta arquitectura tecnológica garantiza escalabilidad, alta velocidad de validación y total adaptabilidad a entornos de alto tráfico.
+
+En términos económicos, la optimización del control de acceso y la administración interna es un factor crucial para la rentabilidad exitosa en el mercado del fitness. En el caso de los gimnasios de Cabimas, esta plataforma automatizada impulsaría significativamente la protección de sus ingresos al evitar fugas de capital por la suplantación de identidad o el uso compartido de membresías. Al facilitar la generación de métricas precisas sobre afluencia sin requerir que el personal invierta tiempo excesivo en labores de registro manual, el sistema contribuye a reducir las ineficiencias operativas y fomenta el crecimiento del negocio.
+
+Finalmente, desde el enfoque científico-investigativo, la limitada investigación aplicada en biometría facial adaptada a contextos deportivos locales con deficiencias administrativas representa un vacío relevante. Este proyecto contribuye al avance científico y técnico integrando conocimientos recientes sobre visión artificial, reconocimiento de patrones y seguridad de la información. Todo ello respaldado con una metodología que asegura el análisis profundo de las necesidades operativas reales de los centros estudiados, garantizando un despliegue tecnológico robusto y un modelo de desarrollo replicable para futuras investigaciones académicas.
+
+Alcance y Propósito o Finalidad de la Investigación
+
+El propósito de esta investigación es desarrollar un sistema de biometría facial para los centros deportivos del municipio Cabimas que funcione como un eje central de gestión, demostrando que la automatización biométrica resuelve de forma efectiva las ineficiencias de los procesos. Se busca validar que, al verificar la identidad y solvencia de los usuarios en milisegundos y centralizar el historial de asistencias en un panel administrativo, se optimiza considerablemente la exclusividad de las instalaciones y se protege la privacidad de los datos personales. Finalmente, se aspira impulsar la transformación digital en el sector deportivo local, permitiendo a las gerencias tomar decisiones estratégicas basadas en analítica de datos en tiempo real, sirviendo como un modelo tecnológico escalable y eficiente para la región.
+
+En cuanto al alcance, la investigación se delimita espacialmente a los centros deportivos ubicados en la parroquia Carmen Herrera del municipio Cabimas. Tecnológicamente, el proyecto comprende el diseño y codificación de una arquitectura web que integra interfaces dinámicas en React.js, lógica de negocio en Node.js y un motor de procesamiento de visión artificial en Python. Funcionalmente, el sistema cubrirá la validación biométrica del estatus de membresía en el punto de acceso y la generación automática de métricas sobre horas pico y asistencia. De esta forma, el proyecto abarca desde el diagnóstico inicial de requerimientos hasta la construcción de una solución capaz de optimizar la gestión administrativa.
+
+CAPÍTULO II
+
+MARCO REFERENCIAL
+
+CAPÍTULO II
+
+MARCO REFERENCIAL
+
+Según las normativas metodológicas de la investigación científica, el marco referencial constituye el apartado donde se integran y sistematizan los aportes teóricos vinculados directamente con el objeto de estudio. De acuerdo con Baena (2017), esta etapa implica la construcción de un sustento documental que permite explicar el fenómeno investigado, fundamentar las decisiones técnicas y orientar la selección de la metodología más adecuada. Su propósito fundamental es proporcionar una perspectiva clara que asegure la profundidad y coherencia del proyecto, evitando errores cometidos en trabajos anteriores y centrando el análisis en las variables que realmente impactan en la solución del problema planteado.
+
+Teoría Genérica Explicativa
+
+Según Hernández-Sampieri y Mendoza (2018), las teorías genéricas explicativas constituyen un marco conceptual dentro del proceso de investigación científica que permite comprender los fenómenos mediante la identificación de relaciones causales entre variables. Estas teorías no se limitan a la descripción de los hechos observados, sino que buscan explicar de manera sistemática el porqué y el cómo ocurren los eventos dentro de un contexto determinado. Asimismo, facilitan la construcción de modelos analíticos y la formulación de hipótesis lógicas que orientan el desarrollo del proceso investigativo hacia soluciones eficientes.
+
+Teoría General de sistemas
+
+Según Van Gigch (1990), la Teoría General de Sistemas (TGS) aplicada a la ingeniería permite comprender las organizaciones como sistemas de niveles elevados de complejidad que se orientan hacia objetivos autoestablecidos. El autor sostiene que para que un sistema funcione con éxito, debe existir una estructura de control donde las comunicaciones desempeñen un papel fundamental en la conducta e interacción de sus subsistemas. En este sentido, cualquier deficiencia en los procesos de comunicación o en la toma de decisiones sobre el flujo de datos genera un comportamiento ineficiente que impide al sistema alcanzar su estado de orden superior.
+
+Para esta investigación, esta teoría constituye el marco conceptual que explica la problemática operativa de los centros deportivos ubicados en la parroquia Carmen Herrera del municipio Cabimas. Al ser sistemas vivientes y comerciales, los establecimientos deportivos de la parroquia Carmen Herrera del municipio requieren que su subsistema de control de acceso funcione de manera precisa. El método actual, basado en el dictado y la digitación manual de la cédula de identidad, se identifica como un proceso de baja eficiencia que satura los canales de comunicación y genera fricción operativa. Por lo tanto, la implementación de la biometría facial se justifica como una mejora en la jerarquía del sistema, optimizando las comunicaciones internas y garantizando un control de entrada automatizado.
+
+Sistemas de Control de Acceso
+
+Un sistema de control de acceso se define como un modelo computacional diseñado para gestionar la identidad y la autorización de entrada a recursos específicos, garantizando la integridad de los procesos organizacionales. Según Mar Cornelio et al. (2024), estos sistemas actúan como herramientas críticas para la toma de decisiones, permitiendo verificar de forma automática si un individuo cumple con los parámetros requeridos para acceder a un área determinada. Su importancia radica en la capacidad de sustituir la gestión manual por procesos algorítmicos que reducen la incertidumbre y fortalecen la seguridad, permitiendo además la recopilación de datos precisos para auditar la operatividad y optimizar el aprovechamiento de las instalaciones.
+
+Elementos de un sistema de control de acceso
+
+Para que un sistema de control de acceso biométrico funcione de manera autónoma y segura, requiere una arquitectura estructurada compuesta por elementos de hardware y software interconectados. Según Stallings y Brown (2023), estos sistemas se desglosan en capas operativas críticas que deben operar en perfecta sincronía para garantizar la autenticación y la integridad de los datos. La correcta implementación de cada una de estas capas asegura la rapidez en la validación y la protección de la información sensible. Por consiguiente, la estructura fundamental de estas plataformas modernas se divide en tres módulos esenciales:
+
+En primer lugar, el Módulo de Captura o dispositivo periférico constituye la interfaz física inicial entre el usuario y el sistema informático. En las plataformas modernas, este elemento utiliza sensores de imagen de alta resolución encargados de capturar los datos primarios (biométricos) del sujeto. Este componente debe operar bajo diversas condiciones ambientales y poseer la capacidad de transmitir la información al núcleo de procesamiento con la calidad óptima requerida para evitar errores de paridad, falsos negativos o alteraciones en el flujo de la red.
+
+En segundo lugar, se encuentra el Módulo de Procesamiento, el cual actúa como el núcleo lógico y analítico de la plataforma. Este componente de software es responsable de recibir la imagen en tiempo real, extraer las características únicas del individuo y convertirlas en una representación matemática. Una vez generado este vector, el módulo consulta la base de datos relacional para verificar la identidad y el estatus administrativo del cliente. Si los parámetros de seguridad concuerdan y la membresía está activa, el sistema procesa instantáneamente la lógica de autorización.
+
+Por último, el Módulo de Gestión y Auditoría corresponde a la interfaz administrativa centralizada, comúnmente denominada Dashboard. A través de este panel, la gerencia puede gestionar la información de los usuarios, modificar niveles de permisos y monitorear la operatividad del recinto en tiempo real. Adicionalmente, esta capa lógica se encarga de almacenar de forma segura el historial de eventos, convirtiendo los datos transaccionales en métricas valiosas para la toma de decisiones estratégicas basadas en el comportamiento real y las horas pico de la población de usuarios.
+
+Tipos de sistemas de control de acceso
+
+Los sistemas de control de acceso pueden clasificarse según el nivel de complejidad tecnológica y el mecanismo utilizado para la autenticación de usuarios. De acuerdo con Stallings y Brown (2023), estos sistemas han evolucionado desde métodos físicos tradicionales hasta soluciones digitales. Los sistemas basados en "conocimiento" (como saber y dictar una cédula o PIN) son altamente vulnerables, ya que la información puede ser compartida o escuchada por terceros, facilitando la suplantación de identidad en entornos de alto tráfico como los centros deportivos.
+
+Finalmente, en el nivel de mayor seguridad, se ubican los sistemas biométricos, considerados los más avanzados dentro del control de acceso moderno. Estos sistemas utilizan características únicas del individuo para realizar la autenticación, pasando de validar "lo que el usuario sabe" a validar "lo que el usuario es". Este enfoque reduce significativamente la posibilidad de fraude, ya que la verificación se basa en atributos biológicos inherentes e intransferibles, lo cual los hace altamente confiables en entornos corporativos o instituciones deportivas que requieren un control de aforo riguroso y ágil.
+
+Biometría
+
+La biometría se define como el conjunto de métodos automatizados utilizados para la identificación o verificación de individuos a partir de características físicas o conductuales únicas. Según García, Horna y Mendoza (2024), las tecnologías biométricas aplicadas a la seguridad de la información incluyen el reconocimiento de huellas dactilares, facial, de iris y de voz, las cuales presentan distintos niveles de precisión, invasión y resistencia al fraude. Estos sistemas permiten mejorar significativamente los procesos de autenticación, eliminando la dependencia de credenciales externas o códigos memorizados.
+
+Algoritmos de geometría facial
+
+Los algoritmos de geometría facial son modelos matemáticos estructurados para calcular y extraer características biométricas a partir de la fisonomía única de una persona. De acuerdo con Capcha Huaman (2022), el funcionamiento de estos algoritmos se basa en la medición precisa de los puntos nodales del rostro humano, analizando parámetros inalterables como la distancia entre los globos oculares, la anchura de la cavidad nasal y la curvatura de la mandíbula. Una vez mapeadas estas distancias, el sistema las convierte en un vector numérico codificado que sirve como plantilla de identificación. La aplicación de estos algoritmos en el desarrollo propuesto garantiza que la plataforma valide atributos biológicos totalmente intransferibles, asegurando una precisión absoluta al momento de contrastar al usuario frente a la base de datos de los centros deportivos.
+
+Reconocimiento Facial
+
+El reconocimiento facial es una tecnología biométrica basada en el análisis de patrones y rasgos faciales para la identificación o verificación de individuos. De acuerdo con García, Horna y Mendoza (2024), esta tecnología forma parte de los principales sistemas biométricos utilizados en la seguridad de la información, destacándose por su nivel de precisión y su facilidad de implementación en entornos digitales. Su funcionamiento se basa en la captura y comparación de características faciales mediante algoritmos computacionales, lo que permite realizar autenticaciones rápidas y sin contacto físico. Por ello, el reconocimiento facial se considera una de las tecnologías más aplicables en sistemas de control de acceso modernos
+
+Privacidad de la Información en Sistemas de Acceso
+
+La privacidad de la información es un principio fundamental en la gestión de sistemas informáticos, orientado a garantizar que los datos personales no sean expuestos ante terceros. En el contexto del control de acceso, los modelos rudimentarios que obligan al usuario a dictar su documento de identidad vulneran directamente la intimidad en espacios públicos. Al respecto, Piedra Alegría (2023) señala que la implementación de biometría ofrece una "autenticación transparente" que elimina por completo la exposición manual o verbal de credenciales. No obstante, el autor enfatiza que esta transición tecnológica no solo responde a una necesidad de rapidez operativa, sino a la estricta obligación ética de aplicar arquitecturas informáticas que aseguren la encriptación y el resguardo absoluto de la identidad del usuario desde el punto de entrada.
+
+Inteligencia de Negocio
+
+La Inteligencia de Negocios (BI) se define como el conjunto de herramientas y procesos tecnológicos orientados a la transformación de datos en información útil para la toma de decisiones organizacionales. Según Viteri y Murillo (2021), esta disciplina permite integrar grandes volúmenes de datos provenientes de distintas fuentes para convertirlos en indicadores visuales mediante dashboards interactivos. En el contexto de los sistemas de control de acceso, esta tecnología permite a la gerencia analizar los registros históricos, evaluar la rentabilidad del negocio y generar métricas de uso relevantes, como la identificación precisa de las horas de mayor afluencia.
+
+Control de Acceso Basado en Roles (RBAC)
+
+El Control de Acceso Basado en Roles (RBAC) es un modelo de seguridad informática que restringe el acceso a los recursos del sistema en función de las responsabilidades asignadas a cada usuario dentro de una organización. De acuerdo con Roldán y Ramos (2024), este enfoque permite simplificar la administración al asignar permisos según funciones específicas, reduciendo riesgos informáticos. Para plataformas de control biométrico, este modelo es vital para definir niveles diferenciados de autorización entre administradores (que ven las finanzas), operadores de recepción y usuarios finales, garantizando la correcta segregación de datos.
+
+Vision por computadora
+
+La visión por computadora es una rama de la inteligencia artificial que permite a los sistemas interpretar y procesar imágenes del entorno para extraer información útil. Según Cruz (2021), esta tecnología se basa en el uso de sensores y algoritmos de procesamiento digital de imágenes que permiten a las máquinas analizar datos visuales de forma automática. Su integración en sistemas de control de acceso, a través de librerías especializadas en lenguajes modernos, mejora la precisión en la autenticación de usuarios en tiempo real, permite la automatización de procesos sin intervención humana y asegura una operatividad fluida en entornos deportivos exigentes.
+
+Antecedentes de campo
+
+En este apartado se analizan las investigaciones y trabajos académicos previos que guardan relación directa con el desarrollo de sistemas de control de acceso, arquitecturas tecnológicas y biometría facial. El estudio de estos antecedentes permite fundamentar la viabilidad técnica del proyecto, identificar metodologías de software exitosas y justificar la pertinencia de la solución tecnológica propuesta para los centros deportivos del municipio Cabimas. Todo esto tomando como referencia los estándares de ingeniería actuales para asegurar que el desarrollo cumpla con los criterios de calidad, seguridad y escalabilidad requeridos en el ámbito comercial local.
+
+En el ámbito internacional, destaca el artículo científico desarrollado por Rodríguez Ponce, Gutiérrez Sánchez y Mendoza De los Santos (2024), titulado "Sistema de control de acceso biométrico mediante reconocimiento facial con técnicas de vivacidad", publicado en la Revista Innovación y Software en Perú. El objetivo principal de este estudio fue mejorar la seguridad en los controles de acceso mediante redes neuronales, implementando el lenguaje Python. Su gran innovación consistió en el uso de "técnicas de vivacidad" (como detectar el parpadeo de ojos) para evitar la suplantación de identidad mediante el uso de fotografías estáticas frente a las cámaras de validación.
+
+Este antecedente aporta un valor técnico fundamental a la presente investigación, ya que demuestra la eficacia de utilizar Python y librerías especializadas de visión artificial, como OpenCV, para la autenticación biométrica en tiempo real. Además, justifica ampliamente la necesidad de implementar mecanismos antisuplantación en los centros deportivos de Cabimas, asegurando que los usuarios que ingresen a las instalaciones sean personas reales y no presenten imágenes falsas o identidades prestadas frente al dispositivo de captura, elevando así los estándares de exclusividad del recinto.
+
+Asimismo, en el contexto internacional, se presenta el trabajo de grado desarrollado por Armijos Erraez (2024), titulado "Sistema de video vigilancia para la seguridad y control operativo", de la Universidad Laica Eloy Alfaro de Manabí, Ecuador. El objetivo de esta investigación fue diseñar e implementar una arquitectura de red basada en dispositivos de captura de video para automatizar el monitoreo de un sector determinado. Metodológicamente, se trató de una investigación de campo con enfoque tecnológico, donde se evaluó la infraestructura de hardware y red necesaria para transmitir fotogramas en tiempo real de manera estable hacia un servidor central de procesamiento.
+
+Este estudio valida teórica y técnicamente los requerimientos de hardware del Módulo de Captura que la plataforma biométrica necesitará para funcionar eficientemente en los gimnasios seleccionados. El antecedente demuestra que la sincronización y la correcta conexión entre cámaras IP de alta definición y una red local estructurada es un paso tecnológico indispensable. Esta infraestructura garantiza que el algoritmo de geometría facial procese las imágenes sin latencia ni interrupciones en la recepción de los recintos deportivos, evitando que se generen nuevos cuellos de botella informáticos en la entrada.
+
+En el ámbito nacional, resalta la investigación realizada por Chirinos (2024), titulada "Sistema de acceso por medio de un dispositivo de reconocimiento facial, para sistemas informáticos", presentada en la Universidad José Antonio Páez en el estado Carabobo. El objetivo consistió en desarrollar un acceso biométrico que garantizara la confidencialidad de datos, sustituyendo el uso de contraseñas vulnerables. La investigación se enmarcó como un proyecto especial de enfoque descriptivo, utilizando la metodología ágil Programación Extrema (XP) y el lenguaje Python para la construcción del algoritmo, logrando validar la eficacia de la identidad geométrica frente a métodos tradicionales.
+
+El aporte de este antecedente es directo y de altísima relevancia para el sistema propuesto en la parroquia Carmen Herrera. En primer lugar, justifica metodológicamente el uso de la Programación Extrema (XP) como el marco de trabajo ideal para desarrollar este tipo de software, permitiendo una gran adaptabilidad durante la fase de codificación. En segundo lugar, demuestra empíricamente que la biometría automatizada es la vía tecnológica más segura para erradicar la digitación manual de cédulas y el préstamo de credenciales, optimizando la administración, privacidad y seguridad de cualquier establecimiento deportivo comercial.
+
+Estudio del arte y la tecnología
+
+Reseña histórica
+
+La gestión de la seguridad física y el control de acceso ha experimentado una profunda transformación sistémica, evolucionando desde modelos rudimentarios y manuales hacia ecosistemas digitales completamente automatizados. Esta evolución no representa únicamente un cambio de hardware, sino una redefinición fundamental de la arquitectura organizacional impulsada por la visión artificial y la conectividad web. De acuerdo con Mar Cornelio et al. (2024), esta progresión ha permitido la transición hacia modelos computacionales diseñados específicamente para la toma de decisiones automatizada, reduciendo la incertidumbre y garantizando la integridad de los procesos de verificación de identidad en tiempo real.
+
+Los cimientos de esta tecnología se establecieron décadas atrás bajo paradigmas analítico-mecánicos. Durante los años setenta y ochenta, la industria dio su primer gran salto con la introducción de sistemas electrónicos locales, popularizando el uso de tarjetas magnéticas y teclados de acceso mediante códigos PIN. Según describen Stallings y Brown (2023), aunque estos métodos fueron revolucionarios al permitir un registro digital básico, presentaban una vulnerabilidad estructural crítica: el sistema autenticaba el "objeto" (tarjeta) o el "conocimiento" (contraseña), pero no a la persona. Esto dejó una brecha abierta para la suplantación de identidad, ineficiencia que aún persiste en los centros deportivos locales.
+
+La verdadera revolución operativa comenzó con la expansión de las redes informáticas y las arquitecturas de bases de datos relacionales entre los años noventa y principios del dos mil. En esta etapa, se introdujeron los primeros dispositivos biométricos comerciales, principalmente lectores de huellas dactilares. Este avance representó un cambio de paradigma crucial: pasar de validar "lo que el usuario tiene" a validar "lo que el usuario es". Sin embargo, como señalan García, Horna y Mendoza (2024), estas tecnologías iniciales solían ser costosas y requerían contacto físico directo, lo que en entornos de alta afluencia generaba lentitud operativa y un desgaste acelerado de los sensores.
+
+El punto de inflexión definitivo para la modernización de estos sistemas ocurrió en la última década, impulsado por el auge de la computación en la nube y los avances exponenciales en la visión por computadora. A partir de 2010, el desarrollo de algoritmos de geometría facial permitió que la biometría sin contacto comenzara a adaptarse comercialmente con alta precisión. Según Cruz (2021), la integración de sensores inteligentes ha permitido a las máquinas interpretar el entorno visual autónomamente. En este contexto, Rodríguez Ponce et al. (2024) destacan que la madurez tecnológica actual permite implementar "técnicas de vivacidad" que bloquean los intentos de fraude mediante fotografías.
+
+Finalmente, la era actual está marcada por soluciones higiénicas sin contacto y por la eficiencia de lenguajes de alto nivel como Python. Como demuestran las investigaciones de Chirinos (2024), el uso de estos lenguajes facilita la creación de sistemas robustos capaces de procesar vectores biométricos en milisegundos. Esta evolución culmina en un modelo de gestión integral basado en la Inteligencia de Negocios; según Viteri-Cevallos y Murillo-Párraga (2021), transformar registros de acceso en métricas visuales optimiza estratégicamente la organización. Así, la plataforma propuesta para los centros deportivos de Cabimas se posiciona en la vanguardia tecnológica, integrando biometría y analítica de datos.
+
+Teorías genéricas ingenieriles 
+
+Para autores contemporáneos como Bermúdez y Navarro (2024), las teorías genéricas ingenieriles proveen una base tecnológica universal y estandarizada para aplicar los principios formales de la ingeniería de sistemas a distintos dominios del mundo real. En el contexto de este proyecto para para los centros deportivos de la parroquia Carmen Herrera del municipio Cabimas, estas teorías constituyen el marco conceptual y metodológico sobre el cual se diseña, desarrolla y valida la plataforma web biométrica. Estas bases definen los componentes lógicos, la arquitectura políglota y los procesos de software necesarios para materializar la solución de reconocimiento facial, asegurando que la plataforma no solo cumpla con sus objetivos de seguridad, sino que posea atributos de calidad indispensables como la escalabilidad y el alto rendimiento.
+
+Programación Extrema (XP)
+
+La Programación Extrema (XP) es una metodología ágil de desarrollo de software diseñada para optimizar la calidad del código y maximizar la capacidad de respuesta ante los cambios en los requisitos del sistema. De acuerdo con Lara Meneses et al. (2024), a diferencia de los modelos tradicionales en cascada, XP promueve un enfoque altamente colaborativo mediante ciclos de desarrollo iterativos y entregas funcionales frecuentes. En el contexto de este trabajo de grado, el uso de XP se justifica plenamente debido a la complejidad técnica que exige la integración de un motor de visión artificial con una arquitectura web. Al aplicar prácticas ágiles como las pruebas constantes, se garantiza que la construcción del sistema de reconocimiento facial y del panel administrativo se ajusten en tiempo real a las verdaderas condiciones operativas de los centros deportivos.
+
+Requerimientos del sistema
+
+Los requerimientos, también denominados requisitos informáticos, constituyen la base fundamental de cualquier proyecto de ingeniería, ya que establecen el contrato técnico entre el problema diagnosticado y la solución propuesta. Según Montoya Suárez y Marín Miranda (2024), un requerimiento representa el punto de partida esencial para el desarrollo de un sistema, definiendo la funcionalidad, los objetivos y las restricciones operativas que garantizan la calidad del software. En este proyecto, la fase de levantamiento de requisitos resulta crítica, puesto que traduce las necesidades administrativas y de seguridad de los centros deportivos de la parroquia Carmen Herrera en especificaciones lógicas concretas. De este modo, se asegura desde el diseño que la integración de la cámara y la base de datos erradicarán definitivamente la ineficiencia del control manual.
+
+Requerimientos Funcionales
+
+Los requerimientos funcionales definen los comportamientos específicos y directos del sistema, describiendo con exactitud qué acciones debe ejecutar el software. Según Hernández-Hernández (2023), estos requisitos se centran teóricamente en las acciones indispensables que la plataforma informática debe realizar para satisfacer las necesidades operativas de la organización. Para el presente proyecto, estos requerimientos incluyen operaciones críticas y determinantes como: permitir el enrolamiento biométrico de un nuevo cliente, delegar la extracción de la geometría facial al algoritmo desarrollado en Python, validar instantáneamente el estatus de la membresía en la base de datos MySQL y registrar la asistencia exitosa en el panel administrativo de la recepción.
+
+Requerimientos No Funcionales
+
+Los requerimientos no funcionales definen las métricas de rendimiento y las restricciones operativas, dictaminando el «cómo» debe operar la arquitectura tecnológica para asegurar su calidad. Según Hernández-Hernández (2023), estos requisitos no describen las tareas primarias, sino que definen cómo el sistema debe comportarse para cumplir con atributos vitales como el desempeño, la seguridad y la usabilidad. Para la plataforma en los centros deportivos de la parroquia Carmen Herrera, esto implica garantizar una validación facial en un margen mínimo de milisegundos, mantener robustez frente a fluctuaciones de red y asegurar la protección de la identidad mediante encriptación, cumpliendo con los estándares de confiabilidad exigidos comercialmente.
+
+Arquitectura Cliente-Servidor
+
+La arquitectura cliente-servidor es el modelo de diseño informático sobre el cual se estructura el sistema de esta investigación. Según Gómez y Poma (2025), en este paradigma de redes las responsabilidades se dividen de forma modular: el "cliente" se encarga exclusivamente de la presentación de la interfaz y la interacción con el usuario, mientras que el "servidor" centraliza el procesamiento pesado, el acceso a los datos y las reglas de negocio. Esta separación lógica es esencial para los centros deportivos de la parroquia Carmen Herrera, ya que garantiza que el procesamiento complejo de la visión artificial y las consultas de solvencia se ejecuten de manera segura en un entorno centralizado. De esta forma, se evita sobrecargar las computadoras locales de la recepción, asegurando un flujo de validación biométrica ininterrumpido y altamente escalable.
+
+JavaScript
+
+JavaScript es un lenguaje de programación de alto nivel, dinámico e interpretado, considerado mundialmente como el pilar fundamental para el desarrollo de la web moderna. Según Celi Párraga et al. (2023), su alcance operativo ha evolucionado drásticamente, trascendiendo la simple creación de interactividad en el navegador para lograr orquestar servidores robustos y gestionar bases de datos. En el contexto de los centros deportivos de la parroquia Carmen Herrera, JavaScript funcionará como el ecosistema tecnológico unificador de la arquitectura. Su flexibilidad permitirá construir las vistas dinámicas e intuitivas del panel de recepción en el Frontend, al mismo tiempo que estructurará la lógica de negocio en el Backend para orquestar las peticiones biométricas enviadas por el núcleo de visión artificial.
+
+React.js
+
+React.js es una potente biblioteca de JavaScript orientada a la construcción de interfaces de usuario dinámicas y de rápida interacción. Según Andi et al. (2024), esta herramienta emplea un modelo basado en componentes reutilizables que facilita la actualización eficiente de la vista de manera parcial, destacándose por su alto rendimiento y velocidad de respuesta sin necesidad de recargar la página web al momento de recibir nueva información. En la capa de Frontend de esta investigación, React.js se utilizará para garantizar que el panel de administración de los centros deportivos sea un ecosistema ágil e intuitivo. Su arquitectura modular permitirá que el personal de recepción reciba las notificaciones biométricas y visualice el estatus de membresía de los usuarios en estricto tiempo real, erradicando los retrasos en el punto de entrada.
+
+Node.js
+
+Node.js es un entorno de ejecución multiplataforma que permite procesar código JavaScript del lado del servidor (Backend). De acuerdo con Esquivel Paula et al. (2025), este entorno destaca por su modelo de operaciones asincrónicas de entrada y salida sin bloqueo, lo que lo hace excepcionalmente ligero, rápido e ideal para aplicaciones que requieren manejar múltiples conexiones concurrentes. En el desarrollo de esta plataforma biométrica, la orquestación de las rutas de red y las reglas de negocio de los centros deportivos se manejará mediante Node.js. Esto garantiza una comunicación ininterrumpida entre el núcleo de visión artificial, la base de datos y la interfaz de usuario, permitiendo una escalabilidad robusta capaz de soportar numerosos registros de asistencia de forma simultánea.
+
+Python
+
+Python es un lenguaje de programación de alto nivel reconocido como el estándar técnico en el ámbito del procesamiento de datos y la visión por computadora. Según Rodríguez Ponce et al. (2024), su sintaxis limpia y su vasta colección de librerías especializadas permiten resolver algoritmos biométricos complejos con alta eficiencia. En este proyecto, el procesamiento de la geometría facial en los centros deportivos será delegado exclusivamente a scripts desarrollados en Python. Esta tecnología aprovechará su potencia computacional para analizar el flujo de video en la recepción, extraer los vectores de los rostros detectados y compararlos contra los patrones almacenados, enviando instantáneamente el resultado de validación al servidor.
+
+API REST
+
+Una API REST es una interfaz de programación que define un conjunto de reglas para la comunicación y el intercambio de datos entre diferentes sistemas informáticos bajo el protocolo HTTP. Según Machado y Dantas (2025), esta arquitectura es fundamental para el diseño de sistemas modernos, ya que permite la integración desacoplada entre diferentes módulos de forma segura y altamente escalable. En esta investigación, la API REST funcionará como el puente lógico indispensable: será el canal de comunicación estructurado que permitirá al motor de visión artificial desarrollado en Python transmitir sus resultados biométricos al servidor Backend en Node.js. De esta forma, el veredicto de validación viajará en milisegundos hacia el panel administrativo de los centros deportivos, logrando una integración políglota perfecta.
+
+MySQL
+
+MySQL es un Sistema de Gestión de Bases de Datos Relacionales de código abierto, implementado mundialmente por su alta velocidad, fiabilidad y robustez transaccional. Al respecto, Chicaiza Navarrete y Paz Rodríguez (2024) lo definen como un motor informático diseñado para proporcionar una solución eficiente en el almacenamiento y recuperación de grandes volúmenes de datos mediante el uso de tablas estructuradas y vinculadas por claves lógicas. En este proyecto, la gestión de la información crítica para los centros deportivos, tales como los perfiles de los usuarios, el historial de membresías y los vectores biométricos encriptados, se centralizará en MySQL. Esto garantiza que el ecosistema administrativo se mantenga transaccionalmente consistente, altamente escalable y protegido en todo momento contra pérdidas de información o accesos no autorizados.
+
+Pruebas de Software
+
+Las pruebas de software conforman un proceso metodológico sistemático cuyo propósito es verificar, validar y certificar que una aplicación tecnológica cumple a cabalidad con los requerimientos previstos antes de su puesta en producción. Según Quintero Meza y Gil García (2025), estas evaluaciones no deben entenderse como una etapa aislada, sino como un eje transversal que consiste en someter el sistema a distintas condiciones de entrada para verificar su comportamiento y garantizar su calidad. Para la plataforma de los centros deportivos, la ejecución rigurosa de estas pruebas es innegociable. Su aplicación garantiza que la comunicación lógica entre el motor de visión artificial, el servidor y la base de datos sea perfecta, asegurando que el algoritmo no genere vulnerabilidades que comprometan el acceso seguro de los usuarios al recinto.
+
+Pruebas Unitarias
+
+Las pruebas unitarias son evaluaciones de «caja blanca» enfocadas en verificar el comportamiento de la unidad funcional más pequeña de un software de forma aislada. Según Gómez et al. (2024), este nivel de pruebas ayuda al aseguramiento de la calidad del sistema desde su estructura más básica, permitiendo aislar errores con rapidez y medir el comportamiento exacto de cada función. El objetivo principal es validar que cada fragmento de código responda según lo esperado antes de integrarlo al ecosistema completo. En el proyecto de los centros deportivos, estas pruebas se aplicarán rigurosamente para verificar el renderizado individual de los componentes visuales en React.js, y para garantizar que las funciones de la API en Node.js y los algoritmos matemáticos en Python procesen la biometría del usuario con precisión absoluta.
+
+Pruebas de Integración
+
+Las pruebas de integración se ejecutan metodológicamente después de las pruebas unitarias y se centran en verificar la correcta interacción entre los distintos módulos de un ecosistema informático. Según Cuevas Aldana et al. (2025), este enfoque consiste en ensamblar y evaluar los componentes de software en conjunto, con el fin de exponer y corregir defectos de comunicación en las interfaces antes de la fase de producción. Para el sistema biométrico de los centros deportivos, estas pruebas son fundamentales al validar flujos operativos reales. Su ejecución permitirá certificar, por ejemplo, que la cámara extraiga la biometría mediante Python, que la API en Node.js cruce los datos correctamente con MySQL, y que el panel en React.js refleje la autorización de acceso al instante, garantizando un servicio fiable e ininterrumpido.
+
+Términos básicos
+
+Algoritmo: Secuencia predefinida y finita de pasos lógicos utilizados para resolver tareas específicas, transformando valores de entrada en resultados de salida de forma independiente al lenguaje (IONOS, 2023).
+
+Backend: Parte invisible de una aplicación encargada de manejar la lógica, el procesamiento de datos y la conexión segura entre el servidor y la base de datos (Platzi, 2025).
+
+Base de Datos Relacional: Colección de información organizada en tablas de filas y columnas que utiliza conexiones lógicas predefinidas para facilitar la visualización y comprensión de cómo se relacionan las estructuras de datos (Google, 2025).
+
+Control de Acceso: Técnica de seguridad que regula quién puede utilizar recursos en un entorno informático, empleando sistemas físicos o lógicos y credenciales como datos biométricos para minimizar riesgos organizacionales (Innovatrics, 2025).
+
+Dashboard: Herramienta de gestión que monitoriza, analiza y muestra visualmente indicadores clave de desempeño y métricas fundamentales para el seguimiento del estado de un proceso (Arimetrics, 2025).
+
+Diseño UI (Interfaz de Usuario): Enfoque centrado en los aspectos visuales e interactivos de un producto, asegurando que la apariencia, colores y tipografía sean intuitivos y cohesivos para el usuario (Wix, 2024).
+
+Diseño UX (Experiencia de Usuario): Proceso de creación de servicios que proporcionan experiencias significativas y funcionales, integrando aspectos de usabilidad y marca para satisfacer las necesidades del usuario (Wix, 2024).
+
+Frontend: Componente visible de un sitio web o aplicación que se ejecuta en el lado del cliente, permitiendo la interacción directa del usuario con la interfaz (Platzi, 2025).
+
+Framework: Esquema o marco de trabajo que ofrece una estructura base y herramientas reutilizables para organizar y desarrollar proyectos de software de manera ágil, limpia y productiva (UNIR, 2022).
+
+Membresía: Forma de suscripción en la que un usuario se une a un grupo selecto para acceder a contenido restringido, bonificaciones o servicios premium de una organización (Arimetrics, 2024).
+
+CAPÍTULO III
+
+MARCO METODOLÓGICO
+
+CAPÍTULO III
+
+MARCO METODOLÓGICO
+
+El presente capítulo describe de manera detallada los procedimientos metodológicos utilizados para el desarrollo de la presente investigación, estableciendo los lineamientos que permiten dar respuesta a la problemática planteada en los centros deportivos del municipio Cabimas. Según Arias (2012), el marco metodológico representa el conjunto de métodos, técnicas e instrumentos que permiten definir el “cómo” se ejecutará el estudio científico, garantizando la coherencia entre los objetivos y los resultados obtenidos. En este sentido, este apartado constituye la base operativa que orienta el desarrollo del sistema propuesto.
+
+Modalidad de la Investigación
+
+La presente investigación se enmarca dentro de la modalidad de Proyecto Tecnológico, la cual está orientada al desarrollo de soluciones informáticas aplicables a problemas reales mediante la integración de conocimientos de ingeniería. Según el Instituto Universitario Politécnico “Santiago Mariño” (2016), esta modalidad consiste en la creación, diseño o mejora de sistemas tecnológicos que permitan resolver necesidades específicas en un contexto determinado. En este caso, se propone el desarrollo de un sistema de reconocimiento facial para el control de acceso en centros deportivos del municipio Cabimas.
+
+Este proyecto tecnológico tiene como finalidad la automatización de procesos administrativos y de seguridad mediante el uso de biometría facial. Para ello, se integran herramientas de visión por computadora, desarrollo web y gestión de bases de datos. De esta manera, la investigación no se limita a un análisis teórico del problema, sino que busca la construcción de un sistema funcional capaz de mejorar la eficiencia operativa de los centros deportivos.
+
+Tipo de Investigación
+
+El tipo de investigación se clasifica como proyectiva con apoyo descriptivo. De acuerdo con Hurtado de Barrera (2012), la investigación proyectiva consiste en la elaboración de propuestas de solución a problemas prácticos, mientras que la investigación descriptiva permite caracterizar y comprender la realidad estudiada. En este caso, primero se analizan los procesos actuales de control de acceso en los centros deportivos, identificando sus fallas y limitaciones operativas.
+
+Posteriormente, a partir del diagnóstico realizado, se diseña una propuesta tecnológica basada en reconocimiento facial que permita automatizar el proceso de ingreso de usuarios. Este enfoque permite no solo describir la situación existente, sino también generar una solución viable y aplicable. De esta manera, se garantiza que la investigación tenga un enfoque práctico orientado a la mejora de procesos reales.
+
+Método de Investigación
+
+El método utilizado en esta investigación es el método deductivo. Según Hernández, Fernández y Baptista (2014), este método parte de principios generales establecidos por teorías científicas para aplicarlos a casos particulares, permitiendo llegar a conclusiones específicas. En este estudio, se parte de teorías generales sobre biometría, sistemas de control de acceso y visión por computadora. Estas teorías se aplican al caso específico de los centros deportivos del municipio Cabimas, con el fin de diseñar un sistema de reconocimiento facial que optimice el control de acceso. Este enfoque deductivo permite estructurar la solución tecnológica de manera lógica, asegurando que el sistema propuesto esté fundamentado en conocimientos científicos previamente validados.
+
+Técnicas e Instrumentos para la Recolección de Información
+
+De acuerdo con Gil (2016), las técnicas e instrumentos de recolección de datos representan el conjunto de herramientas y recursos utilizados para registrar observaciones y facilitar el procesamiento de la información en toda investigación. Dentro de este marco, se incluyen tanto los instrumentos externos que permiten la recopilación de datos (como cuestionarios o guías de entrevistas), como los recursos auxiliares necesarios para su almacenamiento y análisis. Para esta investigación, se han seleccionado técnicas específicas alineadas con la variable, garantizando la recolección de datos pertinentes y confiables.
+
+Observación Directa
+
+La observación directa es una técnica de recolección de datos que consiste en la percepción sistemática de los fenómenos en su entorno natural. Según Arias (2012), esta técnica permite obtener información sin intervenir directamente en el proceso observado. En esta investigación, se aplicará en los centros deportivos del municipio Cabimas para analizar el funcionamiento del sistema actual de control de acceso. El instrumento utilizado será una guía de observación estructurada, en la cual se registrarán aspectos como tiempos de espera, errores en el registro manual y flujo de usuarios. Esta información permitirá identificar las principales deficiencias del sistema actual, sirviendo como base para el diseño del nuevo sistema biométrico.
+
+Entrevistas No Estructuradas
+
+La entrevista no estructurada es una técnica flexible que permite obtener información a través de una conversación abierta con los participantes. Según Sabino (2014), este tipo de entrevista facilita la obtención de datos profundos y cualitativos. En este caso, se aplicará al personal administrativo y gerencial de los centros deportivos. El objetivo de esta técnica es conocer las necesidades del sistema, problemas actuales y expectativas sobre la implementación de un sistema de reconocimiento facial. La información obtenida permitirá definir los requerimientos funcionales y no funcionales del sistema propuesto, asegurando que responda a las necesidades reales de los usuarios.
+
+Técnicas de Análisis para el Tratamiento de la Información
+
+El análisis de la información se realizará bajo un enfoque cualitativo. Según Hernández, Fernández y Baptista (2014), este enfoque permite interpretar datos no numéricos para identificar patrones y significados relevantes dentro del contexto estudiado. En esta investigación, los datos obtenidos mediante observación y entrevistas serán organizados y categorizados. Posteriormente, esta información será utilizada para definir los requerimientos del sistema y modelar su arquitectura. Este proceso permitirá traducir la información obtenida en especificaciones técnicas para el desarrollo del sistema de reconocimiento facial, asegurando su viabilidad y funcionalidad dentro del entorno deportivo.
+
+Propuesta Metodológica para el Desarrollo de la plataforma
+
+La metodología Extreme Programming (XP) se estructura en un conjunto de fases iterativas que permiten el desarrollo progresivo del sistema de manera flexible y controlada. Según Beck (2005), XP se basa en ciclos cortos de desarrollo, retroalimentación constante y mejora continua del software, lo cual resulta adecuado para proyectos donde los requerimientos pueden evolucionar durante el proceso. En este caso, la metodología se adapta al desarrollo de un sistema de reconocimiento facial utilizando Python, OpenCV, Node.js y MySQL, garantizando un producto final funcional y eficiente.
+
+Fase I Planificación del Sistema: En esta fase se realiza la identificación de los requerimientos funcionales y no funcionales del sistema mediante técnicas como la observación directa y la entrevista no estructurada. Se analizan las necesidades de los centros deportivos del municipio Cabimas, con el objetivo de definir los procesos que serán automatizados mediante el reconocimiento facial. Esta etapa permite establecer el alcance del sistema, delimitando las funcionalidades principales del control de acceso biométrico y la gestión administrativa.
+
+Fase II Diseño del Sistema: La fase de diseño se centra en la estructuración de la arquitectura del sistema, definiendo la interacción entre sus componentes principales. En este caso, se establece el uso de Python con OpenCV para el procesamiento de reconocimiento facial, Node.js como backend y MySQL como sistema de almacenamiento de datos. Asimismo, se diseñan los diagramas lógicos del sistema, la estructura de la base de datos y el flujo de comunicación entre los módulos, garantizando una arquitectura escalable y eficiente.
+
+Fase III Desarrollo e Implementación: En esta fase se lleva a cabo la codificación del sistema utilizando programación modular. Se implementa el módulo de reconocimiento facial mediante OpenCV en Python, encargado de capturar y procesar los rostros de los usuarios. Paralelamente, se desarrolla el backend en Node.js, el cual gestiona las solicitudes del sistema y la comunicación con la base de datos MySQL. Esta integración permite que el sistema funcione de manera sincronizada entre captura, procesamiento y almacenamiento de información.
+
+Fase IV Pruebas y Validación: La fase de pruebas tiene como objetivo verificar el correcto funcionamiento del sistema en sus distintos módulos. Se aplican pruebas unitarias para validar cada componente de manera independiente, así como pruebas de integración para evaluar la comunicación entre Python, Node.js y MySQL. Estas pruebas permiten identificar errores, optimizar el rendimiento y garantizar que el sistema de reconocimiento facial responda correctamente ante diferentes condiciones de uso.
+
+Herramientas a Aplicar
+
+Según García Peñalvo (2021), las tecnologías digitales constituyen elementos fundamentales en el desarrollo de sistemas informáticos modernos, ya que permiten la integración eficiente de herramientas de software que facilitan la automatización de procesos y la gestión de información en entornos digitales. En este sentido, la selección de herramientas tecnológicas resulta clave para garantizar la funcionalidad, escalabilidad y rendimiento de los sistemas desarrollados en proyectos de ingeniería de software.
+
+En el presente proyecto, se emplea un conjunto de herramientas tecnológicas orientadas al desarrollo de un sistema de reconocimiento facial para el control de acceso en centros deportivos del municipio Cabimas. Estas herramientas permiten la integración entre el módulo de visión artificial, el backend del sistema y la base de datos, asegurando un flujo de información continuo y eficiente desde la captura de datos biométricos hasta su procesamiento y almacenamiento.
+
+Cuadro 1. Herramientas a Aplicar
+
+Herramienta
+
+Versión
+
+Utilidad
+
+Python
+
+3.12
+
+Lenguaje principal utilizado para el desarrollo del módulo de reconocimiento facial y procesamiento de imágenes biométricas.
+
+OpenCV
+
+4.x
+
+Biblioteca de visión por computadora utilizada para la detección, captura y análisis de rostros en tiempo real.
+
+Node.js
+
+20.x 
+
+Entorno de ejecución utilizado para el desarrollo del backend y la creación de la API del sistema.
+
+Express.js
+
+4.x
+
+Framework de Node.js utilizado para estructurar la API REST del sistema de control de acceso.
+
+React.js
+
+18.x
+
+Biblioteca orientada a la construcción de interfaces de usuario dinámicas para el panel administrativo en el Frontend.
+
+MySQL
+
+8.0
+
+Sistema gestor de base de datos relacional encargado del almacenamiento de usuarios, registros y accesos.
+
+VS Code
+
+1.95
+
+Editor de código fuente utilizado para el desarrollo, depuración e integración del sistema.
+
+Autor: (Ramos 2026)
+
+CAPÍTULO IV
+
+INGENIERÍA DEL PROYECTO
+
+Estudio Diagnóstico
+
+El estudio diagnóstico constituye la etapa inicial del análisis ingenieril, cuyo propósito fundamental es evaluar de forma objetiva la realidad operativa de los centros deportivos de la parroquia Carmen Herrera del municipio Cabimas. Para lograr esto, se tomaron como casos de estudio a los establecimientos ExtremoGym, Booster y CrunchGym, aplicando técnicas de recolección de datos como la observación directa en las áreas de recepción y entrevistas no estructuradas al personal. Este acercamiento permitió identificar con precisión las deficiencias del modelo informático actual, comprender las limitaciones que enfrenta el personal administrativo a diario y sentar las bases lógicas para establecer los requerimientos del nuevo sistema biométrico que se desarrollará en el presente proyecto tecnológico.
+
+A través de la observación directa, se constató que el proceso de control de acceso vigente opera bajo un esquema de validación semi-manual y de baja eficiencia. Al ingresar a las instalaciones, el cliente debe interactuar físicamente con un teclado numérico para digitar su número de cédula, o en su defecto, dictarlo verbalmente al recepcionista para que este lo introduzca en el software y verifique su solvencia. Durante las horas de mayor afluencia, este protocolo genera severos cuellos de botella, evidenciándose la formación de filas de espera de hasta siete personas de forma simultánea. Esta dinámica retrasa significativamente el flujo de entrada, genera molestia en los usuarios y somete al personal a un nivel de estrés que limita su capacidad de atención al cliente.
+
+Por otro lado, la información recabada mediante las entrevistas evidenció que la mayor debilidad de este sistema rudimentario radica en su alta vulnerabilidad ante el fraude y la suplantación de identidad. Al depender de un dato numérico fácilmente transferible, es común que individuos insolventes logren ingresar utilizando la cédula de un socio activo. El recepcionista, saturado por la cantidad de personas en horas pico, carece de tiempo para realizar una verificación visual exhaustiva. Sumado a esto, obligar al cliente a dictar su documento en voz alta frente a terceros expone sus datos personales, vulnerando su derecho a la privacidad y demostrando que el esquema actual no cumple con los estándares de seguridad requeridos.
+
+Desde la perspectiva administrativa, la dependencia de este modelo impide a las gerencias tomar decisiones estratégicas, ya que los programas actuales no generan reportes analíticos automatizados sobre las horas pico o los patrones de asistencia. Aunque los recintos poseen la infraestructura computacional básica en sus recepciones, carecen de una arquitectura que integre periféricos de captura visual inteligente. Los resultados de este diagnóstico confirman que el registro manual es inoperante, justificando la necesidad imperativa de diseñar e implementar una solución basada en biometría facial. Esta nueva plataforma tecnológica erradicará el préstamo de credenciales, eliminará los tiempos de espera y dotará a la administración de un ecosistema digital robusto y altamente escalable.
+
+Definición de Requerimientos
+
+Requerimientos Funcionales
+
+Los requerimientos funcionales definen de forma precisa las acciones y comportamientos específicos que el sistema biométrico debe ejecutar para satisfacer las necesidades operativas de los centros deportivos. En primer lugar, la plataforma debe permitir el enrolamiento inicial del rostro de cada socio, vinculando su vector geométrico a su perfil personal. En segundo lugar, el sistema debe validar el acceso en tiempo real, cruzando la identificación facial con el estado de solvencia de la membresía. Asimismo, debe proporcionar un panel administrativo web para que la gerencia registre los pagos, gestione las nuevas inscripciones y genere reportes automatizados sobre los patrones de asistencia diarios.
+
+Requerimientos No Funcionales
+
+Por su parte, los requerimientos no funcionales establecen las restricciones tecnológicas y los parámetros de rendimiento que garantizan la calidad y eficiencia del software. El atributo más crítico para este proyecto es la velocidad de respuesta: el algoritmo de visión artificial debe capturar el rostro, consultar la base de datos MySQL y emitir el veredicto de acceso en un tiempo inferior a dos (2) segundos para evitar los cuellos de botella en la entrada. Además, el panel administrativo debe ser accesible desde cualquier navegador web estándar, garantizando la seguridad de la información mediante el control de acceso basado en roles (RBAC) y protegiendo la privacidad de la data.
+
+Requerimientos de Hardware (Fase de Desarrollo)
+
+Para llevar a cabo la fase de codificación, pruebas y ensamblaje de la arquitectura web, se requiere de una infraestructura física que soporte la carga de procesamiento del motor de inteligencia artificial y los servidores locales. El equipo de desarrollo utilizado proporciona la potencia matemática necesaria para compilar los scripts de Python sin sobrecalentamientos. Este equipo está respaldado por suficiente memoria volátil para mantener la fluidez operativa entre el entorno de código y la base de datos, una unidad de almacenamiento óptima y un periférico de captura visual de alta definición indispensable para calibrar la precisión del algoritmo facial.
+
+Cuadro 2. Requerimientos de Hardware (Desarrollo)
+
+Componente
+
+Especificación Técnica
+
+Procesador (CPU)
+
+Intel Core i5 de 5ta Generación o equivalente.
+
+Memoria RAM
+
+8 GB de capacidad.
+
+Almacenamiento
+
+Unidad de disco de 512 GB.
+
+Periférico de Captura
+
+Cámara web con resolución de video de 1080p.
+
+Autor: (Ramos, 2026)
+
+Requerimientos de Software (Fase de Desarrollo)
+
+En cuanto a los requerimientos lógicos, el entorno de programación se ejecuta sobre un sistema operativo moderno que ofrece alta compatibilidad con las herramientas de ingeniería seleccionadas. Para la gestión inicial de la base de datos y la emulación de servidores locales durante la fase de pruebas tempranas, se emplea un paquete de software de conectividad libre. El código fuente es escrito e integrado a través de un editor avanzado que unifica las tecnologías de React, Node.js y Python. Finalmente, el control de versiones y el respaldo en la nube del proyecto se gestiona de manera rigurosa mediante repositorios remotos.
+
+Cuadro 3. Requerimientos de Software (Desarrollo)
+
+Componente
+
+Especificación Técnica
+
+Sistema Operativo
+
+Windows 10 (Arquitectura de 64 bits).
+
+Entorno de Pruebas DB
+
+Paquete XAMPP (Apache y MySQL local).
+
+Editor de Código
+
+Visual Studio Code (VS Code).
+
+Control de Versiones
+
+Git (Gestor local) y GitHub (Repositorio en la nube).
+
+Lenguajes / Frameworks
+
+Python, Node.js, React.js.
+
+Autor: (Ramos, 2026)
+
+Estudio de Factibilidad
+
+Factibilidad Técnica
+
+La factibilidad técnica evalúa la disponibilidad de las herramientas tecnológicas y el conocimiento de ingeniería necesarios para materializar el sistema biométrico propuesto. En este sentido, la investigación cuenta con el soporte del hardware básico, constituido por un procesador Intel Core i5 de quinta generación, ocho gigabytes de memoria RAM y una cámara web con resolución de 1080p para calibrar las pruebas de visión por computadora. Asimismo, a nivel de software, se dispone plenamente de los lenguajes de programación de uso libre como Python, Node.js y React.js, junto con el gestor de base de datos MySQL a través de XAMPP. El acceso inmediato a estos recursos y el dominio técnico sobre estas tecnologías garantizan la viabilidad técnica del proyect, asegurando que el desarrollo de la plataforma se ejecute sin dependencias de infraestructura externa compleja.
+
+Factibilidad Económica
+
+Por su parte, la factibilidad económica analiza los costos financieros asociados a la adquisición de los recursos indispensables para la ejecución física de la investigación. Para este proyecto de ingeniería, el análisis de costos se concentra estrictamente en los componentes de hardware requeridos para el entorno de desarrollo y las herramientas lógicas esenciales. Con el fin de presentar una estructura financiera transparente, se ha diseñado un cuadro analítico detallado que desglosa cada recurso necesario, permitiendo su posterior valoración comercial en el mercado local. El presupuesto se enfoca de manera exclusiva en los insumos tecnológicos tangibles, asegurando que la inversión necesaria represente un gasto controlado y viable para el desarrollo completo de la solución web de control de acceso.
+
+Cuadro 4. Costos de Desarrollo del Proyecto (Factibilidad Económica)
+
+Descripción del Recurso
+
+Cantidad
+
+Costo Unitario ($)
+
+Costo Total ($)
+
+Computadora Portátil (Intel Core i5, 8GB RAM, 512GB SSD)
+
+1
+
+Cámara Web de Alta Definición (Resolución 1080p)
+
+1
+
+Servicio de Conectividad a Internet (Mensualidad de banda ancha)
+
+1
+
+Entornos de Desarrollo (VS Code, Python, Node.js, React.js)
+
+1
+
+Gratuito / Open Source
+
+0.00
+
+Herramientas de Base de Datos y Servidor (XAMPP / MySQL)
+
+1
+
+Gratuito / Open Source
+
+0.00
+
+Sistemas de Control de Versiones (Git / GitHub)
+
+1
+
+Gratuito / Open Source
+
+0.00
+
+Materiales de papelería y consumibles
+
+1
+
+TOTAL, GENERAL
+
+-
+
+-
+
+Autor: (Ramos, 2026)
+
+Factibilidad Operativa
+
+Finalmente, la factibilidad operativa determina si el sistema biométrico propuesto puede integrarse de manera armónica en las rutinas diarias de los centros deportivos ExtremoGym, Booster y CrunchGym. El diseño de la plataforma se enfoca en proporcionar una interfaz de usuario intuitiva desarrollada en React.js, lo que garantiza que el personal de recepción requiera una capacitación mínima para dominar el uso del dashboard administrativo y gestionar las membresías. La automatización del ingreso mediante la cámara web sustituirá por completo el tedioso protocolo de digitación manual de cédulas, liberando a los trabajadores de tareas repetitivas y eliminando los cuellos de botella en horas pico. 
+
+REFERENCIAS BIBLIOGRÁFICAS
+
+TEXTOS
+
+Arias, F. (2012). El Proyecto de Investigación. Introducción a la metodología científica. (6ta ed.).: Editorial Episteme. https://tauniversity.org/sites/default/files/libro_el_proyecto_de_investigacion_de_fidias_g_arias.pdf
+
+Baena Paz, G. (2017). Metodología de la investigación (3.ª ed.). Grupo Editorial Patria. http://www.biblioteca.cij.gob.mx/Archivos/Materiales_de_consulta/Drogas_de_Abuso/Articulos/metodologia%20de%20la%20investigacion.pdf
+
+Beck, K. (2005). Extreme Programming Explained: Embrace Change. Addison-Wesley. https://ptgmedia.pearsoncmg.com/images/9780321278654/samplepages/9780321278654.pdf
+
+García-Peñalvo, F. J. (2021). Digital transformation in higher education: Challenges and opportunities. Education in the Knowledge Society, 22, e25465. https://doi.org/10.14201/eks.25465
+
+Hernández Sampieri, R., Fernández Collado, C., y Baptista Lucio, P. (2014). Metodología de la investigación. (6ta ed.). México: McGraw-Hill. https://apiperiodico.jalisco.gob.mx/api/sites/periodicooficial.jalisco.gob.mx/files/metodologia_de_la_investigacion_-_roberto_hernandez_sampieri.pdf
+
+Hurtado de Barrera, J. (2012). Metodología de la investigación: Guía para la comprensión holística de la ciencia. (4ta ed.). Caracas: Ediciones Quirón. https://ayudacontextos.wordpress.com/wp-content/uploads/2018/04/jacqueline-hurtado-de-barrera-metodologia-de-investigacion-holistica.pdf
+
+Sabino, C. (2014). El proceso de investigación. Caracas: Editorial Panapo. https://www.perio.unlp.edu.ar/tif/wp-content/uploads/2021/04/CarlosSabino-ElProcesoDeInvestigacion_0.pdf
+
+Stallings, W., & Brown, L. (2023). Computer security: Principles and practice (5th ed.). Pearson. (libro fisico)
+
+TRABAJOS DE GRADO
+
+Armijos Erraez, J. V. (2024). Sistema de video vigilancia para la seguridad y control operativo [Proyecto de grado, Universidad Laica Eloy Alfaro de Manabí]. Repositorio Institucional ULEAM. https://repositorio.uleam.edu.ec/bitstream/123456789/10967/1/ULEAM-TEC.INF-217.pdf
+
+Capcha Huaman, A. (2022). Sistema de reconocimiento facial basado en los algoritmos Haar Cascade, DeepFace Y Luxand FaceSDK [Tesis de pregrado, Universidad César Vallejo]. Repositorio Institucional UCV. https://repositorio.ucv.edu.pe/handle/20.500.12692/86897
+
+Chirinos, J. (2024). Sistema de acceso por medio de un dispositivo de reconocimiento facial, para sistemas informáticos [Trabajo de grado, Universidad José Antonio Páez]. Repositorio Institucional UJAP. https://riujap.ujap.edu.ve/server/api/core/bitstreams/a655ee57-ea1e-4c51-8885-5a9a5c69d55d/content
+
+Hernández-Hernández, D. A. (2023). Propuesta de modernización de arquitectura del software Gestemed [Proyecto de graduación de pregrado, Tecnológico de Costa Rica]. Repositorio Institucional TEC. https://repositoriotec.tec.ac.cr/handle/2238/15740
+
+FUENTES ELECTRÓNICAS
+
+Andi, K., Ramirez, D., & Chango Sailema, W. G. (2024). Comparativa de frameworks más usados de JavaScript mediante la creación de una aplicación web. Mikarimin. Revista Científica Multidisciplinaria, 10(3), 81-100. https://dialnet.unirioja.es/servlet/articulo?codigo=9847660
+
+Chicaiza Navarrete, A. D., & Paz Rodríguez, S. T. (2024). Multiplatform system for hotel reservations: design, evaluation, and implementation. Diginomics, . https://dialnet.unirioja.es/servlet/articulo?codigo=10457893
+
+Celi Párraga, R. J., Bone Andrade, M. F., & Mora Olivero, A. P. (2023). Programación Web del Frontend al Backend. Editorial Grupo AEA. https://dialnet.unirioja.es/servlet/libro?codigo=933116
+
+Cruz, H. (2021). La visión por computadora y las futuras aplicaciones tecnológicas en diversos escenarios. Revista de la Academia de la Guerra del Ejército Ecuatoriano. https://www.researchgate.net/publication/353448385_LA_VISION_POR_COMPUTADORA_Y_LAS_FUTURAS_APLICACIONES_TECNOLOGICAS_EN_DIVERSOS_ESCENARIOS
+
+Cuevas Aldana, A. C., Sampayo Rodríguez, C. J., Hernández Luna, A., & Hernández Cabrera, H. (2025). Aplicación web construida con el framework Laravel integrada a routers MikroTik para administrar clientes, corte de ventas y generar fichas hotspot. Revista de Investigación en Tecnologías de la Información, 13(30), 42-59. https://dialnet.unirioja.es/servlet/articulo?codigo=10503344
+
+Esquivel Paula, G., Quisaguano Collaguazo, L., Caluña Guaman, A., & Llambo Alvarez, S. (2025). Frameworks del lado del Servidor: Caso de Estudio Node JS, Django y Laravel. 593 Digital Publisher CEIT, 10(1), 403-414. https://dialnet.unirioja.es/servlet/articulo?codigo=9966614
+
+García, A., Horna, M. M., & Mendoza, A. C. (2024). Análisis de la eficiencia de las tecnologías biométricas en la seguridad de la información. Ingeniería Ciencia Tecnología e Innovación, 11(1), 62–71. https://www.researchgate.net/publication/383321581_Analisis_de_la_eficiencia_de_las_tecnologias_biometricas_en_la_seguridad_de_informacion
+
+Google. (2025). ¿Qué es una base de datos relacional? Google Cloud. https://cloud.google.com/learn/what-is-a-relational-database?hl=es-419
+
+Gómez, A., Silva, J., & Ramírez, C. (2024). Uso del framework de ISTQB para aplicaciones desarrolladas: Aseguramiento de la calidad y pruebas unitarias de software. Revista Arbitrada de Tecnología y Sistemas, 12(4), 15-28. https://dialnet.unirioja.es/servlet/articulo?codigo=10342384
+
+Gómez Arteaga, M., & Poma Japón, D. (2025). Desarrollo de un sitio web interactivo para la gestión y venta de jugos artesanales “Liquid Bliss”. Revista Ingenio Global, 4(2), 205-218. https://dialnet.unirioja.es/servlet/articulo?codigo=10551172
+
+Innovatrics. (2025). Control de acceso. Innovatrics Glosario. https://www.innovatrics.com/es/glosario/control-de-acceso/
+
+Lara Meneses, C. E., Santa Torres, E. J., Herrán Cardoso, L. A., & Feria Rodriguez, A. J. (2024). Impacto del Software de Gestión de Equipos en la Productividad de Interconexiones Tecnológicas Girardot. Revista Pensamiento Transformacional, 3(10), 48–60. https://revistapensamientotransformacional.editorialpiensadiferente.com/index.php/pensamiento_transformacional/article/view/85
+
+Machado, T. C., & Dantas, M. S. (2025). Digital transformation of academic management: weblab, a restful system for automated laboratory reservation in the public sector. Observatorio de la Economía Latinoamericana, 23(11), 1-15. https://dialnet.unirioja.es/servlet/articulo?codigo=10630108
+
+Mar Cornelio, O., Gulín González, J., y Santana Ching, I. (2024). Modelo computacional para la toma de decisiones sobre el control de acceso a las prácticas de laboratorios. Revista Cubana de Ciencias Informáticas, 18(1), 83-99. https://dialnet.unirioja.es/servlet/articulo?codigo=9919060
+
+Montoya Suárez, L. M., & Marín Miranda, A. F. (2024). Importancia estratégica de la enseñanza de requisitos de software: Preparando a los estudiantes para los desafíos de la industria. Revista Elementos, 8(1), 1-8. https://dialnet.unirioja.es/servlet/articulo?codigo=10398357
+
+Piedra Alegría, J. J. (2023). La recopilación de datos biométricos en Costa Rica: Controversias éticas a partir del proyecto de Ley Nº 21321. Revista Enfoques: Ciencia Política y Administración Pública, 21(38), 23-49. https://dialnet.unirioja.es/servlet/articulo?codigo=9375653
+
+Platzi. (2025). Qué es Frontend y Backend: características, diferencias y ejemplos. Platzi Blog. https://platzi.com/blog/que-es-frontend-y-backend/
+
+Pressman, R. S., y Maxim, B. R. (2020). Ingeniería de Software: Un enfoque práctico. (9na ed.). México: McGraw-Hill Interamericana. https://studylib.net/doc/27891445/ingenieria-de-software-roger-s.-pressman--bruce-r.-maxim
+
+Quintero Meza, R. R., & Gil García, E. G. (2025). Automatización de pruebas de software basadas en propiedades mediante ingeniería de prompts e inteligencia artificial. Revista de Investigación en Tecnologías de la Información, 13(31), 39-51. https://dialnet.unirioja.es/servlet/articulo?codigo=10503925
+
+Rodríguez Ponce, K. J., Gutiérrez Sánchez, F. J., y Mendoza De los Santos, A. C. (2024). Sistema de control de acceso biométrico mediante reconocimiento facial con técnicas de vivacidad. Revista Innovación y Software, 5(2), 114-128. https://www.researchgate.net/publication/384621185_Sistema_de_control_de_acceso_biometrico_mediante_reconocimiento_facial_con_tecnicas_de_vivacidad
+
+Rodríguez Ponce, K. J., Gutiérrez Sánchez, F. J., & Mendoza De los Santos, A. C. (2024). Sistema de control de acceso biométrico mediante reconocimiento facial con técnicas de vivacidad. Revista Innovación y Software, 5(2), 114-128. https://dialnet.unirioja.es/servlet/articulo?codigo=9816505
+
+Roldán, M. L., & Ramos, J. C. (2024). Implementación de un modelo “Role Based Access Control” en un entorno productivo. Simposio Argentino de Ciberseguridad y Ciberdefensa, 53 JAIIO, https://www.researchgate.net/publication/385654914_Implementacion_de_un_modelo_Role_Based_Access_Control_en_un_entorno_productivo
+
+UNIRFP. (2022). Framework: qué es, para qué sirve y algunos ejemplos. Revista de Ingeniería y Tecnología. https://unirfp.unir.net/revista/ingenieria-y-tecnologia/framework/
+
+Van Gigch, J. P. (1990). Teoría General de Sistemas. Editorial Trillas. https://etikhe.wordpress.com/wp-content/uploads/2013/10/306-lectura3-2.pdf
+
+Viteri-Cevallos, C. J., & Murillo-Párraga, D. Y. (2021). Inteligencia de Negocios para las Organizaciones. Revista Arbitrada Interdisciplinaria Koinonía. https://www.redalyc.org/journal/5768/576868967013/html/
+
+ANEXOS
+
+ANEXOS AANTECEDENTES

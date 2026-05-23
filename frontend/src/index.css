@@ -1,0 +1,909 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO DEPORTIVO MINIMALISTA - MARIAN GYM (CLARO & OSCURO)
+   ========================================================================== */
+
+:root {
+  /* Variables generales de estructura */
+  --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --border-radius-lg: 16px;
+  --border-radius-md: 10px;
+  --border-radius-sm: 6px;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Colores base deportivos de alta fidelidad */
+  --primary: #0f62fe;        /* Azul Deportivo Real */
+  --primary-hover: #0043ce;  /* Azul Profundo Hover */
+  --success: #00a86b;        /* Verde Esmeralda (Solvente) */
+  --danger: #e63946;         /* Rojo Deportivo (Insolvente) */
+  --warning: #ff9f0a;        /* Naranja (Por vencer) */
+}
+
+/* Modo Claro (Predeterminado) */
+:root, html:not(.dark-mode) {
+  --bg-app: #f4f7fb;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-header: #ffffff;
+  --text-primary: #161616;
+  --text-secondary: #525252;
+  --text-muted: #8d8d8d;
+  --border-color: #e0e6ed;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 16px rgba(15, 98, 254, 0.05), 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.05);
+  
+  --table-header: #f8fafc;
+  --table-row-hover: #f1f5f9;
+  
+  --badge-bg-success: rgba(0, 168, 107, 0.08);
+  --badge-bg-danger: rgba(230, 57, 70, 0.08);
+  --badge-bg-warning: rgba(255, 159, 10, 0.08);
+  --badge-bg-primary: rgba(15, 98, 254, 0.08);
+  
+  --input-bg: #ffffff;
+  --input-border: #ccd3e0;
+  
+  --header-glass: rgba(255, 255, 255, 0.85);
+  --kiosk-bg: #ffffff;
+}
+
+/* Modo Oscuro (Activado con clase .dark-mode en html) */
+html.dark-mode {
+  --bg-app: #080c16;
+  --bg-card: #0f1524;
+  --bg-sidebar: #0f1524;
+  --bg-header: #0f1524;
+  --text-primary: #f4f6fa;
+  --text-secondary: #a0aec0;
+  --text-muted: #64748b;
+  --border-color: #212c3f;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+  
+  --table-header: #141c2f;
+  --table-row-hover: #131b2c;
+  
+  --badge-bg-success: rgba(0, 168, 107, 0.15);
+  --badge-bg-danger: rgba(230, 57, 70, 0.15);
+  --badge-bg-warning: rgba(255, 159, 10, 0.15);
+  --badge-bg-primary: rgba(15, 98, 254, 0.15);
+  
+  --input-bg: rgba(255, 255, 255, 0.02);
+  --input-border: #212c3f;
+  
+  --header-glass: rgba(15, 21, 36, 0.85);
+  --kiosk-bg: #080c16;
+}
+
+/* Reset de estilos */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  height: 100vh;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   LAYOUT Y ESTRUCTURA GENERAL
+   ========================================================================== */
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Barra Lateral (Sidebar) Minimalista */
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  z-index: 100;
+  flex-shrink: 0;
+  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  margin-bottom: 24px;
+}
+
+.sidebar-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.sidebar-logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin: 16px 0 8px 8px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.sidebar-item:hover {
+  color: var(--primary);
+  background-color: rgba(15, 98, 254, 0.04);
+}
+
+.sidebar-item.active {
+  color: #ffffff;
+  background-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.2);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+/* Área Principal */
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Cabecera Principal */
+.header {
+  height: 70px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background-color: var(--header-glass);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.header-title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.view-container {
+  flex-grow: 1;
+  padding: 32px 40px;
+  overflow-y: auto;
+  height: calc(100vh - 70px);
+}
+
+/* ==========================================================================
+   COMPONENTES Y TARJETAS
+   ========================================================================== */
+
+.glass-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* Contadores Estadísticos Premium Deportivos y Minimalistas */
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, border-color var(--transition-fast) ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-md);
+  background-color: rgba(15, 98, 254, 0.06);
+  border: 1px solid rgba(15, 98, 254, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+}
+
+.stat-card.success .stat-icon {
+  background-color: rgba(0, 168, 107, 0.06);
+  border-color: rgba(0, 168, 107, 0.1);
+  color: var(--success);
+}
+
+.stat-card.danger .stat-icon {
+  background-color: rgba(230, 57, 70, 0.06);
+  border-color: rgba(230, 57, 70, 0.1);
+  color: var(--danger);
+}
+
+.stat-card.warning .stat-icon {
+  background-color: rgba(255, 159, 10, 0.06);
+  border-color: rgba(255, 159, 10, 0.1);
+  color: var(--warning);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  line-height: 1;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   BOTONES E INPUTS
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  user-select: none;
+  font-family: var(--font-primary);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 98, 254, 0.15);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 6px 16px rgba(15, 98, 254, 0.25);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--table-row-hover);
+}
+
+.btn-success {
+  background-color: var(--success);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 168, 107, 0.15);
+}
+
+.btn-success:hover {
+  background-color: #008f5a;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.15);
+}
+
+.btn-danger:hover {
+  background-color: #d12e3b;
+}
+
+/* Formularios Deportivos */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.form-control {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-primary);
+  transition: var(--transition-fast);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.15);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   TABLAS MINIMALISTAS Y BADGES
+   ========================================================================== */
+
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.custom-table th {
+  padding: 14px 20px;
+  background-color: var(--table-header);
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.custom-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: middle;
+  transition: background-color var(--transition-fast);
+}
+
+.custom-table tr:hover td {
+  background-color: var(--table-row-hover);
+}
+
+/* Insignias Deportivas (Badges) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.badge-success {
+  background-color: var(--badge-bg-success);
+  color: var(--success);
+  border-color: rgba(0, 168, 107, 0.1);
+}
+
+.badge-danger {
+  background-color: var(--badge-bg-danger);
+  color: var(--danger);
+  border-color: rgba(230, 57, 70, 0.1);
+}
+
+.badge-warning {
+  background-color: var(--badge-bg-warning);
+  color: var(--warning);
+  border-color: rgba(255, 159, 10, 0.1);
+}
+
+.badge-primary {
+  background-color: var(--badge-bg-primary);
+  color: var(--primary);
+  border-color: rgba(15, 98, 254, 0.1);
+}
+
+/* ==========================================================================
+   FEED DE ACCESOS EN VIVO (MÓDULO RECEPCIÓN)
+   ========================================================================== */
+
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.activity-item:hover {
+  border-color: var(--primary);
+}
+
+.activity-user-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--primary);
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.activity-avatar.allowed { border-color: var(--success); }
+.activity-avatar.denied { border-color: var(--danger); }
+
+.activity-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.activity-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.activity-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   KIOSCO DE ACCESO TOTAL (PANTALLA DE ENTRADA)
+   ========================================================================== */
+
+.kiosk-viewport-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--kiosk-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  transition: background-color var(--transition-normal);
+}
+
+/* Tarjeta de Entrada Circular Kiosk */
+.kiosk-camera-circle {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 6px solid var(--border-color);
+  background-color: #050811;
+  box-shadow: var(--shadow-lg);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.kiosk-camera-circle.scanning {
+  border-color: var(--primary);
+  box-shadow: 0 0 25px rgba(15, 98, 254, 0.25);
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+.kiosk-camera-circle.allowed {
+  border-color: var(--success);
+  box-shadow: 0 0 35px rgba(0, 168, 107, 0.35);
+}
+
+.kiosk-camera-circle.denied {
+  border-color: var(--danger);
+  box-shadow: 0 0 35px rgba(230, 57, 70, 0.35);
+}
+
+@keyframes pulse-border {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Panel gigante de veredicto en Kiosco */
+.kiosk-verdict-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border-radius: var(--border-radius-lg);
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.kiosk-verdict-panel.idle {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.kiosk-verdict-panel.allowed {
+  background-color: var(--success);
+  color: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 168, 107, 0.3);
+}
+
+.kiosk-verdict-panel.denied {
+  background-color: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 10px 40px rgba(230, 57, 70, 0.3);
+}
+
+.kiosk-verdict-panel.analyzing {
+  background-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 10px 40px rgba(15, 98, 254, 0.3);
+}
+
+/* ==========================================================================
+   GRÁFICOS DE BARRAS DE ASISTENCIA MINIMALISTA
+   ========================================================================== */
+
+.chart-axis-y {
+  display: flex;
+  align-items: flex-end;
+  height: 180px;
+  gap: 8px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 6px;
+  width: 100%;
+}
+
+.chart-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+  position: relative;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 24px;
+  background-color: var(--primary);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  position: relative;
+}
+
+.chart-bar:hover {
+  background-color: var(--primary-hover);
+}
+
+.chart-bar-tooltip {
+  position: absolute;
+  top: -24px;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.chart-bar-wrapper:hover .chart-bar-tooltip {
+  opacity: 1;
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fade-in 0.15s ease-out forwards;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 500px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  animation: slide-up 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Animaciones de Click y Hover Premium */
+.btn:active {
+  transform: scale(0.97);
+}
+.btn:hover {
+  filter: brightness(1.08);
+}
+.sidebar-item:active {
+  transform: scale(0.98);
+}
+.stat-card:active {
+  transform: scale(0.98);
+}
+
+/* Rediseño de Dropdowns Selects Premium */
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f62fe' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px;
+  padding-right: 40px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Skeleton Loaders pulsantes premium */
+.skeleton-box {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--table-header) 25%, var(--border-color) 50%, var(--table-header) 75%);
+  background-size: 200% 100%;
+  animation: loading-pulse 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes loading-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Personalización de barra de scroll moderna */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ==========================================================================
+   MEDIA QUERIES - DISEÑO RESPONSIVE AUTODEPORTIVO
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 20px;
+  }
+  .sidebar-logo {
+    margin-bottom: 12px;
+  }
+  .sidebar-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sidebar-item {
+    padding: 8px 12px;
+  }
+  .sidebar-footer {
+    display: none; /* Ocultar footer en versión móvil compacta */
+  }
+  .header {
+    padding: 0 20px;
+    height: 60px;
+  }
+  .view-container {
+    padding: 20px;
+    height: auto;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-stats {
+    grid-template-columns: 1fr;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .header-actions {
+    gap: 10px;
+  }
+  .header-title-container {
+    display: none; /* Simplificar para pantallas pequeñas */
+  }
+}

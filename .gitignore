@@ -1,0 +1,67 @@
+# Dependencias y entornos de ejecución
+node_modules/
+.pnp
+.pnp.js
+jspm_packages/
+.npm/
+.eslintcache
+
+# Archivos de entorno y credenciales (¡Seguridad Crítica!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.sample
+*.env
+
+# Carpetas de Compilación y Distribución
+dist/
+build/
+out/
+.next/
+.nuxt/
+bin/
+obj/
+
+# Archivos de Sistemas Operativos
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Configuraciones de IDEs y Editores de código
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+
+# Datos dinámicos locales de socios e imágenes (¡Privacidad de Datos!)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Datos de entrenamiento del motor biométrico (Locales/Dinámicos)
+biometrics/faces/*
+!biometrics/faces/.gitkeep
+biometrics/model.yml
+biometrics/metadata.json
+
+# Archivos de registro y logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+logs/
+*.log
+
+# Carpetas de herramientas y agentes IA locales
+.gemini/
+.system_generated/

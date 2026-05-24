@@ -92,6 +92,16 @@ async function registerFace(req, res) {
     const pythonResult = await callPythonService('/register', payload);
 
     if (pythonResult.error) {
+      const isConnectionError = pythonResult.error.includes('inactivo') || 
+                                pythonResult.error.includes('Timeout') || 
+                                pythonResult.error.includes('refused') ||
+                                pythonResult.error.includes('code');
+      
+      if (!isConnectionError) {
+        // Es un error real de detección facial retornado por el motor Python
+        return res.status(400).json({ error: pythonResult.error });
+      }
+
       console.warn(`⚠️ Advertencia de Biometría Python: ${pythonResult.error}. Guardando foto localmente como referencia.`);
       return res.json({
         success: true,
@@ -121,6 +131,7 @@ async function verifyFace(req, res) {
 
     const db = getPool();
     let matchedSocioId = null;
+    let pythonResult = null;
 
     // A. ESCENARIO DE SIMULACIÓN DIRECTA (Para demostración rápida)
     if (mock_cedula) {
@@ -137,7 +148,7 @@ async function verifyFace(req, res) {
     } else {
       // B. ESCENARIO REAL (Consultando motor biométrico de Python)
       console.log('📡 Enviando captura de cámara al motor de visión artificial en Python...');
-      const pythonResult = await callPythonService('/verify', { image_base64: foto_base64 });
+      pythonResult = await callPythonService('/verify', { image_base64: foto_base64 });
 
       if (pythonResult.error || !pythonResult.success) {
         console.warn(`⚠️ Error en verificación biométrica real: ${pythonResult.error || 'No coincide ningún rostro'}`);
@@ -155,8 +166,8 @@ async function verifyFace(req, res) {
     // 3. Consultar datos del socio detectado, membresía y solvencia en XAMPP MySQL
     const query = `
       SELECT 
-        s.id, s.cedula, s.nombre, s.apellido, s.status, s.foto_url,
-        m.solvencia, m.fecha_fin
+        s.id, s.cedula, s.nombre, s.apellido, s.status, s.foto_url, s.fecha_registro, s.fecha_nacimiento,
+        m.solvencia, m.fecha_fin, m.fecha_inicio, m.tipo
       FROM socios s
       LEFT JOIN membresias m ON s.id = m.socio_id
       WHERE s.id = ?
@@ -212,7 +223,11 @@ async function verifyFace(req, res) {
         foto_url: socio.foto_url,
         status: socio.status,
         solvencia: socio.solvencia,
-        fecha_fin: socio.fecha_fin
+        fecha_fin: socio.fecha_fin,
+        fecha_registro: socio.fecha_registro,
+        fecha_nacimiento: socio.fecha_nacimiento,
+        fecha_inicio: socio.fecha_inicio,
+        membresia_tipo: socio.tipo
       }
     });
   } catch (error) {

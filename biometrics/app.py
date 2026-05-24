@@ -186,8 +186,11 @@ def register_face():
             # Convertir a escala de grises
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             
-            # Detectar rostro
-            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
+            # Ecualización del histograma para normalizar la luz (Cabimas Proof)
+            gray_eq = cv2.equalizeHist(gray)
+            
+            # Detectar rostro con parámetros de alta fidelidad y tolerancia
+            faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.06, minNeighbors=4, minSize=(40, 40))
             
             if len(faces) == 0:
                 continue
@@ -196,8 +199,8 @@ def register_face():
             faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
             x, y, w, h = faces[0]
             
-            # Recortar y redimensionar
-            cropped_face = gray[y:y+h, x:x+w]
+            # Recortar y redimensionar (desde la imagen ecualizada para normalizar texturas)
+            cropped_face = gray_eq[y:y+h, x:x+w]
             cropped_face_resized = cv2.resize(cropped_face, (200, 200))
 
             # Guardar imagen
@@ -252,8 +255,11 @@ def verify_face():
         # Convertir a escala de grises
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
-        # Detectar rostro
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
+        # Ecualización del histograma para normalizar la luz (Cabimas Proof)
+        gray_eq = cv2.equalizeHist(gray)
+        
+        # Detectar rostro con parámetros de alta fidelidad y tolerancia
+        faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.06, minNeighbors=4, minSize=(40, 40))
         
         if len(faces) == 0:
             return jsonify({"success": False, "error": "no_face_detected"}), 200
@@ -262,8 +268,8 @@ def verify_face():
         faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
         x, y, w, h = faces[0]
         
-        # Recortar y redimensionar
-        cropped_face = gray[y:y+h, x:x+w]
+        # Recortar y redimensionar (desde la imagen ecualizada)
+        cropped_face = gray_eq[y:y+h, x:x+w]
         cropped_face_resized = cv2.resize(cropped_face, (200, 200))
 
         # Realizar predicción
@@ -278,8 +284,8 @@ def verify_face():
         
         print(f"🔮 Predicción biométrica: Socio ID {member_id} | Confianza: {confidence:.2f} ({match_percentage:.1f}%) | Tiempo: {processing_ms:.2f}ms")
 
-        # Umbral para LBPH
-        CONFIDENCE_THRESHOLD = 65.0
+        # Umbral para LBPH (Calibrado a 73.0 para un reconocimiento cómodo en gimnasios)
+        CONFIDENCE_THRESHOLD = 73.0
         
         if confidence < CONFIDENCE_THRESHOLD:
             metadata = member_metadata.get(str(member_id), {})

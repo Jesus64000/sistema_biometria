@@ -37,6 +37,8 @@ initDB()
     const configRoutes = require('./routes/config');
     const expenseRoutes = require('./routes/expenses');
     const asistenciasRoutes = require('./routes/asistencias');
+    const userRoutes = require('./routes/users');
+    const personalRoutes = require('./routes/personal');
 
     // Rutas de API
     app.use('/api/members', memberRoutes);
@@ -47,6 +49,8 @@ initDB()
     app.use('/api/config', configRoutes);
     app.use('/api/expenses', expenseRoutes);
     app.use('/api/asistencias', asistenciasRoutes);
+    app.use('/api/users', userRoutes);
+    app.use('/api/personal', personalRoutes);
 
     // Ruta de estado general
     app.get('/api/health', (req, res) => {

@@ -6,16 +6,16 @@ async function registerPayment(req, res) {
   try {
     await connection.beginTransaction();
 
-    const { socio_id, monto, metodo_pago, tipo_membresia, gym_sede } = req.body;
+    const { socio_id, monto, metodo_pago, tipo_membresia, gym_sede, referencia } = req.body;
 
     if (!socio_id || !monto) {
       return res.status(400).json({ error: 'Socio e importe son campos obligatorios.' });
     }
 
-    // 1. Insertar el pago en la sede activa
+    // 1. Insertar el pago en la sede activa (incluyendo auditoría de referencia bancaria)
     await connection.query(
-      'INSERT INTO pagos (socio_id, monto, metodo_pago, gym_sede) VALUES (?, ?, ?, ?)',
-      [socio_id, monto, metodo_pago || 'pago_movil', gym_sede || 'ExtremoGym']
+      'INSERT INTO pagos (socio_id, monto, metodo_pago, gym_sede, referencia) VALUES (?, ?, ?, ?, ?)',
+      [socio_id, monto, metodo_pago || 'pago_movil', gym_sede || 'MarianGym', referencia || null]
     );
 
     // 2. Obtener la membresía actual

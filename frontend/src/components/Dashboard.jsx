@@ -58,8 +58,11 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
     email: '',
     tipo_membresia: 'mensual',
     genero: 'Masculino',
+    fecha_nacimiento: '',
     foto_base64: ''
   });
+
+  const [dashCedulaPrefix, setDashCedulaPrefix] = useState('V-');
 
   // Formulario de pago
   const [membersList, setMembersList] = useState([]);
@@ -68,8 +71,45 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
   const [paymentData, setPaymentData] = useState({
     monto: '30.00',
     metodo_pago: 'pago_movil',
-    tipo_membresia: 'mensual'
+    tipo_membresia: 'mensual',
+    referencia: ''
   });
+
+  const [config, setConfig] = useState({
+    tasa_cambio: 114.00,
+    cuota_mensual: 30.00,
+    cuota_trimestral: 80.00,
+    cuota_anual: 300.00,
+    cobra_inscripcion: 1,
+    cuota_inscripcion: 10.00,
+    cuota_reactivacion: 5.00
+  });
+
+  const [includeInscription, setIncludeInscription] = useState(false);
+  const [includeReactivation, setIncludeReactivation] = useState(false);
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/config');
+      const data = await res.json();
+      if (!data.error) {
+        setConfig(data);
+      }
+    } catch (e) {
+      console.warn('Error al cargar configuración en Dashboard:', e.message);
+    }
+  };
+
+  const calculateTotalPayment = (tipo, incIns, incReac, customConfig = config) => {
+    let base = parseFloat(customConfig.cuota_mensual !== undefined ? customConfig.cuota_mensual : 30.00);
+    if (tipo === 'trimestral') base = parseFloat(customConfig.cuota_trimestral !== undefined ? customConfig.cuota_trimestral : 80.00);
+    else if (tipo === 'anual') base = parseFloat(customConfig.cuota_anual !== undefined ? customConfig.cuota_anual : 300.00);
+
+    if (incIns && customConfig.cobra_inscripcion === 1) base += parseFloat(customConfig.cuota_inscripcion !== undefined ? customConfig.cuota_inscripcion : 10.00);
+    if (incReac) base += parseFloat(customConfig.cuota_reactivacion !== undefined ? customConfig.cuota_reactivacion : 5.00);
+
+    return base.toFixed(2);
+  };
 
   // Formulario de gastos
   const [expenseData, setExpenseData] = useState({
@@ -150,9 +190,25 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
     }
   };
 
+  const getTodayBirthdays = () => {
+    if (!membersList) return [];
+    const today = new Date();
+    const todayMonth = today.getMonth() + 1; // 1-12
+    const todayDay = today.getDate(); // 1-31
+
+    return membersList.filter(m => {
+      if (!m.fecha_nacimiento) return false;
+      const parts = m.fecha_nacimiento.split('T')[0].split('-');
+      if (parts.length !== 3) return false;
+      const birthMonth = parseInt(parts[1], 10);
+      const birthDay = parseInt(parts[2], 10);
+      return birthMonth === todayMonth && birthDay === todayDay;
+    });
+  };
+
   useEffect(() => {
     setLoading(true);
-    Promise.all([fetchDashboardData(), loadInitialMembers()]).finally(() => setLoading(false));
+    Promise.all([fetchDashboardData(), loadInitialMembers(), fetchConfig()]).finally(() => setLoading(false));
     loadDashNotes();
 
     // Auto-recarga cada 2 segundos (antes era 8s) para reflejar biometría en vivo instantáneamente
@@ -238,10 +294,11 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
     }
 
     try {
+      const fullCedula = `${dashCedulaPrefix}${memberFormData.cedula.trim()}`;
       const res = await fetch('http://localhost:3000/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...memberFormData, gym_sede: 'MarianGym' })
+        body: JSON.stringify({ ...memberFormData, cedula: fullCedula, gym_sede: 'MarianGym' })
       });
       const result = await res.json();
 
@@ -263,6 +320,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
       alert('Socio inscrito e ingresado al sistema biométrico con éxito.');
       setShowAddModal(false);
+      setDashCedulaPrefix('V-');
       setMemberFormData({
         cedula: '',
         nombre: '',
@@ -271,10 +329,12 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
         email: '',
         tipo_membresia: 'mensual',
         genero: 'Masculino',
+        fecha_nacimiento: '',
         foto_base64: ''
       });
       stopCamera();
       fetchDashboardData();
+      loadInitialMembers();
     } catch (err) {
       console.error(err);
       alert('Error al registrar socio en el servidor.');
@@ -288,6 +348,11 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
       return;
     }
 
+    if ((paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') && !paymentData.referencia) {
+      alert('Por favor, introduzca el número de referencia bancaria para Pago Móvil / Transferencia.');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:3000/api/payments', {
         method: 'POST',
@@ -297,7 +362,8 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           monto: parseFloat(paymentData.monto),
           metodo_pago: paymentData.metodo_pago,
           tipo_membresia: paymentData.tipo_membresia,
-          gym_sede: 'MarianGym'
+          gym_sede: 'MarianGym',
+          referencia: (paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') ? paymentData.referencia : null
         })
       });
       const result = await res.json();
@@ -312,6 +378,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
       setSelectedMember(null);
       setPaymentSearch('');
       fetchDashboardData();
+      loadInitialMembers();
     } catch (err) {
       console.error(err);
       alert('Error en red al procesar el pago.');
@@ -802,8 +869,17 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
                     <button 
                       onClick={() => {
-                        setSelectedMember({ id: log.socio_id, nombre: log.nombre, apellido: log.apellido, cedula: log.cedula, status: 'activo', membresia_tipo: 'mensual' });
-                        setPaymentData(prev => ({ ...prev, tipo_membresia: 'mensual', monto: '30.00' }));
+                        setSelectedMember({ id: log.socio_id, nombre: log.nombre, apellido: log.apellido, cedula: log.cedula, status: 'inactivo', membresia_tipo: 'mensual' });
+                        
+                        setIncludeInscription(false);
+                        setIncludeReactivation(true); // Es un socio inactivo bloqueado, se cobra cuota de reactivación por defecto
+                        const baseMonto = calculateTotalPayment('mensual', false, true);
+                        setPaymentData(prev => ({ 
+                          ...prev, 
+                          tipo_membresia: 'mensual',
+                          monto: baseMonto,
+                          referencia: ''
+                        }));
                         setShowPaymentModal(true);
                       }}
                       className="btn btn-primary" 
@@ -819,90 +895,192 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
         </div>
 
-        {/* Lado Derecho: Recordatorios de Guardia (Bloc de Notas) */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '20px', minHeight: '400px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h4 style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)' }}>📋 Notas y Pendientes de Recepción</h4>
-            <button 
-              onClick={() => onNavigate('notes')} 
-              style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '10px', fontWeight: 800 }}
-            >
-              Gestionar Notas
-            </button>
-          </div>
+        {/* Lado Derecho: Recordatorios de Guardia y Cumpleañeros de Hoy */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          {/* Recordatorios de Guardia (Bloc de Notas) */}
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '20px', minHeight: '320px', flexGrow: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)' }}>📋 Notas y Pendientes de Recepción</h4>
+              <button 
+                onClick={() => onNavigate('notes')} 
+                style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '10px', fontWeight: 800 }}
+              >
+                Gestionar Notas
+              </button>
+            </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flexGrow: 1, maxHeight: '330px', paddingRight: '4px' }}>
-            {dashNotes && dashNotes.filter(n => !n.archivada).length === 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '240px', color: 'var(--text-muted)', textAlign: 'center' }}>
-                <Check size={28} style={{ opacity: 0.15, marginBottom: '8px' }} />
-                <p style={{ fontSize: '11px' }}>No hay recordatorios activos de guardia.</p>
-              </div>
-            ) : (
-              dashNotes && dashNotes.filter(n => !n.archivada).map(n => {
-                const completadas = n.tareas ? n.tareas.filter(t => t.completada).length : 0;
-                const totales = n.tareas ? n.tareas.length : 0;
-                const hasTareas = totales > 0;
-                
-                const getBorderColor = (p) => {
-                  if (p === 'alta') return 'var(--danger)';
-                  if (p === 'media') return 'var(--primary)';
-                  return 'var(--text-muted)';
-                };
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flexGrow: 1, maxHeight: '250px', paddingRight: '4px' }}>
+              {dashNotes && dashNotes.filter(n => !n.archivada).length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '180px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                  <Check size={28} style={{ opacity: 0.15, marginBottom: '8px' }} />
+                  <p style={{ fontSize: '11px' }}>No hay recordatorios activos de guardia.</p>
+                </div>
+              ) : (
+                dashNotes && dashNotes.filter(n => !n.archivada).map(n => {
+                  const completadas = n.tareas ? n.tareas.filter(t => t.completada).length : 0;
+                  const totales = n.tareas ? n.tareas.length : 0;
+                  const hasTareas = totales > 0;
+                  
+                  const getBorderColor = (p) => {
+                    if (p === 'alta') return 'var(--danger)';
+                    if (p === 'media') return 'var(--primary)';
+                    return 'var(--text-muted)';
+                  };
 
-                return (
-                  <div key={n.id} style={{ 
-                    padding: '12px', 
-                    borderRadius: 'var(--border-radius-md)', 
-                    backgroundColor: 'var(--bg-app)', 
-                    border: '1px solid var(--border-color)',
-                    borderLeft: `4px solid ${getBorderColor(n.prioridad)}`,
-                    position: 'relative'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <strong style={{ fontSize: '11px', color: 'var(--text-primary)' }}>{n.titulo}</strong>
-                      <span style={{ fontSize: '8px', fontWeight: 800, textTransform: 'uppercase', color: getBorderColor(n.prioridad) }}>
-                        {n.prioridad}
-                      </span>
-                    </div>
-
-                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.4 }}>
-                      {n.contenido}
-                    </p>
-
-                    {/* Subchecklist en el Dashboard */}
-                    {hasTareas && (
-                      <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
-                        {n.tareas.map(t => (
-                          <div 
-                            key={t.id} 
-                            onClick={() => handleToggleDashTask(n.id, t.id)} 
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-                          >
-                            <div style={{ width: '10px', height: '10px', borderRadius: '2px', border: '1px solid var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: t.completada ? 'var(--success)' : 'transparent' }}>
-                              {t.completada && <Check size={7} color="#ffffff" />}
-                            </div>
-                            <span style={{ 
-                              fontSize: '10px', 
-                              color: t.completada ? 'var(--text-muted)' : 'var(--text-secondary)',
-                              textDecoration: t.completada ? 'line-through' : 'none',
-                              fontWeight: 600
-                            }}>
-                              {t.texto}
-                            </span>
-                          </div>
-                        ))}
+                  return (
+                    <div key={n.id} style={{ 
+                      padding: '12px', 
+                      borderRadius: 'var(--border-radius-md)', 
+                      backgroundColor: 'var(--bg-app)', 
+                      border: '1px solid var(--border-color)',
+                      borderLeft: `4px solid ${getBorderColor(n.prioridad)}`,
+                      position: 'relative'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <strong style={{ fontSize: '11px', color: 'var(--text-primary)' }}>{n.titulo}</strong>
+                        <span style={{ fontSize: '8px', fontWeight: 800, textTransform: 'uppercase', color: getBorderColor(n.prioridad) }}>
+                          {n.prioridad}
+                        </span>
                       </div>
-                    )}
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '8px', color: 'var(--text-muted)', fontWeight: 700 }}>
-                      <span>Por: {n.autor || 'Recepción'}</span>
-                      <span>{n.fecha}</span>
+                      <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.4 }}>
+                        {n.contenido}
+                      </p>
+
+                      {/* Subchecklist en el Dashboard */}
+                      {hasTareas && (
+                        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                          {n.tareas.map(t => (
+                            <div 
+                              key={t.id} 
+                              onClick={() => handleToggleDashTask(n.id, t.id)} 
+                              style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                            >
+                              <div style={{ width: '10px', height: '10px', borderRadius: '2px', border: '1px solid var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: t.completada ? 'var(--success)' : 'transparent' }}>
+                                {t.completada && <Check size={7} color="#ffffff" />}
+                              </div>
+                              <span style={{ 
+                                fontSize: '10px', 
+                                color: t.completada ? 'var(--text-muted)' : 'var(--text-secondary)',
+                                textDecoration: t.completada ? 'line-through' : 'none',
+                                fontWeight: 600
+                              }}>
+                                {t.texto}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', fontSize: '8px', color: 'var(--text-muted)', fontWeight: 700 }}>
+                        <span>Por: {n.autor || 'Recepción'}</span>
+                        <span>{n.fecha}</span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
           </div>
+
+          {/* Cumpleañeros de Hoy 🎂 */}
+          <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', padding: '20px', minHeight: '220px' }}>
+            <h4 style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              🎂 Cumpleañeros de Hoy
+            </h4>
+            <p style={{ fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+              Felicita a tus socios hoy en su día y mejora la retención del gimnasio.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', maxHeight: '180px', paddingRight: '4px' }}>
+              {getTodayBirthdays().length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '120px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                  <span style={{ fontSize: '24px', marginBottom: '6px' }}>🎈</span>
+                  <p style={{ fontSize: '11px' }}>No hay cumpleañeros el día de hoy.</p>
+                </div>
+              ) : (
+                getTodayBirthdays().map(m => {
+                  const parts = m.fecha_nacimiento.split('T')[0].split('-');
+                  const age = new Date().getFullYear() - parseInt(parts[0], 10);
+                  
+                  let cleanPhone = m.telefono ? m.telefono.replace(/\D/g, '') : '';
+                  if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '58' + cleanPhone.substring(1);
+                  } else if (cleanPhone.length > 0 && !cleanPhone.startsWith('58')) {
+                    cleanPhone = '58' + cleanPhone;
+                  }
+
+                  const templateMsg = `¡Hola ${m.nombre}! 🎉 En Marian Gym te deseamos un muy feliz cumpleaños. 🎂 Que pases un excelente día lleno de salud y entrenamiento. ¡Hoy tienes un pase gratis de cortesía para un invitado especial! 🏋️‍♂️💪`;
+                  const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(templateMsg)}` : null;
+
+                  return (
+                    <div key={m.id} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      padding: '10px 12px', 
+                      backgroundColor: 'rgba(168, 85, 247, 0.03)', 
+                      border: '1px solid rgba(168, 85, 247, 0.08)',
+                      borderRadius: 'var(--border-radius-md)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div className="activity-avatar" style={{ 
+                          width: '32px', 
+                          height: '32px', 
+                          border: '1px dashed var(--primary)', 
+                          fontSize: '11px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: '50%',
+                          background: 'rgba(15, 98, 254, 0.05)',
+                          color: 'var(--primary)',
+                          fontWeight: 800
+                        }}>
+                          {m.foto_url ? (
+                            <img src={`http://localhost:3000${m.foto_url}`} alt="Socio" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                          ) : (
+                            m.nombre[0]
+                          )}
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', display: 'block' }}>{m.nombre} {m.apellido}</span>
+                          <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>¡Cumple {age} años! 🎁</span>
+                        </div>
+                      </div>
+
+                      {waUrl ? (
+                        <a 
+                          href={waUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn btn-secondary" 
+                          style={{ 
+                            padding: '4px 10px', 
+                            fontSize: '10px', 
+                            height: '26px', 
+                            textDecoration: 'none', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            backgroundColor: 'rgba(37, 211, 102, 0.08)',
+                            borderColor: 'rgba(37, 211, 102, 0.15)',
+                            color: '#25d366'
+                          }}
+                        >
+                          💬 Felicitar
+                        </a>
+                      ) : (
+                        <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Sin teléfono</span>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -1013,14 +1191,26 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
               <div className="form-group">
                 <label className="form-label">Cédula de Identidad *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ej: 25123456"
-                  value={memberFormData.cedula}
-                  onChange={(e) => setMemberFormData(prev => ({ ...prev, cedula: e.target.value }))}
-                  className="form-control"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    value={dashCedulaPrefix}
+                    onChange={(e) => setDashCedulaPrefix(e.target.value)}
+                    className="form-control"
+                    style={{ width: '80px', flexShrink: 0, fontWeight: 700 }}
+                  >
+                    <option value="V-">V-</option>
+                    <option value="E-">E-</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Ej: 25123456"
+                    value={memberFormData.cedula}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '') }))}
+                    className="form-control"
+                    style={{ flexGrow: 1 }}
+                  />
+                </div>
               </div>
 
               <div className="form-row">
@@ -1060,16 +1250,37 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                   />
                 </div>
                 <div className="form-group">
+                  <label className="form-label">Fecha de Nacimiento</label>
+                  <input 
+                    type="date" 
+                    max={new Date().toISOString().split('T')[0]}
+                    value={memberFormData.fecha_nacimiento}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
                   <label className="form-label">Membresía</label>
                   <select 
                     value={memberFormData.tipo_membresia}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, tipo_membresia: e.target.value }))}
                     className="form-control"
                   >
-                    <option value="mensual">Mensual ($30.00)</option>
-                    <option value="trimestral">Trimestral ($80.00)</option>
-                    <option value="anual">Anual ($300.00)</option>
+                    <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
+                    {config.solo_mensual !== 1 && (
+                      <>
+                        <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
+                        <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
+                      </>
+                    )}
                   </select>
+                </div>
+                <div className="form-group" style={{ opacity: 0, pointerEvents: 'none' }}>
+                  <label className="form-label">Espacio</label>
+                  <select className="form-control"><option/></select>
                 </div>
               </div>
 
@@ -1222,10 +1433,17 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                         key={m.id}
                         onClick={() => {
                           setSelectedMember(m);
-                          let monto = '30.00';
-                          if (m.membresia_tipo === 'trimestral') monto = '80.00';
-                          else if (m.membresia_tipo === 'anual') monto = '300.00';
-                          setPaymentData(prev => ({ ...prev, tipo_membresia: m.membresia_tipo || 'mensual', monto }));
+                          const isInactive = m.status === 'inactivo';
+                          setIncludeInscription(false);
+                          setIncludeReactivation(isInactive);
+                          
+                          const baseMonto = calculateTotalPayment(m.membresia_tipo || 'mensual', false, isInactive);
+                          setPaymentData(prev => ({ 
+                            ...prev, 
+                            tipo_membresia: m.membresia_tipo || 'mensual',
+                            monto: baseMonto,
+                            referencia: ''
+                          }));
                         }}
                         style={{ 
                           padding: '10px 14px', 
@@ -1291,16 +1509,18 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     value={paymentData.tipo_membresia}
                     onChange={(e) => {
                       const tipo = e.target.value;
-                      let monto = '30.00';
-                      if (tipo === 'trimestral') monto = '80.00';
-                      else if (tipo === 'anual') monto = '300.00';
-                      setPaymentData(prev => ({ ...prev, tipo_membresia: tipo, monto }));
+                      const newMonto = calculateTotalPayment(tipo, includeInscription, includeReactivation);
+                      setPaymentData(prev => ({ ...prev, tipo_membresia: tipo, monto: newMonto }));
                     }}
                     className="form-control"
                   >
-                    <option value="mensual">Mensual ($30.00)</option>
-                    <option value="trimestral">Trimestral ($80.00)</option>
-                    <option value="anual">Anual ($300.00)</option>
+                    <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
+                    {config.solo_mensual !== 1 && (
+                      <>
+                        <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
+                        <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
@@ -1320,7 +1540,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     <label className="form-label">Método de Pago</label>
                     <select 
                       value={paymentData.metodo_pago}
-                      onChange={(e) => setPaymentData(prev => ({ ...prev, metodo_pago: e.target.value }))}
+                      onChange={(e) => setPaymentData(prev => ({ ...prev, metodo_pago: e.target.value, referencia: '' }))}
                       className="form-control"
                     >
                       <option value="pago_movil">Pago Móvil</option>
@@ -1329,6 +1549,83 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                       <option value="transferencia">Transferencia</option>
                     </select>
                   </div>
+                </div>
+
+                {/* Input Dinámico de Referencia para Pago Móvil y Transferencia */}
+                {(paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') && (
+                  <div className="form-group" style={{ marginTop: '10px' }}>
+                    <label className="form-label" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>Referencia Bancaria (Últimos 4-6 dígitos) *</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="Ej: 9584"
+                      value={paymentData.referencia || ''}
+                      onChange={(e) => setPaymentData(prev => ({ ...prev, referencia: e.target.value.replace(/\D/g, '') }))}
+                      className="form-control"
+                    />
+                  </div>
+                )}
+
+                {/* Checkboxes de cobro opcional para inscripción y reactivación */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '14px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', padding: '12px', borderRadius: '10px' }}>
+                  {config.cobra_inscripcion === 1 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input 
+                        type="checkbox"
+                        id="dash_inc_ins"
+                        checked={includeInscription}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          const newMonto = calculateTotalPayment(paymentData.tipo_membresia, checked, includeReactivation);
+                          setIncludeInscription(checked);
+                          setPaymentData(prev => ({ ...prev, monto: newMonto }));
+                        }}
+                        style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                      />
+                      <label htmlFor="dash_inc_ins" style={{ fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: 'var(--text-primary)' }}>
+                        Cobrar Inscripción (+${parseFloat(config.cuota_inscripcion || 10).toFixed(2)})
+                      </label>
+                    </div>
+                  )}
+                  
+                  {selectedMember?.status === 'inactivo' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input 
+                        type="checkbox"
+                        id="dash_inc_reac"
+                        checked={includeReactivation}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          const newMonto = calculateTotalPayment(paymentData.tipo_membresia, includeInscription, checked);
+                          setIncludeReactivation(checked);
+                          setPaymentData(prev => ({ ...prev, monto: newMonto }));
+                        }}
+                        style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                      />
+                      <label htmlFor="dash_inc_reac" style={{ fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: 'var(--text-primary)' }}>
+                        Cobrar Cuota de Reactivación (+${parseFloat(config.cuota_reactivacion || 5).toFixed(2)})
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                {/* Caja de conversión en vivo a Bs (Fijado al registrar) */}
+                <div style={{
+                  background: 'rgba(15, 98, 254, 0.05)',
+                  border: '1px solid rgba(15, 98, 254, 0.15)',
+                  borderRadius: '10px',
+                  padding: '12px',
+                  marginTop: '14px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>Total en Bolívares (BCV):</span>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--primary)' }}>
+                    Bs. {(parseFloat(paymentData.monto || 0) * (config.tasa_cambio || 114.00)).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>

@@ -20,19 +20,56 @@ async function getConfig(req, res) {
 // 2. Actualizar la configuración del gimnasio
 async function updateConfig(req, res) {
   try {
-    const { gym_name, tasa_cambio, logo_url } = req.body;
+    const { 
+      gym_name, 
+      tasa_cambio, 
+      logo_url,
+      cuota_mensual,
+      cuota_trimestral,
+      cuota_anual,
+      cobra_inscripcion,
+      cuota_inscripcion,
+      cuota_reactivacion,
+      umbral_biometrico,
+      solo_mensual
+    } = req.body;
+
     if (!gym_name || !tasa_cambio) {
       return res.status(400).json({ error: 'Nombre de gimnasio y tasa de cambio son requeridos.' });
     }
 
     const db = getPool();
-    // Intentar actualizar el primer registro
+    // Actualizar todas las columnas de configuración en el registro id = 1
     const [result] = await db.query(
-      'UPDATE configuracion SET gym_name = ?, tasa_cambio = ?, logo_url = ? WHERE id = 1',
-      [gym_name, parseFloat(tasa_cambio), logo_url || null]
+      `UPDATE configuracion SET 
+        gym_name = ?, 
+        tasa_cambio = ?, 
+        logo_url = ?, 
+        cuota_mensual = ?, 
+        cuota_trimestral = ?, 
+        cuota_anual = ?, 
+        cobra_inscripcion = ?, 
+        cuota_inscripcion = ?, 
+        cuota_reactivacion = ?, 
+        umbral_biometrico = ?,
+        solo_mensual = ?
+       WHERE id = 1`,
+      [
+        gym_name, 
+        parseFloat(tasa_cambio), 
+        logo_url || null,
+        parseFloat(cuota_mensual || 30.00),
+        parseFloat(cuota_trimestral || 80.00),
+        parseFloat(cuota_anual || 300.00),
+        parseInt(cobra_inscripcion ? 1 : 0),
+        parseFloat(cuota_inscripcion || 10.00),
+        parseFloat(cuota_reactivacion || 5.00),
+        parseFloat(umbral_biometrico || 73.00),
+        parseInt(solo_mensual ? 1 : 0)
+      ]
     );
 
-    res.json({ success: true, message: 'Configuración actualizada con éxito.' });
+    res.json({ success: true, message: 'Configuración y tarifas actualizadas con éxito.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -119,4 +156,99 @@ module.exports = {
   updateConfig,
   syncBcvRate,
   performBcvSyncInternal
+};
+
+// 5. Exportar copia de seguridad de la base de datos (Dump JSON)
+async function exportBackup(req, res) {
+  try {
+    const db = getPool();
+    const tables = ['configuracion', 'socios', 'membresias', 'pagos', 'registro_asistencias', 'usuarios', 'personal', 'gastos'];
+    const backupData = {
+      backup_date: new Date().toISOString(),
+      gym_name: 'Marian Gym',
+      tables: {}
+    };
+
+    // Consultar secuencialmente todas las tablas
+    for (const table of tables) {
+      const [rows] = await db.query(`SELECT * FROM \`${table}\``);
+      backupData.tables[table] = rows;
+    }
+
+    res.setHeader('Content-disposition', `attachment; filename=mariangym_backup_${new Date().toISOString().split('T')[0]}.json`);
+    res.setHeader('Content-type', 'application/json');
+    res.json(backupData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// 6. Restaurar base de datos desde copia de seguridad JSON
+async function importBackup(req, res) {
+  const connection = await getPool().getConnection();
+  try {
+    const { backupData } = req.body;
+    if (!backupData || !backupData.tables) {
+      return res.status(400).json({ error: 'Formato de copia de seguridad inválido.' });
+    }
+
+    await connection.beginTransaction();
+    
+    // Limpiar tablas en orden inverso de claves foráneas
+    const tablesToClean = ['gastos', 'personal', 'registro_asistencias', 'pagos', 'membresias', 'socios', 'usuarios', 'configuracion'];
+    for (const table of tablesToClean) {
+      await connection.query(`DELETE FROM \`${table}\``);
+      try {
+        await connection.query(`ALTER TABLE \`${table}\` AUTO_INCREMENT = 1`);
+      } catch (err) {
+        // Ignorar si no soporta AUTO_INCREMENT
+      }
+    }
+
+    // Repoblar las tablas en orden de dependencias
+    const populateOrder = ['configuracion', 'usuarios', 'socios', 'membresias', 'pagos', 'registro_asistencias', 'personal', 'gastos'];
+
+    for (const table of populateOrder) {
+      const rows = backupData.tables[table];
+      if (!rows || rows.length === 0) continue;
+
+      // Obtener columnas de la primera fila
+      const columns = Object.keys(rows[0]);
+      const columnNames = columns.map(c => `\`${c}\``).join(', ');
+      const placeholders = columns.map(() => '?').join(', ');
+
+      for (const row of rows) {
+        const values = columns.map(col => {
+          const val = row[col];
+          // Formatear fechas de forma segura para MySQL
+          if (val && (col.startsWith('fecha') || col.endsWith('_at') || col === 'bcv_last_update')) {
+            return new Date(val);
+          }
+          return val;
+        });
+        
+        await connection.query(
+          `INSERT INTO \`${table}\` (${columnNames}) VALUES (${placeholders})`,
+          values
+        );
+      }
+    }
+
+    await connection.commit();
+    res.json({ success: true, message: '✓ Base de datos restaurada al 100% con éxito.' });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({ error: `Error de restauración: ${error.message}` });
+  } finally {
+    connection.release();
+  }
+}
+
+module.exports = {
+  getConfig,
+  updateConfig,
+  syncBcvRate,
+  performBcvSyncInternal,
+  exportBackup,
+  importBackup
 };

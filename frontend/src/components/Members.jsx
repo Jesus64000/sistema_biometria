@@ -44,10 +44,13 @@ function Members({ activeGym, initialTab, user }) {
     email: '',
     tipo_membresia: 'mensual',
     genero: 'Masculino',
+    fecha_nacimiento: '',
     foto_base64: ''
   });
 
-  // Formulario de edición
+  const [cedulaPrefix, setCedulaPrefix] = useState('V-');
+  const [editCedulaPrefix, setEditCedulaPrefix] = useState('V-');
+
   const [editFormData, setEditFormData] = useState({
     id: '',
     cedula: '',
@@ -57,15 +60,55 @@ function Members({ activeGym, initialTab, user }) {
     email: '',
     status: 'activo',
     genero: 'Masculino',
-    tipo_membresia: 'mensual'
+    fecha_nacimiento: '',
+    tipo_membresia: 'mensual',
+    foto_url: '',
+    foto_base64: ''
   });
 
   // Formulario de pago
   const [paymentData, setPaymentData] = useState({
     monto: '30.00',
     metodo_pago: 'pago_movil',
-    tipo_membresia: 'mensual'
+    tipo_membresia: 'mensual',
+    referencia: ''
   });
+
+  const [config, setConfig] = useState({
+    tasa_cambio: 114.00,
+    cuota_mensual: 30.00,
+    cuota_trimestral: 80.00,
+    cuota_anual: 300.00,
+    cobra_inscripcion: 1,
+    cuota_inscripcion: 10.00,
+    cuota_reactivacion: 5.00
+  });
+
+  const [includeInscription, setIncludeInscription] = useState(false);
+  const [includeReactivation, setIncludeReactivation] = useState(false);
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/config');
+      const data = await res.json();
+      if (!data.error) {
+        setConfig(data);
+      }
+    } catch (e) {
+      console.warn('Error al cargar configuración en socios:', e.message);
+    }
+  };
+
+  const calculateTotalPayment = (tipo, incIns, incReac, customConfig = config) => {
+    let base = parseFloat(customConfig.cuota_mensual !== undefined ? customConfig.cuota_mensual : 30.00);
+    if (tipo === 'trimestral') base = parseFloat(customConfig.cuota_trimestral !== undefined ? customConfig.cuota_trimestral : 80.00);
+    else if (tipo === 'anual') base = parseFloat(customConfig.cuota_anual !== undefined ? customConfig.cuota_anual : 300.00);
+
+    if (incIns && customConfig.cobra_inscripcion === 1) base += parseFloat(customConfig.cuota_inscripcion !== undefined ? customConfig.cuota_inscripcion : 10.00);
+    if (incReac) base += parseFloat(customConfig.cuota_reactivacion !== undefined ? customConfig.cuota_reactivacion : 5.00);
+
+    return base.toFixed(2);
+  };
 
   // Cámara e imágenes
   const [cameraActive, setCameraActive] = useState(false);
@@ -90,6 +133,7 @@ function Members({ activeGym, initialTab, user }) {
 
   useEffect(() => {
     fetchMembers();
+    fetchConfig();
     if (initialTab === 'payments') {
       setFilterSolvency('insolvent'); // Enfocar insolventes automáticamente
     }
@@ -136,7 +180,11 @@ function Members({ activeGym, initialTab, user }) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       
       const base64 = canvas.toDataURL('image/jpeg', 0.8);
-      setFormData(prev => ({ ...prev, foto_base64: base64 }));
+      if (showEditModal) {
+        setEditFormData(prev => ({ ...prev, foto_base64: base64 }));
+      } else {
+        setFormData(prev => ({ ...prev, foto_base64: base64 }));
+      }
       stopCamera();
     }
   };
@@ -150,10 +198,11 @@ function Members({ activeGym, initialTab, user }) {
     }
 
     try {
+      const fullCedula = `${cedulaPrefix}${formData.cedula.trim()}`;
       const res = await fetch('http://localhost:3000/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, gym_sede: 'MarianGym' })
+        body: JSON.stringify({ ...formData, cedula: fullCedula, gym_sede: 'MarianGym' })
       });
       const result = await res.json();
 
@@ -178,6 +227,7 @@ function Members({ activeGym, initialTab, user }) {
       
       // Cerrar modal y limpiar
       setShowAddModal(false);
+      setCedulaPrefix('V-');
       setFormData({
         cedula: '',
         nombre: '',
@@ -185,6 +235,8 @@ function Members({ activeGym, initialTab, user }) {
         telefono: '',
         email: '',
         tipo_membresia: 'mensual',
+        genero: 'Masculino',
+        fecha_nacimiento: '',
         foto_base64: ''
       });
       stopCamera();
@@ -200,6 +252,11 @@ function Members({ activeGym, initialTab, user }) {
     e.preventDefault();
     if (!selectedSocio) return;
 
+    if ((paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') && !paymentData.referencia) {
+      alert('Por favor, introduzca el número de referencia bancaria para Pago Móvil / Transferencia.');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:3000/api/payments', {
         method: 'POST',
@@ -209,7 +266,8 @@ function Members({ activeGym, initialTab, user }) {
           monto: parseFloat(paymentData.monto),
           metodo_pago: paymentData.metodo_pago,
           tipo_membresia: paymentData.tipo_membresia,
-          gym_sede: 'MarianGym'
+          gym_sede: 'MarianGym',
+          referencia: (paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') ? paymentData.referencia : null
         })
       });
       const result = await res.json();
@@ -248,16 +306,30 @@ function Members({ activeGym, initialTab, user }) {
 
   // Abrir modal de edición
   const handleOpenEditModal = (socio) => {
+    let prefix = 'V-';
+    let number = socio.cedula;
+    if (socio.cedula.includes('-')) {
+      const parts = socio.cedula.split('-');
+      prefix = parts[0] + '-';
+      number = parts[1];
+    } else if (socio.cedula.startsWith('V') || socio.cedula.startsWith('E')) {
+      prefix = socio.cedula.substring(0, 1) + '-';
+      number = socio.cedula.substring(1);
+    }
+    setEditCedulaPrefix(prefix);
     setEditFormData({
       id: socio.id,
-      cedula: socio.cedula,
+      cedula: number,
       nombre: socio.nombre,
       apellido: socio.apellido,
       telefono: socio.telefono || '',
       email: socio.email || '',
       status: socio.status || 'activo',
       genero: socio.genero || 'Masculino',
-      tipo_membresia: socio.membresia_tipo || 'mensual'
+      fecha_nacimiento: socio.fecha_nacimiento ? socio.fecha_nacimiento.split('T')[0] : '',
+      tipo_membresia: socio.membresia_tipo || 'mensual',
+      foto_url: socio.foto_url || '',
+      foto_base64: ''
     });
     setShowEditModal(true);
   };
@@ -271,10 +343,11 @@ function Members({ activeGym, initialTab, user }) {
     }
 
     try {
+      const fullCedula = `${editCedulaPrefix}${editFormData.cedula.trim()}`;
       const res = await fetch(`http://localhost:3000/api/members/${editFormData.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editFormData)
+        body: JSON.stringify({ ...editFormData, cedula: fullCedula })
       });
       const result = await res.json();
 
@@ -283,8 +356,21 @@ function Members({ activeGym, initialTab, user }) {
         return;
       }
 
+      // Si se capturó una nueva foto, enrolarla en el motor Python Flask
+      if (editFormData.foto_base64) {
+        await fetch('http://localhost:3000/api/biometrics/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            socio_id: editFormData.id,
+            foto_base64: editFormData.foto_base64
+          })
+        });
+      }
+
       alert('Datos del socio actualizados exitosamente.');
       setShowEditModal(false);
+      stopCamera();
       fetchMembers();
     } catch (err) {
       console.error(err);
@@ -597,7 +683,18 @@ function Members({ activeGym, initialTab, user }) {
                           style={{ padding: '6px 12px', fontSize: '11px', gap: '4px', height: '30px' }}
                           onClick={() => {
                             setSelectedSocio(member);
-                            setPaymentData(prev => ({ ...prev, tipo_membresia: member.membresia_tipo || 'mensual' }));
+                            const isInactive = member.status === 'inactivo';
+                            setIncludeInscription(false);
+                            setIncludeReactivation(isInactive);
+                            
+                            // Cargar de inmediato con la tasa correcta y el sueldo de reactivacion si aplica
+                            const baseMonto = calculateTotalPayment(member.membresia_tipo || 'mensual', false, isInactive);
+                            setPaymentData(prev => ({ 
+                              ...prev, 
+                              tipo_membresia: member.membresia_tipo || 'mensual',
+                              monto: baseMonto,
+                              referencia: ''
+                            }));
                             setShowPaymentModal(true);
                           }}
                           title="Registrar cobro de mensualidad"
@@ -678,14 +775,26 @@ function Members({ activeGym, initialTab, user }) {
 
               <div className="form-group">
                 <label className="form-label">Cédula de Identidad *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ej: 25123456"
-                  value={formData.cedula}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value }))}
-                  className="form-control"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    value={cedulaPrefix}
+                    onChange={(e) => setCedulaPrefix(e.target.value)}
+                    className="form-control"
+                    style={{ width: '80px', flexShrink: 0, fontWeight: 700 }}
+                  >
+                    <option value="V-">V-</option>
+                    <option value="E-">E-</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Ej: 25123456"
+                    value={formData.cedula}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '') }))}
+                    className="form-control"
+                    style={{ flexGrow: 1 }}
+                  />
+                </div>
               </div>
 
               <div className="form-row">
@@ -725,16 +834,37 @@ function Members({ activeGym, initialTab, user }) {
                   />
                 </div>
                 <div className="form-group">
+                  <label className="form-label">Fecha de Nacimiento</label>
+                  <input 
+                    type="date" 
+                    max={new Date().toISOString().split('T')[0]}
+                    value={formData.fecha_nacimiento}
+                    onChange={(e) => setFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
                   <label className="form-label">Membresía</label>
                   <select 
                     value={formData.tipo_membresia}
                     onChange={(e) => setFormData(prev => ({ ...prev, tipo_membresia: e.target.value }))}
                     className="form-control"
                   >
-                    <option value="mensual">Mensual ($30.00)</option>
-                    <option value="trimestral">Trimestral ($80.00)</option>
-                    <option value="anual">Anual ($300.00)</option>
+                    <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
+                    {config.solo_mensual !== 1 && (
+                      <>
+                        <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
+                        <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
+                      </>
+                    )}
                   </select>
+                </div>
+                <div className="form-group" style={{ opacity: 0, pointerEvents: 'none' }}>
+                  <label className="form-label">Espacio</label>
+                  <select className="form-control"><option/></select>
                 </div>
               </div>
 
@@ -836,16 +966,18 @@ function Members({ activeGym, initialTab, user }) {
                   value={paymentData.tipo_membresia}
                   onChange={(e) => {
                     const tipo = e.target.value;
-                    let monto = '30.00';
-                    if (tipo === 'trimestral') monto = '80.00';
-                    else if (tipo === 'anual') monto = '300.00';
-                    setPaymentData(prev => ({ ...prev, tipo_membresia: tipo, monto }));
+                    const newMonto = calculateTotalPayment(tipo, includeInscription, includeReactivation);
+                    setPaymentData(prev => ({ ...prev, tipo_membresia: tipo, monto: newMonto }));
                   }}
                   className="form-control"
                 >
-                  <option value="mensual">Mensual ($30.00)</option>
-                  <option value="trimestral">Trimestral ($80.00)</option>
-                  <option value="anual">Anual ($300.00)</option>
+                  <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
+                  {config.solo_mensual !== 1 && (
+                    <>
+                      <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
+                      <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
+                    </>
+                  )}
                 </select>
               </div>
 
@@ -865,7 +997,7 @@ function Members({ activeGym, initialTab, user }) {
                   <label className="form-label">Método de Pago</label>
                   <select 
                     value={paymentData.metodo_pago}
-                    onChange={(e) => setPaymentData(prev => ({ ...prev, metodo_pago: e.target.value }))}
+                    onChange={(e) => setPaymentData(prev => ({ ...prev, metodo_pago: e.target.value, referencia: '' }))}
                     className="form-control"
                   >
                     <option value="pago_movil">Pago Móvil</option>
@@ -874,6 +1006,83 @@ function Members({ activeGym, initialTab, user }) {
                     <option value="transferencia">Transferencia</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Input Dinámico de Referencia para Pago Móvil y Transferencia */}
+              {(paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') && (
+                <div className="form-group" style={{ marginTop: '10px' }}>
+                  <label className="form-label" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>Referencia Bancaria (Últimos 4-6 dígitos) *</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="Ej: 9584"
+                    value={paymentData.referencia || ''}
+                    onChange={(e) => setPaymentData(prev => ({ ...prev, referencia: e.target.value.replace(/\D/g, '') }))}
+                    className="form-control"
+                  />
+                </div>
+              )}
+
+              {/* Checkboxes de cobro opcional para inscripción y reactivación */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '14px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', padding: '12px', borderRadius: '10px' }}>
+                {config.cobra_inscripcion === 1 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input 
+                      type="checkbox"
+                      id="inc_ins"
+                      checked={includeInscription}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        const newMonto = calculateTotalPayment(paymentData.tipo_membresia, checked, includeReactivation);
+                        setIncludeInscription(checked);
+                        setPaymentData(prev => ({ ...prev, monto: newMonto }));
+                      }}
+                      style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                    />
+                    <label htmlFor="inc_ins" style={{ fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                      Cobrar Inscripción (+${parseFloat(config.cuota_inscripcion || 10).toFixed(2)})
+                    </label>
+                  </div>
+                )}
+                
+                {selectedSocio?.status === 'inactivo' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input 
+                      type="checkbox"
+                      id="inc_reac"
+                      checked={includeReactivation}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        const newMonto = calculateTotalPayment(paymentData.tipo_membresia, includeInscription, checked);
+                        setIncludeReactivation(checked);
+                        setPaymentData(prev => ({ ...prev, monto: newMonto }));
+                      }}
+                      style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                    />
+                    <label htmlFor="inc_reac" style={{ fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                      Cobrar Cuota de Reactivación (+${parseFloat(config.cuota_reactivacion || 5).toFixed(2)})
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {/* Caja de conversión en vivo a Bs (Fijado al registrar) */}
+              <div style={{
+                background: 'rgba(15, 98, 254, 0.05)',
+                border: '1px solid rgba(15, 98, 254, 0.15)',
+                borderRadius: '10px',
+                padding: '12px',
+                marginTop: '14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>Total en Bolívares (BCV):</span>
+                <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--primary)' }}>
+                  Bs. {(parseFloat(paymentData.monto || 0) * (config.tasa_cambio || 114.00)).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
@@ -895,7 +1104,7 @@ function Members({ activeGym, initialTab, user }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Editar Expediente del Socio</h3>
               <button 
-                onClick={() => setShowEditModal(false)}
+                onClick={() => { setShowEditModal(false); stopCamera(); }}
                 style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
               >
                 <X size={18} />
@@ -928,13 +1137,25 @@ function Members({ activeGym, initialTab, user }) {
 
               <div className="form-group">
                 <label className="form-label">Cédula de Identidad *</label>
-                <input 
-                  type="text" 
-                  required
-                  value={editFormData.cedula}
-                  onChange={(e) => setEditFormData(prev => ({ ...prev, cedula: e.target.value }))}
-                  className="form-control"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    value={editCedulaPrefix}
+                    onChange={(e) => setEditCedulaPrefix(e.target.value)}
+                    className="form-control"
+                    style={{ width: '80px', flexShrink: 0, fontWeight: 700 }}
+                  >
+                    <option value="V-">V-</option>
+                    <option value="E-">E-</option>
+                  </select>
+                  <input 
+                    type="text" 
+                    required
+                    value={editFormData.cedula}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '') }))}
+                    className="form-control"
+                    style={{ flexGrow: 1 }}
+                  />
+                </div>
               </div>
 
               <div className="form-row">
@@ -942,6 +1163,7 @@ function Members({ activeGym, initialTab, user }) {
                   <label className="form-label">Teléfono</label>
                   <input 
                     type="text" 
+                    placeholder="Ej: 0414-1234567"
                     value={editFormData.telefono}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, telefono: e.target.value }))}
                     className="form-control"
@@ -951,6 +1173,7 @@ function Members({ activeGym, initialTab, user }) {
                   <label className="form-label">Email</label>
                   <input 
                     type="email" 
+                    placeholder="Ej: cliente@correo.com"
                     value={editFormData.email}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="form-control"
@@ -992,19 +1215,91 @@ function Members({ activeGym, initialTab, user }) {
                     onChange={(e) => setEditFormData(prev => ({ ...prev, tipo_membresia: e.target.value }))}
                     className="form-control"
                   >
-                    <option value="mensual">Mensual ($30.00)</option>
-                    <option value="trimestral">Trimestral ($80.00)</option>
-                    <option value="anual">Anual ($300.00)</option>
+                    <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
+                    {config.solo_mensual !== 1 && (
+                      <>
+                        <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
+                        <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
+                      </>
+                    )}
                   </select>
                 </div>
-                <div className="form-group" style={{ opacity: 0, pointerEvents: 'none' }}>
-                  <label className="form-label">Espacio</label>
-                  <select className="form-control"><option/></select>
+                <div className="form-group">
+                  <label className="form-label">Fecha de Nacimiento</label>
+                  <input 
+                    type="date" 
+                    max={new Date().toISOString().split('T')[0]}
+                    value={editFormData.fecha_nacimiento}
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              {/* Enrolamiento / Actualización de Foto */}
+              <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)' }}>
+                  <Camera size={14} /> Actualizar Foto del Cliente (Opcional)
+                </label>
+                
+                <div style={{ display: 'flex', gap: '16px', marginTop: '12px', alignItems: 'center' }}>
+                  <div style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden', 
+                    background: 'var(--bg-app)', 
+                    border: '2px solid var(--border-color)', 
+                    position: 'relative', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    boxShadow: 'var(--shadow-sm)'
+                  }}>
+                    {cameraActive ? (
+                      <video 
+                        ref={videoRef} 
+                        autoPlay 
+                        playsInline
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
+                      />
+                    ) : editFormData.foto_base64 ? (
+                      <img 
+                        src={editFormData.foto_base64} 
+                        alt="Nueva Foto" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : editFormData.foto_url ? (
+                      <img 
+                        src={`http://localhost:3000${editFormData.foto_url}`} 
+                        alt="Foto Actual" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <Users size={20} style={{ opacity: 0.2 }} />
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {!cameraActive ? (
+                      <button type="button" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={startCamera}>
+                        <span>Iniciar Cámara</span>
+                      </button>
+                    ) : (
+                      <button type="button" className="btn btn-success" style={{ padding: '6px 12px', fontSize: '11px', gap: '4px' }} onClick={captureSnapshot}>
+                        <Check size={12} />
+                        <span>Capturar</span>
+                      </button>
+                    )}
+                    {editFormData.foto_base64 && (
+                      <span style={{ fontSize: '10px', color: 'var(--success)', fontWeight: 700 }}>✓ Nueva foto lista</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancelar</button>
+                <button type="button" className="btn btn-secondary" onClick={() => { setShowEditModal(false); stopCamera(); }}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Guardar Cambios</button>
               </div>
             </form>

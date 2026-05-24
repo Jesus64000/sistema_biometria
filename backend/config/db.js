@@ -135,7 +135,32 @@ async function checkAndCreateTables() {
         \`gym_name\` VARCHAR(100) NOT NULL DEFAULT 'Marian Gym',
         \`tasa_cambio\` DECIMAL(10, 2) NOT NULL DEFAULT 114.00,
         \`logo_url\` VARCHAR(255) DEFAULT NULL,
-        \`bcv_last_update\` TIMESTAMP NULL DEFAULT NULL
+        \`bcv_last_update\` TIMESTAMP NULL DEFAULT NULL,
+        \`cuota_mensual\` DECIMAL(10, 2) NOT NULL DEFAULT 30.00,
+        \`cuota_trimestral\` DECIMAL(10, 2) NOT NULL DEFAULT 80.00,
+        \`cuota_anual\` DECIMAL(10, 2) NOT NULL DEFAULT 300.00,
+        \`cobra_inscripcion\` TINYINT(1) NOT NULL DEFAULT 1,
+        \`cuota_inscripcion\` DECIMAL(10, 2) NOT NULL DEFAULT 10.00,
+        \`cuota_reactivacion\` DECIMAL(10, 2) NOT NULL DEFAULT 5.00,
+        \`umbral_biometrico\` DECIMAL(5, 2) NOT NULL DEFAULT 73.00,
+        \`solo_mensual\` TINYINT(1) NOT NULL DEFAULT 0
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Tabla de Personal / Entrenadores [NUEVA]
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS \`personal\` (
+        \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+        \`cedula\` VARCHAR(20) NOT NULL UNIQUE,
+        \`nombre\` VARCHAR(50) NOT NULL,
+        \`apellido\` VARCHAR(50) NOT NULL,
+        \`cargo\` VARCHAR(50) NOT NULL DEFAULT 'Entrenador',
+        \`telefono\` VARCHAR(20) DEFAULT NULL,
+        \`email\` VARCHAR(100) DEFAULT NULL,
+        \`sueldo\` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+        \`activo\` TINYINT(1) NOT NULL DEFAULT 1,
+        \`fecha_contratacion\` DATE DEFAULT NULL,
+        \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
@@ -179,6 +204,17 @@ async function checkAndCreateTables() {
       console.warn('⚠️ Error al migrar columna genero:', err.message);
     }
 
+    // MIGRACIÓN: Añadir columna fecha_nacimiento a socios si no existe
+    try {
+      const [columns] = await connection.query("SHOW COLUMNS FROM `socios` LIKE 'fecha_nacimiento'");
+      if (columns.length === 0) {
+        await connection.query("ALTER TABLE `socios` ADD COLUMN `fecha_nacimiento` DATE DEFAULT NULL");
+        console.log('✅ Migración: Columna `fecha_nacimiento` añadida a la tabla `socios`.');
+      }
+    } catch (err) {
+      console.warn('⚠️ Error al migrar columna fecha_nacimiento:', err.message);
+    }
+
     // MIGRACIÓN: Añadir columna bcv_last_update a configuracion si no existe
     try {
       const [columns] = await connection.query("SHOW COLUMNS FROM `configuracion` LIKE 'bcv_last_update'");
@@ -190,7 +226,41 @@ async function checkAndCreateTables() {
       console.warn('⚠️ Error al migrar columna bcv_last_update:', err.message);
     }
 
-    console.log('✅ Estructura de tablas deportivas (Configuración, Socios, Gastos) verificada e inicializada correctamente en MySQL.');
+    // MIGRACIÓN: Añadir columnas de tarifas a configuracion si no existen (Migración automática incremental)
+    const configPriceColumns = [
+      { name: 'cuota_mensual', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 30.00' },
+      { name: 'cuota_trimestral', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 80.00' },
+      { name: 'cuota_anual', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 300.00' },
+      { name: 'cobra_inscripcion', type: 'TINYINT(1) NOT NULL DEFAULT 1' },
+      { name: 'cuota_inscripcion', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 10.00' },
+      { name: 'cuota_reactivacion', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 5.00' },
+      { name: 'umbral_biometrico', type: 'DECIMAL(5, 2) NOT NULL DEFAULT 73.00' },
+      { name: 'solo_mensual', type: 'TINYINT(1) NOT NULL DEFAULT 0' }
+    ];
+    for (const col of configPriceColumns) {
+      try {
+        const [cols] = await connection.query(`SHOW COLUMNS FROM \`configuracion\` LIKE '${col.name}'`);
+        if (cols.length === 0) {
+          await connection.query(`ALTER TABLE \`configuracion\` ADD COLUMN \`${col.name}\` ${col.type}`);
+          console.log(`✅ Migración: Columna \`${col.name}\` añadida a la tabla \`configuracion\`.`);
+        }
+      } catch (err) {
+        console.warn(`⚠️ Error al migrar columna ${col.name}:`, err.message);
+      }
+    }
+
+    // MIGRACIÓN: Añadir columna referencia a pagos si no existe (Auditoría de Pago Móvil en Venezuela)
+    try {
+      const [columns] = await connection.query("SHOW COLUMNS FROM `pagos` LIKE 'referencia'");
+      if (columns.length === 0) {
+        await connection.query("ALTER TABLE `pagos` ADD COLUMN `referencia` VARCHAR(50) DEFAULT NULL");
+        console.log('✅ Migración: Columna `referencia` añadida a la tabla `pagos`.');
+      }
+    } catch (err) {
+      console.warn('⚠️ Error al migrar columna referencia:', err.message);
+    }
+
+    console.log('✅ Estructura de tablas deportivas (Configuración, Socios, Personal, Gastos) verificada e inicializada correctamente en MySQL.');
   } catch (error) {
     console.error('❌ Error al inicializar las tablas de la base de datos:', error.message);
   } finally {

@@ -15,6 +15,12 @@ async function register(req, res) {
 
     const db = getPool();
 
+    // BLOQUEO DE SEGURIDAD: Solo permitir registro si no hay usuarios en la base de datos (registro del primer administrador)
+    const [existingUsers] = await db.query('SELECT COUNT(*) as count FROM usuarios');
+    if (existingUsers[0].count > 0) {
+      return res.status(403).json({ error: 'El registro de nuevas cuentas desde la pantalla de bienvenida está bloqueado por motivos de seguridad. Los nuevos usuarios deben ser registrados por un Administrador desde el panel interno.' });
+    }
+
     // Verificar si el usuario ya existe
     const [existing] = await db.query('SELECT id FROM usuarios WHERE username = ?', [username]);
     if (existing.length > 0) {
@@ -151,9 +157,56 @@ function verifyToken(req, res, next) {
   });
 }
 
+// 4. Restablecer contraseña con Llave Maestra (Recuperación Offline para Cabimas)
+async function resetPassword(req, res) {
+  try {
+    const { username, newPassword, recoveryKey } = req.body;
+    if (!username || !newPassword || !recoveryKey) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios (usuario, nueva clave, llave de recuperación).' });
+    }
+
+    const MASTER_RECOVERY_KEY = process.env.ADMIN_RECOVERY_KEY || 'Cabimas2026';
+    if (recoveryKey !== MASTER_RECOVERY_KEY) {
+      return res.status(401).json({ error: 'La Llave Maestra de Recuperación es incorrecta.' });
+    }
+
+    const db = getPool();
+    // Verificar si el usuario existe
+    const [rows] = await db.query('SELECT id FROM usuarios WHERE username = ?', [username]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'El nombre de usuario ingresado no existe en el sistema.' });
+    }
+
+    // Encriptar y actualizar contraseña
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    await db.query('UPDATE usuarios SET password = ? WHERE id = ?', [hashedPassword, rows[0].id]);
+
+    res.json({
+      success: true,
+      message: '✓ Contraseña restablecida con éxito. Inicie sesión con su nueva contraseña.'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// 5. Verificar si se requiere el registro inicial (Primer administrador)
+async function getSetupStatus(req, res) {
+  try {
+    const db = getPool();
+    const [rows] = await db.query('SELECT COUNT(*) as count FROM usuarios');
+    const count = rows[0].count;
+    res.json({ setupRequired: count === 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   register,
   login,
   getProfile,
-  verifyToken
+  verifyToken,
+  resetPassword,
+  getSetupStatus
 };

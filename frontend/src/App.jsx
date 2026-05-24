@@ -26,18 +26,21 @@ import Analytics from './components/Analytics';
 // Módulos auxiliares simplificados e incrustados para velocidad y portabilidad
 import Expenses from './components/Expenses';
 import Notes from './components/Notes';
-import Trainers from './components/Trainers';
+import Personal from './components/Personal';
+import UsersManager from './components/Users';
+import KioskStatus from './components/KioskStatus';
 import Settings from './components/Settings';
 
 function App() {
+
   // Cargar sesión inicial desde localStorage si existe
   const [token, setToken] = useState(localStorage.getItem('jwt_token') || '');
   const [user, setUser] = useState(
     localStorage.getItem('active_user') ? JSON.parse(localStorage.getItem('active_user')) : null
   );
 
-  // Evaluar modo Kiosco al arrancar
-  const isKioskInit = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk';
+  // Evaluar modo Kiosco al arrancar (Soporta rol 'kiosco' directo)
+  const isKioskInit = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk' || (user && user.role === 'kiosco');
   const [currentView, setCurrentView] = useState(isKioskInit ? 'kiosk' : 'dashboard');
   const [darkMode, setDarkMode] = useState(localStorage.getItem('dark_mode') === 'true');
   
@@ -58,6 +61,32 @@ function App() {
       console.warn('Error al conectar con la API de configuración:', error.message);
     }
   };
+
+  const [nodeStatus, setNodeStatus] = useState('checking');
+  const [pythonStatus, setPythonStatus] = useState('checking');
+
+  const checkTelemetry = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/config');
+      if (res.ok) setNodeStatus('online');
+      else setNodeStatus('offline');
+    } catch (e) {
+      setNodeStatus('offline');
+    }
+
+    try {
+      await fetch('http://localhost:5000/', { mode: 'no-cors' });
+      setPythonStatus('online');
+    } catch (e) {
+      setPythonStatus('offline');
+    }
+  };
+
+  useEffect(() => {
+    checkTelemetry();
+    const interval = setInterval(checkTelemetry, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -107,7 +136,6 @@ function App() {
   const menuItems = [
     { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard },
     { id: 'members', label: 'Clientes', icon: Users },
-    { id: 'access', label: 'Control de acceso', icon: ScanFace },
     { id: 'payments', label: 'Control de pagos', icon: CreditCard },
   ];
 
@@ -115,13 +143,31 @@ function App() {
     { id: 'analytics', label: 'Analíticas', icon: BarChart2 },
     { id: 'expenses', label: 'Gastos', icon: DollarSign },
     { id: 'notes', label: 'Notas', icon: FileText },
-    { id: 'trainers', label: 'Entrenadores', icon: Dumbbell },
+    { id: 'trainers', label: 'Personal y Staff', icon: Dumbbell },
+    { id: 'users', label: 'Usuarios', icon: UserCheck },
     { id: 'settings', label: 'Configuración', icon: SettingsIcon },
   ];
 
+  // 📺 ESCENARIO ESPECIAL: Pantalla secundaria de Kiosco/Escáner Completo en Pantalla 2
+  const isKioskStatusPage = window.location.pathname.includes('/kiosk-status') || window.location.hash.includes('kiosk-status');
+  if (isKioskStatusPage) {
+    return (
+      <div className="kiosk-viewport-container">
+        <BiometricAccess 
+          activeGym={gymName} 
+          isKiosk={true} 
+          exitKiosk={() => {
+            window.location.href = '/';
+          }} 
+          onLogout={handleLogout}
+        />
+      </div>
+    );
+  }
+
   // Si no está autenticado, redirigir a la compuerta de login
   if (!token || !user) {
-    const isKioskMode = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk';
+    const isKioskMode = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk' || isKioskStatusPage;
     return <Login onLoginSuccess={handleLoginSuccess} isKiosk={isKioskMode} />;
   }
 
@@ -178,8 +224,8 @@ function App() {
         <span className="sidebar-label">Administración</span>
         <ul className="sidebar-menu">
           {auxiliaryItems.map((item) => {
-            // Si el rol es recepcionista, bloqueamos configuración, gastos y analíticas
-            if ((item.id === 'settings' || item.id === 'expenses' || item.id === 'analytics') && user.role !== 'admin') return null;
+            // Si el rol es recepcionista, bloqueamos configuración, gastos, analíticas y usuarios del sistema
+            if ((item.id === 'settings' || item.id === 'expenses' || item.id === 'analytics' || item.id === 'users') && user.role !== 'admin') return null;
             const Icon = item.icon;
             return (
               <li 
@@ -259,7 +305,8 @@ function App() {
               {currentView === 'payments' && 'Control de Pagos'}
               {currentView === 'expenses' && 'Registro de Gastos'}
               {currentView === 'notes' && 'Bloc de Notas'}
-              {currentView === 'trainers' && 'Entrenadores'}
+              {currentView === 'trainers' && 'Personal y Staff Técnico'}
+              {currentView === 'users' && 'Cuentas de Usuarios'}
               {currentView === 'settings' && 'Configuración del Sistema'}
             </h1>
             <p className="header-subtitle">
@@ -270,12 +317,42 @@ function App() {
               {currentView === 'payments' && 'Membresías / Control de mensualidades'}
               {currentView === 'expenses' && 'Administración / Egresos del establecimiento'}
               {currentView === 'notes' && 'Herramientas / Notas rápidas administrativas'}
-              {currentView === 'trainers' && 'Personal / Staff técnico del gimnasio'}
-              {currentView === 'settings' && 'Parámetros / Tasa de cambio de divisas'}
+              {currentView === 'trainers' && 'Personal / Staff técnico y entrenadores'}
+              {currentView === 'users' && 'Seguridad / Cuentas operativas del sistema'}
+              {currentView === 'settings' && 'Parámetros / Tasa de cambio y precios dinámicos'}
             </p>
           </div>
 
           <div className="header-actions">
+            {/* Telemetría Offline de Conexión */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginRight: '4px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-color)', padding: '5px 12px', borderRadius: '20px' }}>
+              {/* LED MySQL DB */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} title={nodeStatus === 'online' ? 'Base de Datos MySQL (XAMPP): CONECTADO' : 'Base de Datos MySQL (XAMPP): DESCONECTADO (Verifique XAMPP)'}>
+                <div style={{ 
+                  width: '7px', 
+                  height: '7px', 
+                  borderRadius: '50%', 
+                  backgroundColor: nodeStatus === 'online' ? '#10b981' : nodeStatus === 'offline' ? '#ef4444' : '#eab308',
+                  boxShadow: nodeStatus === 'online' ? '0 0 8px #10b981' : nodeStatus === 'offline' ? '0 0 8px #ef4444' : '0 0 8px #eab308',
+                  transition: 'all 0.3s ease'
+                }} />
+                <span style={{ color: 'var(--text-secondary)', fontSize: '9px', fontWeight: 800 }}>DB Local</span>
+              </div>
+
+              {/* LED Python Biometrics */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} title={pythonStatus === 'online' ? 'Servicio Facial IA (Python Flask): CONECTADO' : 'Servicio Facial IA (Python Flask): DESCONECTADO (Ejecute iniciar_sistema.bat)'}>
+                <div style={{ 
+                  width: '7px', 
+                  height: '7px', 
+                  borderRadius: '50%', 
+                  backgroundColor: pythonStatus === 'online' ? '#10b981' : pythonStatus === 'offline' ? '#ef4444' : '#eab308',
+                  boxShadow: pythonStatus === 'online' ? '0 0 8px #10b981' : pythonStatus === 'offline' ? '0 0 8px #ef4444' : '0 0 8px #eab308',
+                  transition: 'all 0.3s ease'
+                }} />
+                <span style={{ color: 'var(--text-secondary)', fontSize: '9px', fontWeight: 800 }}>IA Facial</span>
+              </div>
+            </div>
+
             {/* Tasa del día dinámico */}
             <div style={{ 
               display: 'flex', 
@@ -331,7 +408,8 @@ function App() {
           {currentView === 'payments' && <Members activeGym={gymName} initialTab="payments" user={user} />}
           {currentView === 'expenses' && <Expenses user={user} />}
           {currentView === 'notes' && <Notes />}
-          {currentView === 'trainers' && <Trainers user={user} />}
+          {currentView === 'trainers' && <Personal tasaCambio={tasaCambio} />}
+          {currentView === 'users' && <UsersManager />}
           {currentView === 'settings' && (
             <Settings 
               gymName={gymName} 

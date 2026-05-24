@@ -78,7 +78,7 @@ async function createMember(req, res) {
   try {
     await connection.beginTransaction();
 
-    const { cedula, nombre, apellido, telefono, email, foto_base64, tipo_membresia, gym_sede, genero } = req.body;
+    const { cedula, nombre, apellido, telefono, email, foto_base64, tipo_membresia, gym_sede, genero, fecha_nacimiento } = req.body;
 
     if (!cedula || !nombre || !apellido) {
       return res.status(400).json({ error: 'Cédula, nombre y apellido son campos requeridos.' });
@@ -96,10 +96,10 @@ async function createMember(req, res) {
       fotoUrl = saveBase64Image(foto_base64, cedula);
     }
 
-    // Insertar socio en su respectiva sede
+    // Insertar socio en su respectiva sede (incluyendo fecha de nacimiento)
     const [socioResult] = await connection.query(
-      'INSERT INTO socios (cedula, nombre, apellido, telefono, email, foto_url, status, gym_sede, genero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [cedula, nombre, apellido, telefono || null, email || null, fotoUrl, 'activo', gym_sede || 'ExtremoGym', genero || 'Masculino']
+      'INSERT INTO socios (cedula, nombre, apellido, telefono, email, foto_url, status, gym_sede, genero, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [cedula, nombre, apellido, telefono || null, email || null, fotoUrl, 'activo', gym_sede || 'ExtremoGym', genero || 'Masculino', fecha_nacimiento || null]
     );
 
     const socioId = socioResult.insertId;
@@ -184,7 +184,7 @@ async function updateMember(req, res) {
     await connection.beginTransaction();
 
     const { id } = req.params;
-    const { cedula, nombre, apellido, telefono, email, status, tipo_membresia, genero } = req.body;
+    const { cedula, nombre, apellido, telefono, email, status, tipo_membresia, genero, fecha_nacimiento } = req.body;
 
     if (!cedula || !nombre || !apellido) {
       return res.status(400).json({ error: 'Cédula, nombre y apellido son campos requeridos.' });
@@ -196,11 +196,23 @@ async function updateMember(req, res) {
       return res.status(400).json({ error: `La Cédula ${cedula} ya está registrada por otro socio.` });
     }
 
-    // Actualizar datos del socio
-    await connection.query(
-      'UPDATE socios SET cedula = ?, nombre = ?, apellido = ?, telefono = ?, email = ?, status = ?, genero = ? WHERE id = ?',
-      [cedula, nombre, apellido, telefono || null, email || null, status || 'activo', genero || 'Masculino', id]
-    );
+    // Actualizar datos del socio (incluyendo fecha de nacimiento y foto si se envía)
+    let querySocio = 'UPDATE socios SET cedula = ?, nombre = ?, apellido = ?, telefono = ?, email = ?, status = ?, genero = ?, fecha_nacimiento = ?';
+    const queryParams = [cedula, nombre, apellido, telefono || null, email || null, status || 'activo', genero || 'Masculino', fecha_nacimiento || null];
+
+    const { foto_base64 } = req.body;
+    if (foto_base64) {
+      const fotoUrl = saveBase64Image(foto_base64, cedula);
+      if (fotoUrl) {
+        querySocio += ', foto_url = ?';
+        queryParams.push(fotoUrl);
+      }
+    }
+
+    querySocio += ' WHERE id = ?';
+    queryParams.push(id);
+
+    await connection.query(querySocio, queryParams);
 
     // Si se especificó el tipo de membresía, actualizar en la tabla membresias
     if (tipo_membresia) {

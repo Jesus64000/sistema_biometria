@@ -88,12 +88,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      fetchGlobalConfig();
-    }
-  }, [token]);
-
   // Manejar el toggle de modo Claro/Oscuro
   useEffect(() => {
     const htmlEl = document.documentElement;
@@ -131,6 +125,27 @@ function App() {
     const isKioskMode = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk';
     setCurrentView(isKioskMode ? 'kiosk' : 'dashboard');
   };
+
+  const verifyTokenOnServer = async (tokenToCheck) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${tokenToCheck}` }
+      });
+      if (res.status === 401 || res.status === 403) {
+        console.warn('Sesión expirada o inválida. Cerrando sesión automáticamente.');
+        handleLogout();
+      }
+    } catch (e) {
+      console.error('Error al verificar sesión en el servidor:', e);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchGlobalConfig();
+      verifyTokenOnServer(token);
+    }
+  }, [token]);
 
   // Menú lateral de módulos principales
   const menuItems = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Save, RefreshCw, Dumbbell, TrendingUp, CreditCard, ShieldAlert } from 'lucide-react';
+import { Settings as SettingsIcon, Save, RefreshCw, Dumbbell, TrendingUp, CreditCard, ShieldAlert, Camera } from 'lucide-react';
 
 function Settings({ gymName, tasaCambio, onUpdate }) {
   const [name, setName] = useState(gymName);
@@ -15,10 +15,45 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
   const [umbralBiometrico, setUmbralBiometrico] = useState(73.00);
   const [soloMensual, setSoloMensual] = useState(false);
 
+  // Estados de selección de cámara web
+  const [videoDevices, setVideoDevices] = useState([]);
+  const [selectedCameraId, setSelectedCameraId] = useState(localStorage.getItem('selectedCameraId') || '');
+
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+
+  const loadCameraDevices = async () => {
+    try {
+      // Solicitar permiso temporal de video para poder leer las etiquetas de los dispositivos
+      await navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        stream.getTracks().forEach(track => track.stop());
+      }).catch(() => {});
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(device => device.kind === 'videoinput');
+      setVideoDevices(videoInputs);
+      
+      // Si hay cámaras y no hay una previamente guardada, seleccionar la primera
+      if (videoInputs.length > 0) {
+        const savedId = localStorage.getItem('selectedCameraId');
+        const exists = videoInputs.some(device => device.deviceId === savedId);
+        if (exists && savedId) {
+          setSelectedCameraId(savedId);
+        } else {
+          setSelectedCameraId(videoInputs[0].deviceId);
+          localStorage.setItem('selectedCameraId', videoInputs[0].deviceId);
+        }
+      }
+    } catch (err) {
+      console.warn('Error al enumerar dispositivos de video:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadCameraDevices();
+  }, []);
 
   const fetchConfigDetails = async () => {
     try {
@@ -237,6 +272,35 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
                 <span>Sincronizar BCV 🇻🇪</span>
               </button>
             </div>
+          </div>
+
+          {/* Cámara Web por Defecto */}
+          <div className="form-group">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Camera size={14} color="var(--primary)" /> Cámara Web de Portería / Enrolamiento
+            </label>
+            <select
+              value={selectedCameraId}
+              onChange={(e) => {
+                const id = e.target.value;
+                setSelectedCameraId(id);
+                localStorage.setItem('selectedCameraId', id);
+              }}
+              className="form-control"
+            >
+              {videoDevices.length === 0 ? (
+                <option value="">Cámara por Defecto del Navegador</option>
+              ) : (
+                videoDevices.map((device, index) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label || `Cámara ${index + 1}`}
+                  </option>
+                ))
+              )}
+            </select>
+            <span style={{ fontSize: '10px', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+              Esta cámara será utilizada para el Kiosco, la Recepción y en todos los formularios de enrolamiento del gimnasio.
+            </span>
           </div>
 
           <hr style={{ border: '0', borderTop: '1px solid var(--border-color)', margin: '10px 0' }} />

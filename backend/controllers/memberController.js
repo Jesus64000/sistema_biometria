@@ -5,6 +5,12 @@ const path = require('path');
 // Helper para guardar imágenes en Base64 en el servidor
 function saveBase64Image(base64Data, cedula) {
   try {
+    if (Array.isArray(base64Data)) {
+      base64Data = base64Data[0];
+    }
+    if (!base64Data) {
+      return null;
+    }
     // Limpiar cabecera del base64 (ej: "data:image/jpeg;base64,")
     const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {

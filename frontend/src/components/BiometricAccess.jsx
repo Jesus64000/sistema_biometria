@@ -131,7 +131,31 @@ function BiometricAccess({ activeGym, isKiosk, exitKiosk, onLogout }) {
       setCameraError('');
       setCameraActive(true);
       setScanningStatus('scanning');
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+
+      const savedCameraId = localStorage.getItem('selectedCameraId');
+      let constraints = { video: { width: 400, height: 300 } };
+      if (savedCameraId) {
+        constraints = {
+          video: {
+            deviceId: { exact: savedCameraId },
+            width: 400,
+            height: 300
+          }
+        };
+      }
+
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (err) {
+        if (savedCameraId) {
+          console.warn('Fallo al abrir cámara guardada, reintentando con la de defecto:', err);
+          stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+        } else {
+          throw err;
+        }
+      }
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;

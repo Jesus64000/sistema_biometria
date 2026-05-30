@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `socios` (
     `foto_url` VARCHAR(255) DEFAULT NULL,
     `fecha_registro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `status` ENUM('activo', 'inactivo') DEFAULT 'activo',
-    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
     INDEX `idx_cedula` (`cedula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `pagos` (
     `monto` DECIMAL(10, 2) NOT NULL,
     `fecha_pago` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `metodo_pago` ENUM('efectivo', 'pago_movil', 'divisas', 'transferencia') NOT NULL DEFAULT 'pago_movil',
-    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
     FOREIGN KEY (`socio_id`) REFERENCES `socios`(`id`) ON DELETE CASCADE,
     INDEX `idx_pago_socio` (`socio_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `registro_asistencias` (
     `metodo` ENUM('facial', 'manual') DEFAULT 'facial',
     `status_acceso` ENUM('permitido', 'denegado') NOT NULL,
     `razon_denegacion` VARCHAR(255) DEFAULT NULL, -- Ej: 'Insolvente', 'Membresía Vencida', etc.
-    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
     FOREIGN KEY (`socio_id`) REFERENCES `socios`(`id`) ON DELETE CASCADE,
     INDEX `idx_asistencia_socio` (`socio_id`),
     INDEX `idx_fecha_hora` (`fecha_hora`)
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
     `role` ENUM('admin', 'recepcionista') NOT NULL DEFAULT 'recepcionista',
     `nombre` VARCHAR(50) NOT NULL,
     `apellido` VARCHAR(50) NOT NULL,
-    `gym_sede` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+    `gym_sede` VARCHAR(50) NOT NULL DEFAULT '',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 -- 6. Tabla de Configuración Global [NUEVA]
 CREATE TABLE IF NOT EXISTS `configuracion` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `gym_name` VARCHAR(100) NOT NULL DEFAULT 'Marian Gym',
+    `gym_name` VARCHAR(100) NOT NULL DEFAULT 'RamosGym',
     `tasa_cambio` DECIMAL(10, 2) NOT NULL DEFAULT 114.00,
     `logo_url` VARCHAR(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

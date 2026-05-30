@@ -16,6 +16,7 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import CaptureModal from './CaptureModal';
 
 function Members({ activeGym, initialTab, user }) {
   const [members, setMembers] = useState([]);
@@ -110,11 +111,17 @@ function Members({ activeGym, initialTab, user }) {
     return base.toFixed(2);
   };
 
-  // Cámara e imágenes
-  const [cameraActive, setCameraActive] = useState(false);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const streamRef = useRef(null);
+  // Cámara e imágenes (Modal Dedicado)
+  const [showCaptureModal, setShowCaptureModal] = useState(false);
+  const [captureModalMode, setCaptureModalMode] = useState('enrol'); // 'enrol' o 'edit'
+
+  const handleCaptureConfirm = (data) => {
+    if (captureModalMode === 'enrol') {
+      setFormData(prev => ({ ...prev, foto_base64: data }));
+    } else {
+      setEditFormData(prev => ({ ...prev, foto_base64: data }));
+    }
+  };
 
   const fetchMembers = async () => {
     try {
@@ -139,55 +146,10 @@ function Members({ activeGym, initialTab, user }) {
     }
   }, [initialTab]);
 
-  // Iniciar webcam para capturar foto de enrolamiento
-  const startCamera = async () => {
-    try {
-      setCameraActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (err) {
-      console.error('No se pudo acceder a la cámara:', err.message);
-      alert('Error: No se pudo abrir la cámara. Verifica los permisos de tu navegador.');
-      setCameraActive(false);
-    }
-  };
-
-  // Apagar cámara
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-    }
-    setCameraActive(false);
-  };
-
-  // Capturar instantánea
-  const captureSnapshot = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = 240;
-      canvas.height = 240; // Cuadrada para el avatar circular
-      
-      // Dibujar imagen invertida (modo espejo) y centrar
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, -40, 0, 320, 240); // Ajustar encuadre
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      
-      const base64 = canvas.toDataURL('image/jpeg', 0.8);
-      if (showEditModal) {
-        setEditFormData(prev => ({ ...prev, foto_base64: base64 }));
-      } else {
-        setFormData(prev => ({ ...prev, foto_base64: base64 }));
-      }
-      stopCamera();
-    }
-  };
+  // Control de cámara en CaptureModal
+  const startCamera = async () => {};
+  const stopCamera = () => {};
+  const captureSnapshot = () => {};
 
   // Guardar nuevo socio
   const handleAddMember = async (e) => {
@@ -868,16 +830,16 @@ function Members({ activeGym, initialTab, user }) {
                 </div>
               </div>
 
-              {/* Enrolamiento Circular */}
+              {/* Enrolamiento Circular (Dedicado) */}
               <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                 <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)' }}>
-                  <Camera size={14} /> Captura Facial del Cliente
+                  <Camera size={14} /> Captura Facial del Cliente (Escáner Biométrico)
                 </label>
                 
                 <div style={{ display: 'flex', gap: '16px', marginTop: '12px', alignItems: 'center' }}>
                   <div style={{ 
-                    width: '100px', 
-                    height: '100px', 
+                    width: '90px', 
+                    height: '90px', 
                     borderRadius: '50%', 
                     overflow: 'hidden', 
                     background: 'var(--bg-app)', 
@@ -888,43 +850,42 @@ function Members({ activeGym, initialTab, user }) {
                     justifyContent: 'center',
                     boxShadow: 'var(--shadow-sm)'
                   }}>
-                    {cameraActive ? (
-                      <video 
-                        ref={videoRef} 
-                        autoPlay 
-                        playsInline
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
-                      />
-                    ) : formData.foto_base64 ? (
+                    {Array.isArray(formData.foto_base64) && formData.foto_base64.length > 0 ? (
                       <img 
-                        src={formData.foto_base64} 
+                        src={formData.foto_base64[0]} 
                         alt="Foto Enrolada" 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     ) : (
-                      <Users size={20} style={{ opacity: 0.2 }} />
+                      <Users size={24} style={{ opacity: 0.15 }} />
                     )}
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {!cameraActive ? (
-                      <button type="button" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={startCamera}>
-                        <span>Iniciar Cámara</span>
-                      </button>
-                    ) : (
-                      <button type="button" className="btn btn-success" style={{ padding: '6px 12px', fontSize: '11px', gap: '4px' }} onClick={captureSnapshot}>
-                        <Check size={12} />
-                        <span>Capturar</span>
-                      </button>
-                    )}
-                    {formData.foto_base64 && (
-                      <span style={{ fontSize: '10px', color: 'var(--success)', fontWeight: 700 }}>✓ Cara lista</span>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ 
+                        padding: '8px 14px', 
+                        fontSize: '11px', 
+                        fontWeight: 700, 
+                        background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%)', 
+                        border: '1px solid rgba(0, 242, 254, 0.3)',
+                        color: '#00f2fe',
+                        borderRadius: '10px'
+                      }} 
+                      onClick={() => { setCaptureModalMode('enrol'); setShowCaptureModal(true); }}
+                    >
+                      <span>📷 {Array.isArray(formData.foto_base64) ? 'Repetir Captura Facial' : 'Iniciar Escáner Facial'}</span>
+                    </button>
+                    {Array.isArray(formData.foto_base64) && (
+                      <span style={{ fontSize: '10px', color: 'var(--success)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Check size={12} /> ✓ {formData.foto_base64.length}/3 Fotos Biométricas Listas
+                      </span>
                     )}
                   </div>
                 </div>
               </div>
-
-              <canvas ref={canvasRef} style={{ display: 'none' }} />
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
                 <button type="button" className="btn btn-secondary" onClick={() => { setShowAddModal(false); stopCamera(); }}>Cancelar</button>
@@ -1236,7 +1197,7 @@ function Members({ activeGym, initialTab, user }) {
                 </div>
               </div>
 
-              {/* Enrolamiento / Actualización de Foto */}
+              {/* Enrolamiento / Actualización de Foto (Dedicado) */}
               <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                 <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)' }}>
                   <Camera size={14} /> Actualizar Foto del Cliente (Opcional)
@@ -1244,8 +1205,8 @@ function Members({ activeGym, initialTab, user }) {
                 
                 <div style={{ display: 'flex', gap: '16px', marginTop: '12px', alignItems: 'center' }}>
                   <div style={{ 
-                    width: '100px', 
-                    height: '100px', 
+                    width: '90px', 
+                    height: '90px', 
                     borderRadius: '50%', 
                     overflow: 'hidden', 
                     background: 'var(--bg-app)', 
@@ -1256,14 +1217,7 @@ function Members({ activeGym, initialTab, user }) {
                     justifyContent: 'center',
                     boxShadow: 'var(--shadow-sm)'
                   }}>
-                    {cameraActive ? (
-                      <video 
-                        ref={videoRef} 
-                        autoPlay 
-                        playsInline
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
-                      />
-                    ) : editFormData.foto_base64 ? (
+                    {editFormData.foto_base64 ? (
                       <img 
                         src={editFormData.foto_base64} 
                         alt="Nueva Foto" 
@@ -1276,23 +1230,31 @@ function Members({ activeGym, initialTab, user }) {
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     ) : (
-                      <Users size={20} style={{ opacity: 0.2 }} />
+                      <Users size={24} style={{ opacity: 0.15 }} />
                     )}
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {!cameraActive ? (
-                      <button type="button" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={startCamera}>
-                        <span>Iniciar Cámara</span>
-                      </button>
-                    ) : (
-                      <button type="button" className="btn btn-success" style={{ padding: '6px 12px', fontSize: '11px', gap: '4px' }} onClick={captureSnapshot}>
-                        <Check size={12} />
-                        <span>Capturar</span>
-                      </button>
-                    )}
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ 
+                        padding: '8px 14px', 
+                        fontSize: '11px', 
+                        fontWeight: 700, 
+                        background: 'linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(79, 172, 254, 0.1) 100%)', 
+                        border: '1px solid rgba(0, 242, 254, 0.3)',
+                        color: '#00f2fe',
+                        borderRadius: '10px'
+                      }} 
+                      onClick={() => { setCaptureModalMode('edit'); setShowCaptureModal(true); }}
+                    >
+                      <span>📷 {editFormData.foto_base64 || editFormData.foto_url ? 'Actualizar Foto' : 'Iniciar Cámara'}</span>
+                    </button>
                     {editFormData.foto_base64 && (
-                      <span style={{ fontSize: '10px', color: 'var(--success)', fontWeight: 700 }}>✓ Nueva foto lista</span>
+                      <span style={{ fontSize: '10px', color: 'var(--success)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Check size={12} /> ✓ Nueva foto de perfil lista
+                      </span>
                     )}
                   </div>
                 </div>
@@ -1306,6 +1268,13 @@ function Members({ activeGym, initialTab, user }) {
           </div>
         </div>
       )}
+
+      <CaptureModal
+        isOpen={showCaptureModal}
+        onClose={() => setShowCaptureModal(false)}
+        onConfirm={handleCaptureConfirm}
+        isEnrolment={captureModalMode === 'enrol'}
+      />
     </div>
   );
 }

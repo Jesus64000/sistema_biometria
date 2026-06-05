@@ -144,6 +144,14 @@ def init_model():
         # Intentar entrenar si existen imágenes
         train_model()
 
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({
+        "status": "online",
+        "service": "Marian Gym Biometric IA Engine",
+        "engine": "OpenCV LBPH"
+    })
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({

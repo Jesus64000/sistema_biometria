@@ -278,7 +278,7 @@ function App() {
                 {user.nombre}
               </p>
               <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {user.role === 'admin' ? 'Administrador' : 'Recepcionista'}
+                {user.role === 'admin' ? 'Administrador' : user.role === 'kiosco' ? 'Kiosco de Entrada' : 'Recepcionista'}
               </span>
             </div>
           </div>

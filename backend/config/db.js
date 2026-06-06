@@ -119,7 +119,7 @@ async function checkAndCreateTables() {
         \`id\` INT AUTO_INCREMENT PRIMARY KEY,
         \`username\` VARCHAR(50) NOT NULL UNIQUE,
         \`password\` VARCHAR(255) NOT NULL,
-        \`role\` ENUM('admin', 'recepcionista') NOT NULL DEFAULT 'recepcionista',
+        \`role\` ENUM('admin', 'recepcionista', 'kiosco') NOT NULL DEFAULT 'recepcionista',
         \`nombre\` VARCHAR(50) NOT NULL,
         \`apellido\` VARCHAR(50) NOT NULL,
         \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
@@ -258,6 +258,14 @@ async function checkAndCreateTables() {
       }
     } catch (err) {
       console.warn('⚠️ Error al migrar columna referencia:', err.message);
+    }
+
+    // MIGRACIÓN: Modificar rol en usuarios para incluir 'kiosco'
+    try {
+      await connection.query("ALTER TABLE `usuarios` MODIFY COLUMN `role` ENUM('admin', 'recepcionista', 'kiosco') NOT NULL DEFAULT 'recepcionista'");
+      console.log('✅ Migración: Columna `role` de la tabla `usuarios` actualizada para incluir el rol `kiosco`.');
+    } catch (err) {
+      console.warn('⚠️ Error al migrar columna role en usuarios:', err.message);
     }
 
     console.log('✅ Estructura de tablas deportivas (Configuración, Socios, Personal, Gastos) verificada e inicializada correctamente en MySQL.');

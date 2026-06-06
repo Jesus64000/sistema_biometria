@@ -13,6 +13,8 @@ export default function Personal({ tasaCambio = 114.00 }) {
   const [showPayModal, setShowPayModal] = useState(false);
   const [payingMember, setPayingMember] = useState(null);
 
+  const [cedulaPrefix, setCedulaPrefix] = useState('V-');
+
   // Formularios
   const [formData, setFormData] = useState({
     cedula: '',
@@ -80,6 +82,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
 
   const openCreateModal = () => {
     setEditingMember(null);
+    setCedulaPrefix('V-');
     setFormData({
       cedula: '',
       nombre: '',
@@ -96,8 +99,21 @@ export default function Personal({ tasaCambio = 114.00 }) {
 
   const openEditModal = (member) => {
     setEditingMember(member);
+    
+    let prefix = 'V-';
+    let number = member.cedula;
+    if (member.cedula.includes('-')) {
+      const parts = member.cedula.split('-');
+      prefix = parts[0] + '-';
+      number = parts[1];
+    } else if (member.cedula.startsWith('V') || member.cedula.startsWith('E')) {
+      prefix = member.cedula.substring(0, 1) + '-';
+      number = member.cedula.substring(1);
+    }
+    setCedulaPrefix(prefix);
+
     setFormData({
-      cedula: member.cedula,
+      cedula: number,
       nombre: member.nombre,
       apellido: member.apellido,
       cargo: member.cargo,
@@ -127,6 +143,14 @@ export default function Personal({ tasaCambio = 114.00 }) {
       return;
     }
 
+    if (formData.cedula.length < 6 || formData.cedula.length > 8) {
+      alert('La cédula de identidad debe tener entre 6 y 8 números.');
+      return;
+    }
+
+    const fullCedula = `${cedulaPrefix}${formData.cedula.trim()}`;
+    const payload = { ...formData, cedula: fullCedula };
+
     try {
       const url = editingMember 
         ? `http://localhost:3000/api/personal/${editingMember.id}` 
@@ -136,7 +160,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
       const res = await fetch(url, {
         method,
         headers: getHeaders(),
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       const result = await res.json();
 
@@ -431,7 +455,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                   <input 
                     type="text" 
                     value={formData.nombre}
-                    onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                     placeholder="Ej. Juan"
                     required
@@ -442,7 +466,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                   <input 
                     type="text" 
                     value={formData.apellido}
-                    onChange={(e) => setFormData(prev => ({ ...prev, apellido: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, apellido: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                     placeholder="Ej. Gómez"
                     required
@@ -453,14 +477,26 @@ export default function Personal({ tasaCambio = 114.00 }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px' }}>
                 <div className="form-group">
                   <label className="form-label">Cédula de Identidad *</label>
-                  <input 
-                    type="text" 
-                    value={formData.cedula}
-                    onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\s/g, '') }))}
-                    className="form-control"
-                    placeholder="V-12345678"
-                    required
-                  />
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <select 
+                      value={cedulaPrefix}
+                      onChange={(e) => setCedulaPrefix(e.target.value)}
+                      className="form-control"
+                      style={{ width: '70px', padding: '10px', flexShrink: 0 }}
+                    >
+                      <option value="V-">V-</option>
+                      <option value="E-">E-</option>
+                    </select>
+                    <input 
+                      type="text" 
+                      value={formData.cedula}
+                      onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '').slice(0, 8) }))}
+                      className="form-control"
+                      placeholder="12345678"
+                      required
+                      style={{ flexGrow: 1 }}
+                    />
+                  </div>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Cargo asignado *</label>
@@ -484,9 +520,9 @@ export default function Personal({ tasaCambio = 114.00 }) {
                   <input 
                     type="text" 
                     value={formData.telefono}
-                    onChange={(e) => setFormData(prev => ({ ...prev, telefono: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, telefono: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
                     className="form-control"
-                    placeholder="0412-1234567"
+                    placeholder="04121234567"
                   />
                 </div>
                 <div className="form-group">

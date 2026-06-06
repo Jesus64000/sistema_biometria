@@ -247,6 +247,11 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
       return;
     }
 
+    if (memberFormData.cedula.length < 6 || memberFormData.cedula.length > 8) {
+      alert('La cédula de identidad debe tener entre 6 y 8 números.');
+      return;
+    }
+
     try {
       const fullCedula = `${dashCedulaPrefix}${memberFormData.cedula.trim()}`;
       const res = await fetch('http://localhost:3000/api/members', {
@@ -302,9 +307,16 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
       return;
     }
 
-    if ((paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') && !paymentData.referencia) {
-      alert('Por favor, introduzca el número de referencia bancaria para Pago Móvil / Transferencia.');
-      return;
+    if (paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') {
+      if (!paymentData.referencia) {
+        alert('Por favor, introduzca el número de referencia bancaria para Pago Móvil / Transferencia.');
+        return;
+      }
+      const refLength = paymentData.referencia.length;
+      if (refLength !== 4 && refLength !== 6) {
+        alert('El número de referencia bancaria debe tener exactamente 4 o 6 dígitos (ni más ni menos).');
+        return;
+      }
     }
 
     try {
@@ -1127,7 +1139,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     type="text" 
                     required
                     value={memberFormData.nombre}
-                    onChange={(e) => setMemberFormData(prev => ({ ...prev, nombre: e.target.value }))}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, nombre: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                   />
                 </div>
@@ -1137,7 +1149,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     type="text" 
                     required
                     value={memberFormData.apellido}
-                    onChange={(e) => setMemberFormData(prev => ({ ...prev, apellido: e.target.value }))}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, apellido: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                   />
                 </div>
@@ -1160,7 +1172,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     required
                     placeholder="Ej: 25123456"
                     value={memberFormData.cedula}
-                    onChange={(e) => setMemberFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '') }))}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '').slice(0, 8) }))}
                     className="form-control"
                     style={{ flexGrow: 1 }}
                   />
@@ -1172,9 +1184,9 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                   <label className="form-label">Teléfono</label>
                   <input 
                     type="text" 
-                    placeholder="Ej: 0414-1234567"
+                    placeholder="Ej: 04121234567"
                     value={memberFormData.telefono}
-                    onChange={(e) => setMemberFormData(prev => ({ ...prev, telefono: e.target.value }))}
+                    onChange={(e) => setMemberFormData(prev => ({ ...prev, telefono: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
                     className="form-control"
                   />
                 </div>
@@ -1477,8 +1489,9 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                       required
                       placeholder="Ej: 9584"
                       value={paymentData.referencia || ''}
-                      onChange={(e) => setPaymentData(prev => ({ ...prev, referencia: e.target.value.replace(/\D/g, '') }))}
+                      onChange={(e) => setPaymentData(prev => ({ ...prev, referencia: e.target.value.replace(/\D/g, '').slice(0, 6) }))}
                       className="form-control"
+                      maxLength={6}
                     />
                   </div>
                 )}

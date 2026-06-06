@@ -306,7 +306,7 @@ export default function Users() {
                   <input 
                     type="text" 
                     value={formData.nombre}
-                    onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                     placeholder="Ej. Juan"
                     required
@@ -317,7 +317,7 @@ export default function Users() {
                   <input 
                     type="text" 
                     value={formData.apellido}
-                    onChange={(e) => setFormData(prev => ({ ...prev, apellido: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, apellido: e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '') }))}
                     className="form-control"
                     placeholder="Ej. Pérez"
                     required
@@ -330,7 +330,7 @@ export default function Users() {
                 <input 
                   type="text" 
                   value={formData.username}
-                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/\s/g, '') }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '') }))}
                   className="form-control"
                   placeholder="Ej. juanperez"
                   required

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Users() {
+export default function Users({ activeGym = 'RamosGym' }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -14,7 +14,7 @@ export default function Users() {
     role: 'recepcionista',
     nombre: '',
     apellido: '',
-    gym_sede: 'MarianGym'
+    gym_sede: activeGym
   });
 
   // Cargar token del localStorage
@@ -58,7 +58,7 @@ export default function Users() {
       role: 'recepcionista',
       nombre: '',
       apellido: '',
-      gym_sede: 'MarianGym'
+      gym_sede: activeGym
     });
     setShowModal(true);
   };
@@ -71,7 +71,7 @@ export default function Users() {
       role: user.role,
       nombre: user.nombre,
       apellido: user.apellido,
-      gym_sede: user.gym_sede || 'MarianGym'
+      gym_sede: user.gym_sede || activeGym
     });
     setShowModal(true);
   };
@@ -166,7 +166,7 @@ export default function Users() {
             Cuentas y Usuarios Administrativos
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: 0, marginTop: '4px' }}>
-            Controla quién accede a la plataforma de Marian Gym y define sus permisos operativos.
+            Controla quién accede a la plataforma de {activeGym} y define sus permisos operativos.
           </p>
         </div>
         <button 
@@ -207,7 +207,6 @@ export default function Users() {
                 <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Nombre Completo</th>
                 <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Nombre de Usuario</th>
                 <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Rol asignado</th>
-                <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Sede</th>
                 <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)', textTransform: 'uppercase', textAlign: 'right' }}>Acciones</th>
               </tr>
             </thead>
@@ -233,9 +232,6 @@ export default function Users() {
                     }}>
                       💼 {user.role}
                     </span>
-                  </td>
-                  <td style={{ padding: '16px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                    {user.gym_sede || 'MarianGym'}
                   </td>
                   <td style={{ padding: '16px 20px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

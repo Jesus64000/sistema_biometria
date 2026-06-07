@@ -3,8 +3,20 @@ import React, { useState, useEffect, useRef } from 'react';
 export default function KioskStatus() {
   const [status, setStatus] = useState('idle'); // 'idle' | 'allowed' | 'denied'
   const [data, setData] = useState(null);
+  const [gymName, setGymName] = useState('RamosGym');
   const timeoutRef = useRef(null);
   const audioCtxRef = useRef(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/config')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.error && data.gym_name) {
+          setGymName(data.gym_name);
+        }
+      })
+      .catch(e => console.warn('Error loading config in kiosk status:', e.message));
+  }, []);
 
   // Reproducir sonido sintetizado vía Web Audio API (evita depender de archivos estáticos)
   const playBeep = (type) => {
@@ -138,7 +150,7 @@ export default function KioskStatus() {
             </svg>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '2px', color: '#f8fafc', margin: 0 }}>MARIAN GYM</h1>
+            <h1 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '2px', color: '#f8fafc', margin: 0, textTransform: 'uppercase' }}>{gymName}</h1>
             <p style={{ color: '#64748b', fontSize: '16px', marginTop: '8px', fontWeight: 500 }}>🔒 ESCANEE SU ROSTRO PARA INGRESAR</p>
           </div>
         </div>

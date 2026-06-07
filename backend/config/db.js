@@ -64,7 +64,7 @@ async function checkAndCreateTables() {
         \`genero\` VARCHAR(20) DEFAULT 'Masculino',
         \`fecha_registro\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         \`status\` ENUM('activo', 'inactivo') DEFAULT 'activo',
-        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
         INDEX \`idx_cedula\` (\`cedula\`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
@@ -90,8 +90,10 @@ async function checkAndCreateTables() {
         \`socio_id\` INT NOT NULL,
         \`monto\` DECIMAL(10, 2) NOT NULL,
         \`fecha_pago\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        \`metodo_pago\` ENUM('efectivo', 'pago_movil', 'divisas', 'transferencia') NOT NULL DEFAULT 'pago_movil',
-        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+        \`metodo_pago\` VARCHAR(50) NOT NULL DEFAULT 'pago_movil',
+        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
+        \`referencia\` VARCHAR(50) DEFAULT NULL,
+        \`tasa_cambio\` DECIMAL(10, 2) NOT NULL DEFAULT 114.00,
         FOREIGN KEY (\`socio_id\`) REFERENCES \`socios\`(\`id\`) ON DELETE CASCADE,
         INDEX \`idx_pago_socio\` (\`socio_id\`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -106,7 +108,7 @@ async function checkAndCreateTables() {
         \`metodo\` ENUM('facial', 'manual') DEFAULT 'facial',
         \`status_acceso\` ENUM('permitido', 'denegado') NOT NULL,
         \`razon_denegacion\` VARCHAR(255) DEFAULT NULL,
-        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
         FOREIGN KEY (\`socio_id\`) REFERENCES \`socios\`(\`id\`) ON DELETE CASCADE,
         INDEX \`idx_asistencia_socio\` (\`socio_id\`),
         INDEX \`idx_fecha_hora\` (\`fecha_hora\`)
@@ -122,7 +124,7 @@ async function checkAndCreateTables() {
         \`role\` ENUM('admin', 'recepcionista', 'kiosco') NOT NULL DEFAULT 'recepcionista',
         \`nombre\` VARCHAR(50) NOT NULL,
         \`apellido\` VARCHAR(50) NOT NULL,
-        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym',
+        \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'RamosGym',
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         INDEX \`idx_username\` (\`username\`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -132,7 +134,7 @@ async function checkAndCreateTables() {
     await connection.query(`
       CREATE TABLE IF NOT EXISTS \`configuracion\` (
         \`id\` INT AUTO_INCREMENT PRIMARY KEY,
-        \`gym_name\` VARCHAR(100) NOT NULL DEFAULT 'Marian Gym',
+        \`gym_name\` VARCHAR(100) NOT NULL DEFAULT 'RamosGym',
         \`tasa_cambio\` DECIMAL(10, 2) NOT NULL DEFAULT 114.00,
         \`logo_url\` VARCHAR(255) DEFAULT NULL,
         \`bcv_last_update\` TIMESTAMP NULL DEFAULT NULL,
@@ -179,15 +181,15 @@ async function checkAndCreateTables() {
     // Insertar configuración inicial por defecto si está vacía
     const [configRows] = await connection.query("SELECT COUNT(*) as count FROM `configuracion`");
     if (configRows[0].count === 0) {
-      await connection.query("INSERT INTO `configuracion` (gym_name, tasa_cambio) VALUES ('Marian Gym', 114.00)");
-      console.log('✅ Configuración inicial de Marian Gym insertada.');
+      await connection.query("INSERT INTO `configuracion` (gym_name, tasa_cambio) VALUES ('RamosGym', 114.00)");
+      console.log('✅ Configuración inicial de RamosGym insertada.');
     }
 
     // MIGRACIONES AUTOMÁTICAS: Adaptar tipo de datos de gym_sede a VARCHAR si eran de tipo ENUM en base de datos previa
     const tablesToMigrate = ['socios', 'pagos', 'registro_asistencias', 'usuarios'];
     for (const table of tablesToMigrate) {
       try {
-        await connection.query(`ALTER TABLE \`${table}\` MODIFY COLUMN \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'MarianGym'`);
+        await connection.query(`ALTER TABLE \`${table}\` MODIFY COLUMN \`gym_sede\` VARCHAR(50) NOT NULL DEFAULT 'RamosGym'`);
       } catch (err) {
         // Ignorar si ya está modificado o no existe
       }
@@ -258,6 +260,25 @@ async function checkAndCreateTables() {
       }
     } catch (err) {
       console.warn('⚠️ Error al migrar columna referencia:', err.message);
+    }
+
+    // MIGRACIÓN: Añadir columna tasa_cambio a pagos si no existe
+    try {
+      const [columns] = await connection.query("SHOW COLUMNS FROM `pagos` LIKE 'tasa_cambio'");
+      if (columns.length === 0) {
+        await connection.query("ALTER TABLE `pagos` ADD COLUMN `tasa_cambio` DECIMAL(10, 2) NOT NULL DEFAULT 114.00");
+        console.log('✅ Migración: Columna `tasa_cambio` añadida a la tabla `pagos`.');
+      }
+    } catch (err) {
+      console.warn('⚠️ Error al migrar columna tasa_cambio en pagos:', err.message);
+    }
+
+    // MIGRACIÓN: Cambiar metodo_pago a VARCHAR(50) en pagos para soportar Zelle y otros métodos nuevos sin restricciones de ENUM
+    try {
+      await connection.query("ALTER TABLE `pagos` MODIFY COLUMN `metodo_pago` VARCHAR(50) NOT NULL DEFAULT 'pago_movil'");
+      console.log('✅ Migración: Columna `metodo_pago` en la tabla `pagos` modificada a VARCHAR.');
+    } catch (err) {
+      console.warn('⚠️ Error al migrar columna metodo_pago en pagos:', err.message);
     }
 
     // MIGRACIÓN: Modificar rol en usuarios para incluir 'kiosco'

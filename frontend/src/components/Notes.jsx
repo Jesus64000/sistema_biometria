@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DatePicker from './DatePicker';
 import { 
   FileText, 
   Plus, 
@@ -496,12 +497,11 @@ function Notes() {
                 <label style={{ fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Calendar size={9} /> Fecha Límite
                 </label>
-                <input 
-                  type="date" 
+                <DatePicker 
                   value={editFechaLimite} 
-                  onChange={(e) => setEditFechaLimite(e.target.value)}
-                  className="form-control"
-                  style={{ height: '30px', padding: '0 8px', fontSize: '11px' }}
+                  onChange={setEditFechaLimite}
+                  placeholder="Sin fecha límite"
+                  style={{ width: '100%' }}
                 />
               </div>
 

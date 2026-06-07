@@ -1,9 +1,9 @@
 @echo off
-title MARIAN GYM - INICIAR SISTEMA COMPLETO
+title RAMOS GYM - INICIAR SISTEMA COMPLETO
 color 0B
 
 echo ======================================================================
-echo          SISTEMA DE GESTION Y CONTROL BIOMETRICO - MARIAN GYM
+echo          SISTEMA DE GESTION Y CONTROL BIOMETRICO - RAMOS GYM
 echo                Tesis de Grado - Luis Ramos - Cabimas
 echo ======================================================================
 echo.

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import DatePicker from './DatePicker';
+import PersonalProfileDrawer from './PersonalProfileDrawer';
 
-export default function Personal({ tasaCambio = 114.00 }) {
+export default function Personal({ activeGym = 'RamosGym', tasaCambio = 114.00 }) {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -14,6 +16,9 @@ export default function Personal({ tasaCambio = 114.00 }) {
   const [payingMember, setPayingMember] = useState(null);
 
   const [cedulaPrefix, setCedulaPrefix] = useState('V-');
+
+  // Ficha de Personal (Drawer)
+  const [profilePersonal, setProfilePersonal] = useState(null);
 
   // Formularios
   const [formData, setFormData] = useState({
@@ -119,7 +124,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
       cargo: member.cargo,
       telefono: member.telefono || '',
       email: member.email || '',
-      sueldo: member.sueldo.toString(),
+      sueldo: (member.sueldo ?? 0).toString(),
       activo: member.activo === 1,
       fecha_contratacion: member.fecha_contratacion ? member.fecha_contratacion.split('T')[0] : ''
     });
@@ -130,7 +135,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
     setPayingMember(member);
     setPayFormData({
       descripcion: `Pago de Nómina - ${member.nombre} ${member.apellido} (${member.cargo})`,
-      monto: member.sueldo.toString(),
+      monto: (member.sueldo ?? 0).toString(),
       metodo: 'pago_movil'
     });
     setShowPayModal(true);
@@ -263,7 +268,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
             Nómina y Personal del Gimnasio
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: 0, marginTop: '4px' }}>
-            Gestiona a los entrenadores, personal de limpieza y personal administrativo de Marian Gym.
+            Gestiona a los entrenadores, personal de limpieza y personal administrativo de {activeGym}.
           </p>
         </div>
         {isAdmin && (
@@ -287,7 +292,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
             onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
             onMouseUp={(e) => e.currentTarget.style.transform = 'none'}
           >
-            💪 Contratar Staff
+            💪 Contratar Personal
           </button>
         )}
       </div>
@@ -320,7 +325,12 @@ export default function Personal({ tasaCambio = 114.00 }) {
                 </tr>
               ) : (
                 staff.map((member) => (
-                  <tr key={member.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }} className="table-row-hover">
+                  <tr 
+                    key={member.id} 
+                    onClick={() => setProfilePersonal(member)}
+                    style={{ cursor: 'pointer', borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }} 
+                    className="table-row-hover"
+                  >
                     <td style={{ padding: '16px 20px', fontSize: '13px', fontWeight: 700 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{
@@ -350,7 +360,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                       {member.cargo}
                     </td>
                     <td style={{ padding: '16px 20px', fontSize: '13px', fontWeight: 800, color: '#38bdf8' }}>
-                      ${member.sueldo.toFixed(2)}
+                      ${parseFloat(member.sueldo || 0).toFixed(2)}
                     </td>
                     <td style={{ padding: '16px 20px' }}>
                       <span style={{
@@ -369,7 +379,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                         {isAdmin && member.activo === 1 && (
                           <button 
-                            onClick={() => openPayModal(member)}
+                            onClick={(e) => { e.stopPropagation(); openPayModal(member); }}
                             style={{
                               backgroundColor: 'rgba(56, 189, 248, 0.1)',
                               border: '1px solid rgba(56, 189, 248, 0.2)',
@@ -387,7 +397,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                         {isAdmin && (
                           <>
                             <button 
-                              onClick={() => openEditModal(member)}
+                              onClick={(e) => { e.stopPropagation(); openEditModal(member); }}
                               style={{
                                 backgroundColor: 'rgba(255, 255, 255, 0.03)',
                                 border: '1px solid var(--border-color)',
@@ -402,7 +412,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
                               ✏️ Editar
                             </button>
                             <button 
-                              onClick={() => handleDeleteStaff(member.id, `${member.nombre} ${member.apellido}`)}
+                              onClick={(e) => { e.stopPropagation(); handleDeleteStaff(member.id, `${member.nombre} ${member.apellido}`); }}
                               style={{
                                 backgroundColor: 'rgba(239, 68, 68, 0.05)',
                                 border: '1px solid rgba(239, 68, 68, 0.15)',
@@ -428,6 +438,17 @@ export default function Personal({ tasaCambio = 114.00 }) {
         </div>
       )}
 
+      {/* Ficha de Detalles de Personal (Drawer) */}
+      {profilePersonal && (
+        <PersonalProfileDrawer 
+          member={profilePersonal} 
+          onClose={() => setProfilePersonal(null)} 
+          onEdit={openEditModal}
+          tasaCambio={tasaCambio}
+          isAdmin={isAdmin}
+        />
+      )}
+
       {/* Modal Contratar/Editar Personal */}
       {showStaffModal && (
         <div style={{
@@ -445,7 +466,7 @@ export default function Personal({ tasaCambio = 114.00 }) {
         }}>
           <div className="card" style={{ width: '90%', maxWidth: '520px', padding: '28px', animation: 'scaleUp 0.2s ease-out' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: 800 }}>
-              {editingMember ? '✏️ Editar Registro de Staff' : '🏋️ Registro de Contratación de Personal'}
+              {editingMember ? '✏️ Editar Registro de Personal' : '🏋️ Registro de Contratación de Personal'}
             </h3>
 
             <form onSubmit={handleSubmitStaff} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -552,11 +573,11 @@ export default function Personal({ tasaCambio = 114.00 }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px', alignItems: 'center' }}>
                 <div className="form-group">
                   <label className="form-label">Fecha de contratación</label>
-                  <input 
-                    type="date" 
+                  <DatePicker 
                     value={formData.fecha_contratacion}
-                    onChange={(e) => setFormData(prev => ({ ...prev, fecha_contratacion: e.target.value }))}
-                    className="form-control"
+                    onChange={(val) => setFormData(prev => ({ ...prev, fecha_contratacion: val }))}
+                    placeholder="Seleccionar fecha"
+                    style={{ width: '100%' }}
                   />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '22px' }}>

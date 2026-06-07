@@ -37,7 +37,7 @@ async function createUser(req, res) {
     // Insertar usuario
     await db.query(
       'INSERT INTO usuarios (username, password, role, nombre, apellido, gym_sede) VALUES (?, ?, ?, ?, ?, ?)',
-      [username, hashedPassword, role, nombre, apellido, gym_sede || 'MarianGym']
+      [username, hashedPassword, role, nombre, apellido, gym_sede || 'RamosGym']
     );
 
     res.status(201).json({ success: true, message: 'Usuario administrativo creado con éxito.' });
@@ -65,7 +65,7 @@ async function updateUser(req, res) {
     }
 
     let query = 'UPDATE usuarios SET username = ?, role = ?, nombre = ?, apellido = ?, gym_sede = ?';
-    let params = [username, role, nombre, apellido, gym_sede || 'MarianGym'];
+    let params = [username, role, nombre, apellido, gym_sede || 'RamosGym'];
 
     // Si se envía una nueva contraseña, la encriptamos y la agregamos al update
     if (password && password.trim() !== '') {

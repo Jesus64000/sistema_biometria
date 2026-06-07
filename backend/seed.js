@@ -22,7 +22,7 @@ const demoGastos = [
 ];
 
 async function seed() {
-  console.log('🌱 Iniciando sembrado de datos en XAMPP MySQL para Marian Gym...');
+  console.log('🌱 Iniciando sembrado de datos en XAMPP MySQL para RamosGym...');
   try {
     await initDB();
     const db = getPool();
@@ -40,8 +40,8 @@ async function seed() {
     console.log('🗑️ Base de datos limpiada con éxito.');
 
     // 1. Sembrar Configuración Inicial
-    console.log('⚙️ Sembrando configuración global de Marian Gym...');
-    await db.query("INSERT INTO configuracion (id, gym_name, tasa_cambio) VALUES (1, 'Marian Gym', 114.00)");
+    console.log('⚙️ Sembrando configuración global de RamosGym...');
+    await db.query("INSERT INTO configuracion (id, gym_name, tasa_cambio) VALUES (1, 'RamosGym', 114.00)");
     console.log('✅ Configuración global inicializada.');
 
     // 2. Sembrar Gastos Operacionales
@@ -119,7 +119,7 @@ async function seed() {
       }
     }
 
-    console.log('✅ Sembrado completado exitosamente. Marian Gym está configurado con datos deportivos limpios y listos.');
+    console.log('✅ Sembrado completado exitosamente. RamosGym está configurado con datos deportivos limpios y listos.');
     process.exit(0);
   } catch (error) {
     console.error('💥 Error durante el sembrado de datos:', error.message);

@@ -156,7 +156,8 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `mariangym_respaldo_${new Date().toISOString().split('T')[0]}.json`;
+      const cleanGymName = (gymName || 'RamosGym').toLowerCase().replace(/\s/g, '');
+      a.download = `${cleanGymName}_respaldo_${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -184,7 +185,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
       try {
         const backupData = JSON.parse(event.target.result);
         if (!backupData || !backupData.tables) {
-          throw new Error('El archivo no tiene el formato JSON estructurado de respaldo válido de Marian Gym.');
+          throw new Error('El archivo no tiene el formato JSON estructurado de respaldo válido de ' + (gymName || 'RamosGym') + '.');
         }
 
         const tokenStr = localStorage.getItem('jwt_token') || '';
@@ -240,7 +241,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
               className="form-control"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: Marian Gym"
+              placeholder="Ej: Ramos Gym"
               required
             />
           </div>
@@ -462,7 +463,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
           <span>🔌 Respaldos de Seguridad Anti-Apagones</span>
         </h3>
         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Protege los datos de <strong>Marian Gym</strong> ante cortes de luz o fluctuaciones eléctricas en Cabimas. Descarga un archivo local de respaldo o restaura todo el gimnasio a un punto anterior de forma 100% offline (sin internet).
+          Protege los datos de <strong>{gymName || 'RamosGym'}</strong> ante cortes de luz o fluctuaciones eléctricas en Cabimas. Descarga un archivo local de respaldo o restaura todo el gimnasio a un punto anterior de forma 100% offline (sin internet).
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

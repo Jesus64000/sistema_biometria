@@ -148,7 +148,7 @@ def init_model():
 def index():
     return jsonify({
         "status": "online",
-        "service": "Marian Gym Biometric IA Engine",
+        "service": "Ramos Gym Biometric IA Engine",
         "engine": "OpenCV LBPH"
     })
 

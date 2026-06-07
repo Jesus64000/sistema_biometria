@@ -353,7 +353,7 @@ function Analytics() {
             }}>
               <AlertTriangle size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                <strong>Análisis Operativo Inteligente</strong>: Se registran dos picos severos de asistencia: en la mañana (**7:00 AM**) y en la tarde (**5:00 PM a 7:00 PM**). Recomendamos ubicar al staff técnico/entrenadores demo en el gimnasio principalmente en estas franjas para maximizar el soporte y evitar aglomeraciones en las máquinas de fuerza.
+                <strong>Análisis Operativo Inteligente</strong>: Se registran dos picos severos de asistencia: en la mañana (**7:00 AM**) y en la tarde (**5:00 PM a 7:00 PM**). Recomendamos ubicar al personal técnico/entrenadores demo en el gimnasio principalmente en estas franjas para maximizar el soporte y evitar aglomeraciones en las máquinas de fuerza.
               </div>
             </div>
 

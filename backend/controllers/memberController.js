@@ -256,11 +256,56 @@ async function deleteMember(req, res) {
   }
 }
 
+// 7. Obtener estadísticas de asistencia de un socio
+async function getMemberStats(req, res) {
+  try {
+    const { id } = req.params;
+    const db = getPool();
+
+    // Asistencias totales
+    const [[{ total }]] = await db.query(
+      'SELECT COUNT(*) as total FROM asistencias WHERE socio_id = ?',
+      [id]
+    );
+
+    // Asistencias este mes
+    const [[{ este_mes }]] = await db.query(
+      `SELECT COUNT(*) as este_mes FROM asistencias 
+       WHERE socio_id = ? AND MONTH(fecha_hora) = MONTH(NOW()) AND YEAR(fecha_hora) = YEAR(NOW())`,
+      [id]
+    );
+
+    // Asistencias mes anterior
+    const [[{ mes_anterior }]] = await db.query(
+      `SELECT COUNT(*) as mes_anterior FROM asistencias 
+       WHERE socio_id = ? AND MONTH(fecha_hora) = MONTH(DATE_SUB(NOW(), INTERVAL 1 MONTH)) 
+       AND YEAR(fecha_hora) = YEAR(DATE_SUB(NOW(), INTERVAL 1 MONTH))`,
+      [id]
+    );
+
+    // Última asistencia
+    const [[ultima]] = await db.query(
+      'SELECT fecha_hora FROM asistencias WHERE socio_id = ? ORDER BY fecha_hora DESC LIMIT 1',
+      [id]
+    );
+
+    res.json({
+      total: total || 0,
+      este_mes: este_mes || 0,
+      mes_anterior: mes_anterior || 0,
+      ultima_visita: ultima ? ultima.fecha_hora : null
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getMembers,
   createMember,
   getMemberById,
   updateMemberStatus,
   updateMember,
-  deleteMember
+  deleteMember,
+  getMemberStats
 };

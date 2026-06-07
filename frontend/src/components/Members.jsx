@@ -17,8 +17,10 @@ import {
   Trash2
 } from 'lucide-react';
 import CaptureModal from './CaptureModal';
+import DatePicker from './DatePicker';
+import MemberProfileDrawer from './MemberProfileDrawer';
 
-function Members({ activeGym, initialTab, user }) {
+function Members({ activeGym, initialTab, user, initialFilters }) {
   const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSolvency, setFilterSolvency] = useState('all');
@@ -30,11 +32,16 @@ function Members({ activeGym, initialTab, user }) {
   const [sortOrder, setSortOrder] = useState('desc');
   const [loading, setLoading] = useState(true);
   
+  const [expiringSoon, setExpiringSoon] = useState(false);
+  
   // Estados de modales
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedSocio, setSelectedSocio] = useState(null);
+
+  // Ficha del socio (drawer)
+  const [profileMember, setProfileMember] = useState(null);
 
   // Formulario nuevo socio
   const [formData, setFormData] = useState({
@@ -146,6 +153,14 @@ function Members({ activeGym, initialTab, user }) {
     }
   }, [initialTab]);
 
+  useEffect(() => {
+    if (initialFilters) {
+      setFilterStatus(initialFilters.status || 'all');
+      setFilterSolvency(initialFilters.solvency || 'all');
+      setExpiringSoon(!!initialFilters.expiringSoon);
+    }
+  }, [initialFilters]);
+
   // Control de cámara en CaptureModal
   const startCamera = async () => {};
   const stopCamera = () => {};
@@ -169,7 +184,7 @@ function Members({ activeGym, initialTab, user }) {
       const res = await fetch('http://localhost:3000/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, cedula: fullCedula, gym_sede: 'MarianGym' })
+        body: JSON.stringify({ ...formData, cedula: fullCedula, gym_sede: activeGym || 'RamosGym' })
       });
       const result = await res.json();
 
@@ -240,7 +255,7 @@ function Members({ activeGym, initialTab, user }) {
           monto: parseFloat(paymentData.monto),
           metodo_pago: paymentData.metodo_pago,
           tipo_membresia: paymentData.tipo_membresia,
-          gym_sede: 'MarianGym',
+          gym_sede: activeGym || 'RamosGym',
           referencia: (paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') ? paymentData.referencia : null
         })
       });
@@ -396,6 +411,16 @@ function Members({ activeGym, initialTab, user }) {
       if (filterStatus === 'activo' && m.status !== 'activo') return false;
       if (filterStatus === 'inactivo' && m.status !== 'inactivo') return false;
       
+      // 3.5 Filtro Vencen pronto (3 días)
+      if (expiringSoon) {
+        if (!m.membresia_fin) return false;
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        const fin = new Date(m.membresia_fin);
+        const diffDays = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0 || diffDays > 3 || m.status !== 'activo') return false;
+      }
+      
       // 4. Filtro Género
       if (filterGender === 'Masculino' && m.genero !== 'Masculino') return false;
       if (filterGender === 'Femenino' && m.genero !== 'Femenino') return false;
@@ -467,7 +492,7 @@ function Members({ activeGym, initialTab, user }) {
             <select 
               id="solvency-filter"
               value={filterSolvency}
-              onChange={(e) => setFilterSolvency(e.target.value)}
+              onChange={(e) => { setFilterSolvency(e.target.value); setExpiringSoon(false); }}
               className="form-control"
               style={{ width: '175px', height: '38px', fontWeight: 600 }}
             >
@@ -482,7 +507,7 @@ function Members({ activeGym, initialTab, user }) {
             <select 
               id="status-filter"
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(e) => { setFilterStatus(e.target.value); setExpiringSoon(false); }}
               className="form-control"
               style={{ width: '165px', height: '38px', fontWeight: 600 }}
             >
@@ -497,7 +522,7 @@ function Members({ activeGym, initialTab, user }) {
             <select 
               id="gender-filter"
               value={filterGender}
-              onChange={(e) => setFilterGender(e.target.value)}
+              onChange={(e) => { setFilterGender(e.target.value); setExpiringSoon(false); }}
               className="form-control"
               style={{ width: '165px', height: '38px', fontWeight: 600 }}
             >
@@ -508,33 +533,64 @@ function Members({ activeGym, initialTab, user }) {
           </div>
         </div>
 
+        {expiringSoon && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginTop: '-4px' }}>
+            <span className="badge badge-warning" style={{ 
+              fontSize: '12px', 
+              fontWeight: 700, 
+              padding: '6px 12px', 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              borderRadius: 'var(--border-radius-sm)',
+              border: '1px solid rgba(255, 159, 10, 0.2)',
+              color: 'var(--warning)'
+            }}>
+              Filtro Activo: Vencen en 3 días
+              <button 
+                onClick={() => setExpiringSoon(false)}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: 'inherit', 
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: 0.8
+                }}
+                title="Quitar filtro"
+              >
+                <X size={12} strokeWidth={2.5} />
+              </button>
+            </span>
+          </div>
+        )}
+
         {/* Fila 2: Filtros de Fecha de Inscripción y Ordenación */}
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '14px' }}>
           
           {/* Rangos de Fecha de Registro */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>Inscripción entre:</span>
-            <input 
-              type="date" 
+            <DatePicker
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="form-control"
-              style={{ width: '135px', height: '32px', fontSize: '11px', padding: '4px 8px' }}
-              title="Fecha Inicial de Inscripción"
+              onChange={setStartDate}
+              placeholder="Fecha inicio"
+              style={{ width: '155px' }}
             />
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>y</span>
-            <input 
-              type="date" 
+            <DatePicker
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="form-control"
-              style={{ width: '135px', height: '32px', fontSize: '11px', padding: '4px 8px' }}
-              title="Fecha Final de Inscripción"
+              onChange={setEndDate}
+              placeholder="Fecha fin"
+              style={{ width: '155px' }}
             />
             {(startDate || endDate) && (
               <button 
                 className="btn btn-secondary" 
-                style={{ padding: '4px 8px', fontSize: '10px', height: '32px' }}
+                style={{ padding: '4px 8px', fontSize: '10px', height: '36px' }}
                 onClick={() => { setStartDate(''); setEndDate(''); }}
               >
                 Limpiar Fechas
@@ -612,7 +668,12 @@ function Members({ activeGym, initialTab, user }) {
                 </tr>
               ) : (
                 filteredMembers.map((member) => (
-                  <tr key={member.id} id={`member-row-${member.id}`}>
+                  <tr 
+                    key={member.id} 
+                    id={`member-row-${member.id}`}
+                    onClick={() => setProfileMember(member)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div className="activity-avatar" style={{ width: '34px', height: '34px', border: '2px solid var(--border-color)' }}>
@@ -626,7 +687,9 @@ function Members({ activeGym, initialTab, user }) {
                             member.nombre[0]
                           )}
                         </div>
-                        <span style={{ fontWeight: 700 }}>{member.nombre} {member.apellido}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {member.nombre} {member.apellido}
+                        </span>
                       </div>
                     </td>
                     <td style={{ fontFamily: 'Outfit', fontWeight: 600 }}>{member.cedula}</td>
@@ -639,7 +702,10 @@ function Members({ activeGym, initialTab, user }) {
                     <td>
                       <button 
                         className={`badge ${member.status === 'activo' ? 'badge-success' : 'badge-danger'}`}
-                        onClick={() => isAdmin && toggleStatus(member)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isAdmin) toggleStatus(member);
+                        }}
                         style={{ cursor: isAdmin ? 'pointer' : 'default', border: '1px solid transparent', padding: '2px 8px', fontSize: '10px' }}
                         title={isAdmin ? "Cambiar estatus" : "Control de estatus"}
                         disabled={!isAdmin}
@@ -660,7 +726,8 @@ function Members({ activeGym, initialTab, user }) {
                         <button 
                           className="btn btn-secondary" 
                           style={{ padding: '6px 12px', fontSize: '11px', gap: '4px', height: '30px' }}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedSocio(member);
                             const isInactive = member.status === 'inactivo';
                             setIncludeInscription(false);
@@ -681,13 +748,13 @@ function Members({ activeGym, initialTab, user }) {
                           <CreditCard size={12} />
                           <span>Cobrar</span>
                         </button>
-
+ 
                         {isAdmin && (
                           <>
                             <button 
                               className="btn btn-secondary" 
                               style={{ padding: '6px 12px', fontSize: '11px', gap: '4px', height: '30px', color: 'var(--primary)' }}
-                              onClick={() => handleOpenEditModal(member)}
+                              onClick={(e) => { e.stopPropagation(); handleOpenEditModal(member); }}
                               title="Editar datos de afiliado"
                             >
                               <Edit size={12} />
@@ -697,7 +764,7 @@ function Members({ activeGym, initialTab, user }) {
                             <button 
                               className="btn btn-secondary" 
                               style={{ padding: '6px', color: 'var(--danger)', borderColor: 'transparent', height: '30px' }}
-                              onClick={() => handleDeleteMember(member.id)}
+                              onClick={(e) => { e.stopPropagation(); handleDeleteMember(member.id); }}
                               title="Eliminar socio"
                             >
                               <Trash2 size={14} />
@@ -814,12 +881,12 @@ function Members({ activeGym, initialTab, user }) {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Fecha de Nacimiento</label>
-                  <input 
-                    type="date" 
+                  <DatePicker
                     max={new Date().toISOString().split('T')[0]}
                     value={formData.fecha_nacimiento}
-                    onChange={(e) => setFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
-                    className="form-control"
+                    onChange={(val) => setFormData(prev => ({ ...prev, fecha_nacimiento: val }))}
+                    placeholder="Seleccionar fecha"
+                    style={{ width: '100%' }}
                   />
                 </div>
               </div>
@@ -1205,12 +1272,12 @@ function Members({ activeGym, initialTab, user }) {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Fecha de Nacimiento</label>
-                  <input 
-                    type="date" 
+                  <DatePicker
                     max={new Date().toISOString().split('T')[0]}
                     value={editFormData.fecha_nacimiento}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
-                    className="form-control"
+                    onChange={(val) => setEditFormData(prev => ({ ...prev, fecha_nacimiento: val }))}
+                    placeholder="Seleccionar fecha"
+                    style={{ width: '100%' }}
                   />
                 </div>
               </div>
@@ -1292,6 +1359,28 @@ function Members({ activeGym, initialTab, user }) {
         onClose={() => setShowCaptureModal(false)}
         onConfirm={handleCaptureConfirm}
         isEnrolment={captureModalMode === 'enrol'}
+      />
+
+      {/* Ficha del socio (Drawer lateral) */}
+      <MemberProfileDrawer
+        member={profileMember}
+        onClose={() => setProfileMember(null)}
+        isAdmin={isAdmin}
+        onPay={(member) => {
+          setSelectedSocio(member);
+          const isInactive = member.status === 'inactivo';
+          setIncludeInscription(false);
+          setIncludeReactivation(isInactive);
+          const baseMonto = calculateTotalPayment(member.membresia_tipo || 'mensual', false, isInactive);
+          setPaymentData(prev => ({
+            ...prev,
+            tipo_membresia: member.membresia_tipo || 'mensual',
+            monto: baseMonto,
+            referencia: ''
+          }));
+          setShowPaymentModal(true);
+        }}
+        onEdit={(member) => handleOpenEditModal(member)}
       />
     </div>
   );

@@ -7,7 +7,7 @@ async function getConfig(req, res) {
     const [rows] = await db.query('SELECT * FROM configuracion LIMIT 1');
     if (rows.length === 0) {
       // Auto-crear si no existe
-      await db.query("INSERT INTO configuracion (gym_name, tasa_cambio) VALUES ('Marian Gym', 114.00)");
+      await db.query("INSERT INTO configuracion (gym_name, tasa_cambio) VALUES ('RamosGym', 114.00)");
       const [newRows] = await db.query('SELECT * FROM configuracion LIMIT 1');
       return res.json(newRows[0]);
     }
@@ -165,7 +165,7 @@ async function exportBackup(req, res) {
     const tables = ['configuracion', 'socios', 'membresias', 'pagos', 'registro_asistencias', 'usuarios', 'personal', 'gastos'];
     const backupData = {
       backup_date: new Date().toISOString(),
-      gym_name: 'Marian Gym',
+      gym_name: 'RamosGym',
       tables: {}
     };
 
@@ -175,7 +175,7 @@ async function exportBackup(req, res) {
       backupData.tables[table] = rows;
     }
 
-    res.setHeader('Content-disposition', `attachment; filename=mariangym_backup_${new Date().toISOString().split('T')[0]}.json`);
+    res.setHeader('Content-disposition', `attachment; filename=ramosgym_backup_${new Date().toISOString().split('T')[0]}.json`);
     res.setHeader('Content-type', 'application/json');
     res.json(backupData);
   } catch (error) {

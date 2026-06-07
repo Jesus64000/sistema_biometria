@@ -43,9 +43,25 @@ function App() {
   const isKioskInit = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk' || (user && user.role === 'kiosco');
   const [currentView, setCurrentView] = useState(isKioskInit ? 'kiosk' : 'dashboard');
   const [darkMode, setDarkMode] = useState(localStorage.getItem('dark_mode') === 'true');
+  const [membersFilter, setMembersFilter] = useState({
+    status: 'all',
+    solvency: 'all',
+    expiringSoon: false
+  });
+
+  const navigate = (view, filters = null) => {
+    setCurrentView(view);
+    if (view === 'members') {
+      if (filters) {
+        setMembersFilter(filters);
+      } else {
+        setMembersFilter({ status: 'all', solvency: 'all', expiringSoon: false });
+      }
+    }
+  };
   
   // Variables globales de configuración dinámicas
-  const [gymName, setGymName] = useState('Marian Gym');
+  const [gymName, setGymName] = useState('RamosGym');
   const [tasaCambio, setTasaCambio] = useState(114.00);
 
   // Cargar configuración global al montar o al ingresar
@@ -158,7 +174,7 @@ function App() {
     { id: 'analytics', label: 'Analíticas', icon: BarChart2 },
     { id: 'expenses', label: 'Gastos', icon: DollarSign },
     { id: 'notes', label: 'Notas', icon: FileText },
-    { id: 'trainers', label: 'Personal y Staff', icon: Dumbbell },
+    { id: 'trainers', label: 'Personal', icon: Dumbbell },
     { id: 'users', label: 'Usuarios', icon: UserCheck },
     { id: 'settings', label: 'Configuración', icon: SettingsIcon },
   ];
@@ -226,7 +242,7 @@ function App() {
                 key={item.id}
                 id={`menu-item-${item.id}`}
                 className={`sidebar-item ${currentView === item.id ? 'active' : ''}`}
-                onClick={() => setCurrentView(item.id)}
+                onClick={() => navigate(item.id)}
               >
                 <Icon size={18} />
                 <span>{item.label}</span>
@@ -247,7 +263,7 @@ function App() {
                 key={item.id}
                 id={`menu-item-${item.id}`}
                 className={`sidebar-item ${currentView === item.id ? 'active' : ''}`}
-                onClick={() => setCurrentView(item.id)}
+                onClick={() => navigate(item.id)}
               >
                 <Icon size={18} />
                 <span>{item.label}</span>
@@ -320,7 +336,7 @@ function App() {
               {currentView === 'payments' && 'Control de Pagos'}
               {currentView === 'expenses' && 'Registro de Gastos'}
               {currentView === 'notes' && 'Bloc de Notas'}
-              {currentView === 'trainers' && 'Personal y Staff Técnico'}
+              {currentView === 'trainers' && 'Personal y Nómina del Gimnasio'}
               {currentView === 'users' && 'Cuentas de Usuarios'}
               {currentView === 'settings' && 'Configuración del Sistema'}
             </h1>
@@ -332,7 +348,7 @@ function App() {
               {currentView === 'payments' && 'Membresías / Control de mensualidades'}
               {currentView === 'expenses' && 'Administración / Egresos del establecimiento'}
               {currentView === 'notes' && 'Herramientas / Notas rápidas administrativas'}
-              {currentView === 'trainers' && 'Personal / Staff técnico y entrenadores'}
+              {currentView === 'trainers' && 'Personal / Directorio y control de nómina'}
               {currentView === 'users' && 'Seguridad / Cuentas operativas del sistema'}
               {currentView === 'settings' && 'Parámetros / Tasa de cambio y precios dinámicos'}
             </p>
@@ -413,18 +429,24 @@ function App() {
             <Dashboard 
               activeGym={gymName} 
               tasaCambio={tasaCambio} 
-              onNavigate={(view) => setCurrentView(view)} 
+              onNavigate={(view, filters) => navigate(view, filters)} 
               user={user}
             />
           )}
-          {currentView === 'members' && <Members activeGym={gymName} user={user} />}
+          {currentView === 'members' && (
+            <Members 
+              activeGym={gymName} 
+              user={user} 
+              initialFilters={membersFilter} 
+            />
+          )}
           {currentView === 'analytics' && <Analytics />}
           {currentView === 'access' && <BiometricAccess activeGym={gymName} isKiosk={false} />}
           {currentView === 'payments' && <Members activeGym={gymName} initialTab="payments" user={user} />}
           {currentView === 'expenses' && <Expenses user={user} />}
           {currentView === 'notes' && <Notes />}
-          {currentView === 'trainers' && <Personal tasaCambio={tasaCambio} />}
-          {currentView === 'users' && <UsersManager />}
+          {currentView === 'trainers' && <Personal activeGym={gymName} tasaCambio={tasaCambio} />}
+          {currentView === 'users' && <UsersManager activeGym={gymName} />}
           {currentView === 'settings' && (
             <Settings 
               gymName={gymName} 

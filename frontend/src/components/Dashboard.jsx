@@ -20,6 +20,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import CaptureModal from './CaptureModal';
+import DatePicker from './DatePicker';
 
 function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
   const [stats, setStats] = useState({
@@ -257,7 +258,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
       const res = await fetch('http://localhost:3000/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...memberFormData, cedula: fullCedula, gym_sede: 'MarianGym' })
+        body: JSON.stringify({ ...memberFormData, cedula: fullCedula, gym_sede: activeGym })
       });
       const result = await res.json();
 
@@ -328,7 +329,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           monto: parseFloat(paymentData.monto),
           metodo_pago: paymentData.metodo_pago,
           tipo_membresia: paymentData.tipo_membresia,
-          gym_sede: 'MarianGym',
+          gym_sede: activeGym,
           referencia: (paymentData.metodo_pago === 'pago_movil' || paymentData.metodo_pago === 'transferencia') ? paymentData.referencia : null
         })
       });
@@ -533,7 +534,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
       {/* Contadores Estadísticos Premium Deportivos y Minimalistas */}
       <div className="grid-stats">
-        <div className="stat-card" id="stat-total" onClick={() => onNavigate('members')} style={{ cursor: 'pointer' }}>
+        <div className="stat-card" id="stat-total" onClick={() => onNavigate('members', { status: 'all', solvency: 'all', expiringSoon: false })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon">
             <Users size={20} />
           </div>
@@ -543,7 +544,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           </div>
         </div>
 
-        <div className="stat-card success" id="stat-active" onClick={() => onNavigate('members')} style={{ cursor: 'pointer' }}>
+        <div className="stat-card success" id="stat-active" onClick={() => onNavigate('members', { status: 'activo', solvency: 'all', expiringSoon: false })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon">
             <UserCheck size={20} />
           </div>
@@ -553,7 +554,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           </div>
         </div>
 
-        <div className="stat-card" id="stat-suspended" onClick={() => onNavigate('members')} style={{ cursor: 'pointer' }}>
+        <div className="stat-card" id="stat-suspended" onClick={() => onNavigate('members', { status: 'inactivo', solvency: 'all', expiringSoon: false })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon" style={{ color: 'var(--text-muted)' }}>
             <UserX size={20} />
           </div>
@@ -563,7 +564,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           </div>
         </div>
 
-        <div className="stat-card warning" id="stat-expiring" onClick={() => onNavigate('members')} style={{ cursor: 'pointer' }}>
+        <div className="stat-card warning" id="stat-expiring" onClick={() => onNavigate('members', { status: 'activo', solvency: 'all', expiringSoon: true })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon">
             <AlertTriangle size={20} />
           </div>
@@ -573,7 +574,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           </div>
         </div>
 
-        <div className="stat-card danger" id="stat-expired" onClick={() => onNavigate('members')} style={{ cursor: 'pointer' }}>
+        <div className="stat-card danger" id="stat-expired" onClick={() => onNavigate('members', { status: 'all', solvency: 'insolvent', expiringSoon: false })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon">
             <AlertTriangle size={20} />
           </div>
@@ -977,7 +978,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     cleanPhone = '58' + cleanPhone;
                   }
 
-                  const templateMsg = `¡Hola ${m.nombre}! 🎉 En Marian Gym te deseamos un muy feliz cumpleaños. 🎂 Que pases un excelente día lleno de salud y entrenamiento. ¡Hoy tienes un pase gratis de cortesía para un invitado especial! 🏋️‍♂️💪`;
+                  const templateMsg = `¡Hola ${m.nombre}! 🎉 En ${activeGym} te deseamos un muy feliz cumpleaños. 🎂 Que pases un excelente día lleno de salud y entrenamiento. ¡Hoy tienes un pase gratis de cortesía para un invitado especial! 🏋️‍♂️💪`;
                   const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(templateMsg)}` : null;
 
                   return (
@@ -1217,12 +1218,12 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Fecha de Nacimiento</label>
-                  <input 
-                    type="date" 
+                  <DatePicker 
                     max={new Date().toISOString().split('T')[0]}
                     value={memberFormData.fecha_nacimiento}
-                    onChange={(e) => setMemberFormData(prev => ({ ...prev, fecha_nacimiento: e.target.value }))}
-                    className="form-control"
+                    onChange={(val) => setMemberFormData(prev => ({ ...prev, fecha_nacimiento: val }))}
+                    placeholder="Seleccionar fecha"
+                    style={{ width: '100%' }}
                   />
                 </div>
               </div>

@@ -1028,3 +1028,34 @@ select option, select.form-control option {
   }
 }
 
+/* ==========================================================================
+   SURFACE VARIABLES (MemberProfileDrawer + DatePicker)
+   ========================================================================== */
+:root, html:not(.dark-mode) {
+  --surface-1: #ffffff;
+  --surface-2: #f4f7fb;
+  --primary-dark: #0043ce;
+}
+html.dark-mode {
+  --surface-1: #0f1524;
+  --surface-2: #141c2f;
+  --primary-dark: #0043ce;
+}
+
+/* ==========================================================================
+   DATE PICKER STYLES
+   ========================================================================== */
+@keyframes dp-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.datepicker-input:hover {
+  border-color: var(--primary) !important;
+}
+
+.datepicker-dropdown button:hover:not([disabled]) {
+  background: var(--surface-2) !important;
+  filter: brightness(1.08);
+}
+

@@ -102,7 +102,7 @@ function Login({ onLoginSuccess, isKiosk }) {
           nombre: regNombre,
           apellido: regApellido,
           role: regRole,
-          gym_sede: 'MarianGym'
+          gym_sede: 'RamosGym'
         })
       });
 
@@ -192,7 +192,7 @@ function Login({ onLoginSuccess, isKiosk }) {
           </h2>
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
             {view === 'login' && (isKiosk ? 'Ingrese credenciales para iniciar escáner de entrada' : 'Sistema de Gestión y Acceso de Socios')}
-            {view === 'register' && 'Regístrese para operar el control de Marian Gym'}
+            {view === 'register' && 'Regístrese para operar el control de RamosGym'}
             {view === 'recover' && 'Restablecer contraseña local mediante Llave Maestra'}
           </p>
         </div>

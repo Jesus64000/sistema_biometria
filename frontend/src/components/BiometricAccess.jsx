@@ -213,7 +213,7 @@ function BiometricAccess({ activeGym, isKiosk, exitKiosk, onLogout }) {
         const res = await fetch('http://localhost:3000/api/biometrics/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ foto_base64: base64, gym_sede: 'MarianGym' })
+          body: JSON.stringify({ foto_base64: base64, gym_sede: activeGym || 'RamosGym' })
         });
         const result = await res.json();
         
@@ -311,7 +311,7 @@ function BiometricAccess({ activeGym, isKiosk, exitKiosk, onLogout }) {
         const res = await fetch('http://localhost:3000/api/biometrics/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...payload, gym_sede: 'MarianGym' })
+          body: JSON.stringify({ ...payload, gym_sede: activeGym || 'RamosGym' })
         });
         const result = await res.json();
         processAccessResult(result);

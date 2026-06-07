@@ -6,16 +6,23 @@ async function registerPayment(req, res) {
   try {
     await connection.beginTransaction();
 
-    const { socio_id, monto, metodo_pago, tipo_membresia, gym_sede, referencia } = req.body;
+    const { socio_id, monto, metodo_pago, tipo_membresia, gym_sede, referencia, tasa_cambio } = req.body;
 
     if (!socio_id || !monto) {
       return res.status(400).json({ error: 'Socio e importe son campos obligatorios.' });
     }
 
-    // 1. Insertar el pago en la sede activa (incluyendo auditoría de referencia bancaria)
+    // Obtener la tasa de cambio actual si no se proporciona
+    let activeTasa = tasa_cambio;
+    if (!activeTasa) {
+      const [configRows] = await connection.query('SELECT tasa_cambio FROM configuracion LIMIT 1');
+      activeTasa = configRows[0]?.tasa_cambio || 114.00;
+    }
+
+    // 1. Insertar el pago en la sede activa (incluyendo auditoría de referencia bancaria y tasa de cambio del día)
     await connection.query(
-      'INSERT INTO pagos (socio_id, monto, metodo_pago, gym_sede, referencia) VALUES (?, ?, ?, ?, ?)',
-      [socio_id, monto, metodo_pago || 'pago_movil', gym_sede || 'MarianGym', referencia || null]
+      'INSERT INTO pagos (socio_id, monto, metodo_pago, gym_sede, referencia, tasa_cambio) VALUES (?, ?, ?, ?, ?, ?)',
+      [socio_id, monto, metodo_pago || 'pago_movil', gym_sede || 'RamosGym', referencia || null, activeTasa]
     );
 
     // 2. Obtener la membresía actual
@@ -102,7 +109,26 @@ async function getPayments(req, res) {
   }
 }
 
+// 3. Obtener historial de pagos de un socio específico
+async function getPaymentsByMember(req, res) {
+  try {
+    const { id } = req.params;
+    const db = getPool();
+    const query = `
+      SELECT p.id, p.monto, p.metodo_pago, p.referencia, p.fecha_pago, p.gym_sede, p.tasa_cambio
+      FROM pagos p
+      WHERE p.socio_id = ?
+      ORDER BY p.fecha_pago DESC
+    `;
+    const [rows] = await db.query(query, [id]);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   registerPayment,
-  getPayments
+  getPayments,
+  getPaymentsByMember
 };

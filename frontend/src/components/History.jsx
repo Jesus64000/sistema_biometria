@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DatePicker from './DatePicker';
 import { 
   ScanFace, 
   Search, 
@@ -12,7 +13,7 @@ import {
   UserCheck
 } from 'lucide-react';
 
-function History() {
+function History({ activeGym }) {
   const [logs, setLogs] = useState([]);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
@@ -106,7 +107,7 @@ function History() {
 
       {/* Título de Impresión (Oculto en pantalla, visible al imprimir) */}
       <div className="print-only" style={{ display: 'none', marginBottom: '30px', borderBottom: '3px solid #161616', paddingBottom: '10px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', color: '#161616', textAlign: 'center' }}>Marian Gym</h1>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', color: '#161616', textAlign: 'center' }}>{activeGym || 'RamosGym'}</h1>
         <h2 style={{ fontSize: '16px', fontWeight: 700, textAlign: 'center', color: '#525252', marginTop: '4px' }}>Reporte de Control de Acceso y Asistencia</h2>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', fontSize: '12px', color: '#525252' }}>
           <span>Generado por: Personal Administrativo</span>
@@ -162,14 +163,12 @@ function History() {
             </select>
           </div>
 
-          <div className="form-group" style={{ margin: 0, position: 'relative', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-            <Calendar size={14} style={{ position: 'absolute', right: '12px', top: '12px', color: 'var(--primary)', pointerEvents: 'none' }} />
-            <input 
-              type="date"
-              className="form-control"
-              style={{ height: '38px', width: '150px', paddingRight: '36px' }}
+          <div className="form-group" style={{ margin: 0, flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+            <DatePicker 
               value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
+              onChange={setFecha}
+              placeholder="Filtrar fecha"
+              style={{ width: '160px' }}
             />
           </div>
 

@@ -24,7 +24,7 @@ function fmtDate(str) {
 
 function fmtDateTime(str) {
   if (!str) return '—';
-  return new Date(str).toLocaleString('es-VE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return new Date(str).toLocaleString('es-VE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
 function daysUntil(str) {

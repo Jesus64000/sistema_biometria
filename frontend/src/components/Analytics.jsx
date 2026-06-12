@@ -14,6 +14,16 @@ import {
   TrendingDown
 } from 'lucide-react';
 
+const format12h = (timeStr) => {
+  if (!timeStr || !timeStr.includes(':')) return timeStr;
+  const parts = timeStr.split(':');
+  const hr = parseInt(parts[0], 10);
+  if (isNaN(hr)) return timeStr;
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  const displayHr = hr % 12 === 0 ? 12 : hr % 12;
+  return `${displayHr}:${parts[1]} ${ampm}`;
+};
+
 function Analytics() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -328,13 +338,13 @@ function Analytics() {
                       boxShadow: glow,
                       cursor: 'pointer'
                     }} 
-                    title={`Afluencia a las ${h.hora}: ${h.afluencia} ingresos`}
+                    title={`Afluencia a las ${format12h(h.hora)}: ${h.afluencia} ingresos`}
                     className="analytics-bar-hover"
                     />
 
                     {/* Etiqueta de la hora */}
                     <span style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-muted)', marginTop: '8px', whiteSpace: 'nowrap' }}>
-                      {h.hora}
+                      {format12h(h.hora)}
                     </span>
                   </div>
                 );

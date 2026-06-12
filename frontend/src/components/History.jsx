@@ -236,7 +236,7 @@ function History({ activeGym }) {
                     </td>
                     <td style={{ fontFamily: 'Outfit', fontWeight: 600 }}>{log.cedula}</td>
                     <td style={{ fontWeight: 600 }}>
-                      {new Date(log.fecha_hora).toLocaleDateString([], { day: '2-digit', month: 'short' })} • {new Date(log.fecha_hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(log.fecha_hora).toLocaleDateString([], { day: '2-digit', month: 'short' })} • {new Date(log.fecha_hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                     </td>
                     <td>
                       <span className={`badge ${log.metodo === 'facial' ? 'badge-primary' : 'badge-warning'}`} style={{ fontSize: '10px' }}>

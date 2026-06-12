@@ -143,6 +143,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
             <button
+              type="button"
               onClick={mode === 'years' ? () => setMode('days') : prevMonth}
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display:'flex',alignItems:'center' }}
             >
@@ -151,12 +152,14 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
 
             <div style={{ display: 'flex', gap: '4px' }}>
               <button
+                type="button"
                 onClick={() => setMode(mode === 'months' ? 'days' : 'months')}
                 style={{ background: mode==='months'?'var(--primary)':'none', border: 'none', color: mode==='months'?'#fff':'var(--text-primary)', cursor: 'pointer', padding: '4px 8px', borderRadius: '6px', fontSize: '13px', fontWeight: 700 }}
               >
                 {MONTHS[viewMonth]}
               </button>
               <button
+                type="button"
                 onClick={() => setMode(mode === 'years' ? 'days' : 'years')}
                 style={{ background: mode==='years'?'var(--primary)':'none', border: 'none', color: mode==='years'?'#fff':'var(--text-primary)', cursor: 'pointer', padding: '4px 8px', borderRadius: '6px', fontSize: '13px', fontWeight: 700 }}
               >
@@ -165,6 +168,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
             </div>
 
             <button
+              type="button"
               onClick={mode === 'years' ? () => { setViewYear(y => y + 12); } : nextMonth}
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display:'flex',alignItems:'center' }}
             >
@@ -177,6 +181,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '6px' }}>
               {MONTHS.map((m, i) => (
                 <button
+                  type="button"
                   key={m}
                   onClick={() => { setViewMonth(i); setMode('days'); }}
                   style={{
@@ -197,6 +202,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '6px' }}>
               {years.map(yr => (
                 <button
+                  type="button"
                   key={yr}
                   onClick={() => { setViewYear(yr); setMode('days'); }}
                   style={{
@@ -233,6 +239,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
                   const todayFlag = isToday(day);
                   return (
                     <button
+                      type="button"
                       key={day}
                       onClick={() => !disabled && selectDay(day)}
                       style={{
@@ -254,6 +261,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
               {/* Today button */}
               <div style={{ marginTop: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '8px', textAlign: 'center' }}>
                 <button
+                  type="button"
                   onClick={() => {
                     const t = new Date();
                     const str = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;

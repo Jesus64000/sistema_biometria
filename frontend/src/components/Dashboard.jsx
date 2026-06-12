@@ -22,6 +22,25 @@ import {
 import CaptureModal from './CaptureModal';
 import DatePicker from './DatePicker';
 
+const format12h = (timeStr) => {
+  if (!timeStr || !timeStr.includes(':')) return timeStr;
+  const parts = timeStr.split(':');
+  const hr = parseInt(parts[0], 10);
+  if (isNaN(hr)) return timeStr;
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  const displayHr = hr % 12 === 0 ? 12 : hr % 12;
+  return `${displayHr}:${parts[1]} ${ampm}`;
+};
+
+const formatHourOnly12h = (timeStr) => {
+  if (!timeStr || !timeStr.includes(':')) return timeStr;
+  const hr = parseInt(timeStr.split(':')[0], 10);
+  if (isNaN(hr)) return timeStr;
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  const displayHr = hr % 12 === 0 ? 12 : hr % 12;
+  return `${displayHr} ${ampm}`;
+};
+
 function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
   const [stats, setStats] = useState({
     total_socios: 0,
@@ -596,7 +615,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
             </h3>
             {peakHour.cantidad > 0 && (
               <span className="badge badge-success" style={{ fontSize: '10px', gap: '4px', padding: '4px 10px' }}>
-                <TrendingUp size={10} /> Hora Pico: {peakHour.hora}
+                <TrendingUp size={10} /> Hora Pico: {format12h(peakHour.hora)}
               </span>
             )}
           </div>
@@ -617,7 +636,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                       className="chart-bar" 
                       style={{ height: `${Math.max(pct, 6)}%` }}
                     />
-                    <span className="chart-label">{h.hora.split(':')[0]}</span>
+                    <span className="chart-label">{formatHourOnly12h(h.hora)}</span>
                   </div>
                 );
               })}
@@ -662,7 +681,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     </div>
                     <div className="activity-details">
                       <span className="activity-name">{log.nombre} {log.apellido}</span>
-                      <span className="activity-meta">C.I: {log.cedula} • {new Date(log.fecha_hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="activity-meta">C.I: {log.cedula} • {new Date(log.fecha_hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                     </div>
                   </div>
 

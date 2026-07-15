@@ -6,6 +6,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
   const [tasa, setTasa] = useState(tasaCambio);
   
   // Nuevos campos de tarifas personalizadas y calibración de IA
+  const [cuotaSemanal, setCuotaSemanal] = useState(10.00);
   const [cuotaMensual, setCuotaMensual] = useState(30.00);
   const [cuotaTrimestral, setCuotaTrimestral] = useState(80.00);
   const [cuotaAnual, setCuotaAnual] = useState(300.00);
@@ -23,6 +24,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
   const [syncing, setSyncing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   const loadCameraDevices = async () => {
     try {
@@ -62,6 +64,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
       if (!data.error) {
         setName(data.gym_name);
         setTasa(data.tasa_cambio);
+        setCuotaSemanal(data.cuota_semanal !== undefined ? data.cuota_semanal : 10.00);
         setCuotaMensual(data.cuota_mensual !== undefined ? data.cuota_mensual : 30.00);
         setCuotaTrimestral(data.cuota_trimestral !== undefined ? data.cuota_trimestral : 80.00);
         setCuotaAnual(data.cuota_anual !== undefined ? data.cuota_anual : 300.00);
@@ -115,6 +118,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
         body: JSON.stringify({ 
           gym_name: name, 
           tasa_cambio: parseFloat(tasa),
+          cuota_semanal: parseFloat(cuotaSemanal),
           cuota_mensual: parseFloat(cuotaMensual),
           cuota_trimestral: parseFloat(cuotaTrimestral),
           cuota_anual: parseFloat(cuotaAnual),
@@ -176,6 +180,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
 
     if (!confirm('¿Está seguro de restaurar el sistema? Se sobreescribirán de forma permanente todas las tablas (Socios, Pagos, Personal, Gastos) de la base de datos local.')) {
       e.target.value = ''; // Limpiar input
+      setFileName('');
       return;
     }
 
@@ -210,6 +215,7 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
       } finally {
         setImporting(false);
         e.target.value = ''; // Limpiar input
+        setFileName('');
       }
     };
     reader.readAsText(file);
@@ -326,7 +332,18 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
               </div>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 20px' }}>
+              <div className="form-group" style={{ opacity: soloMensual ? 0.35 : 1, transition: 'opacity 0.2s ease', pointerEvents: soloMensual ? 'none' : 'auto' }}>
+                <label className="form-label" style={{ fontSize: '11px' }}>Cuota Semanal *</label>
+                <input 
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  value={cuotaSemanal}
+                  onChange={(e) => setCuotaSemanal(e.target.value)}
+                  required={!soloMensual}
+                />
+              </div>
               <div className="form-group">
                 <label className="form-label" style={{ fontSize: '11px' }}>Cuota Mensual *</label>
                 <input 
@@ -495,13 +512,50 @@ function Settings({ gymName, tasaCambio, onUpdate }) {
               </span>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '6px', alignItems: 'center' }}>
+              <label 
+                htmlFor="file-restore-backup" 
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  fontSize: '11px', 
+                  fontWeight: 700, 
+                  height: '38px', 
+                  cursor: 'pointer',
+                  backgroundColor: 'rgba(168, 85, 247, 0.08)',
+                  border: '1px solid rgba(168, 85, 247, 0.25)',
+                  color: '#c084fc',
+                  padding: '0 16px',
+                  borderRadius: '10px',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.15)';
+                  e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = 'rgba(168, 85, 247, 0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.25)';
+                }}
+              >
+                📂 Seleccionar Archivo
+              </label>
               <input
+                id="file-restore-backup"
                 type="file"
                 accept=".json"
-                onChange={handleImportBackup}
+                onChange={(e) => {
+                  const name = e.target.files[0]?.name || '';
+                  setFileName(name);
+                  handleImportBackup(e);
+                }}
                 disabled={importing}
-                style={{ fontSize: '11px', color: 'var(--text-primary)', cursor: 'pointer', flexGrow: 1 }}
+                style={{ display: 'none' }}
               />
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontStyle: 'italic', flexGrow: 1 }}>
+                {fileName || 'Ningún archivo seleccionado'}
+              </span>
               {importing && <span style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 700 }}>Restaurando...</span>}
             </div>
           </div>

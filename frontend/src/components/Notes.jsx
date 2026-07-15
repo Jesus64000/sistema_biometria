@@ -116,7 +116,7 @@ function Notes() {
     const newNote = {
       id: Date.now(),
       titulo: 'Nueva Nota ' + (notes.length + 1),
-      contenido: 'Comienza a escribir aquí...',
+      contenido: '',
       fecha: new Date().toLocaleDateString('es-VE'),
       prioridad: 'baja',
       fecha_limite: '',
@@ -536,7 +536,7 @@ function Notes() {
                 }}
                 value={editContenido}
                 onChange={(e) => setEditContenido(e.target.value)}
-                placeholder="Escribe las instrucciones detalladas aquí..."
+                placeholder="Comienza a escribir aquí..."
               />
             </div>
 

@@ -47,6 +47,22 @@
   
   --header-glass: rgba(255, 255, 255, 0.85);
   --kiosk-bg: #ffffff;
+
+  /* Variables del Escáner Biométrico (Modo Claro) */
+  --bg-capture-modal: #ffffff;
+  --border-capture-modal: var(--border-color);
+  --color-capture-modal: var(--text-primary);
+  --capture-btn-bg: rgba(0, 0, 0, 0.05);
+  --capture-btn-color: var(--text-secondary);
+  --capture-card-bg: rgba(0, 0, 0, 0.02);
+  --capture-card-border: var(--border-color);
+  --capture-text-light: var(--text-secondary);
+  --capture-banner-bg: rgba(15, 98, 254, 0.05);
+  --capture-banner-color: var(--primary);
+  --capture-select-bg: #ffffff;
+  --capture-select-color: var(--text-primary);
+  --capture-select-border: var(--border-color);
+  --capture-input-shadow: rgba(0, 0, 0, 0.05);
 }
 
 /* Modo Oscuro (Activado con clase .dark-mode en html) */
@@ -76,6 +92,22 @@ html.dark-mode {
   
   --header-glass: rgba(15, 21, 36, 0.85);
   --kiosk-bg: #080c16;
+
+  /* Variables del Escáner Biométrico (Modo Oscuro) */
+  --bg-capture-modal: rgba(23, 27, 43, 0.95);
+  --border-capture-modal: rgba(255, 255, 255, 0.08);
+  --color-capture-modal: #ffffff;
+  --capture-btn-bg: rgba(255, 255, 255, 0.05);
+  --capture-btn-color: rgba(255, 255, 255, 0.7);
+  --capture-card-bg: rgba(10, 12, 22, 0.6);
+  --capture-card-border: rgba(255, 255, 255, 0.06);
+  --capture-text-light: rgba(255, 255, 255, 0.4);
+  --capture-banner-bg: rgba(0, 242, 254, 0.08);
+  --capture-banner-color: #00f2fe;
+  --capture-select-bg: rgba(10, 12, 22, 0.9);
+  --capture-select-color: #ffffff;
+  --capture-select-border: rgba(0, 242, 254, 0.3);
+  --capture-input-shadow: rgba(0, 242, 254, 0.15);
 }
 
 /* Reset de estilos */
@@ -260,7 +292,7 @@ h1, h2, h3, h4, .font-display {
    COMPONENTES Y TARJETAS
    ========================================================================== */
 
-.glass-card {
+.glass-card, .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
@@ -971,21 +1003,22 @@ select option, select.form-control option {
 }
 
 .capture-modal-content {
-  background-color: rgba(23, 27, 43, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-capture-modal);
+  border: 1px solid var(--border-capture-modal);
   border-radius: 24px;
   width: 100%;
   max-width: 860px;
   margin: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 242, 254, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px var(--capture-input-shadow);
   padding: 24px;
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  color: #fff;
+  color: var(--color-capture-modal);
   font-family: 'Outfit', 'Inter', sans-serif;
   box-sizing: border-box;
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal);
 }
 
 .capture-modal-grid {

@@ -245,7 +245,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
               <Camera size={22} style={{ color: '#00f2fe' }} />
               {isEnrolment ? 'Escáner Biométrico de Enrolamiento' : 'Actualizar Foto de Perfil'}
             </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>
               {isEnrolment ? 'Captura facial multicapa de 3 ángulos' : 'Instantánea única de alta calidad'}
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
             type="button" 
             onClick={() => { stopCamera(); onClose(); }}
             style={{
-              background: 'rgba(255,255,255,0.05)',
+              background: 'var(--capture-btn-bg)',
               border: 'none',
               borderRadius: '50%',
               width: '36px',
@@ -262,11 +262,11 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: 'rgba(255,255,255,0.6)',
+              color: 'var(--capture-btn-color)',
               transition: 'all 0.2s'
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(230, 57, 70, 0.2)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--capture-btn-bg)'}
           >
             <X size={18} />
           </button>
@@ -279,18 +279,18 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
           <div className="capture-modal-col-left">
             {/* Instruction Banner */}
             <div style={{
-              backgroundColor: 'rgba(0, 242, 254, 0.08)',
-              borderLeft: '4px solid #00f2fe',
+              backgroundColor: 'var(--capture-banner-bg)',
+              borderLeft: '4px solid var(--capture-banner-color)',
               borderRadius: '8px',
               padding: '12px 16px',
               fontSize: '13px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
-              color: '#fff',
+              color: 'var(--text-primary)',
               fontWeight: 600
             }}>
-              <Video size={16} style={{ color: '#00f2fe', flexShrink: 0 }} />
+              <Video size={16} style={{ color: 'var(--capture-banner-color)', flexShrink: 0 }} />
               <span>
                 {isEnrolment ? (
                   enrolStep === 1 ? 'Muestra 1: Mire de frente y pulse "Capturar"' :
@@ -313,11 +313,11 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
               backgroundColor: '#0a0c16',
               borderRadius: '20px',
               overflow: 'hidden',
-              border: '2px solid rgba(255, 255, 255, 0.05)',
+              border: '2px solid var(--border-color)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8)'
+              boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8), var(--shadow-sm)'
             }}>
               <video
                 ref={videoRef}
@@ -362,8 +362,8 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                     </div>
                   ) : (
                     <>
-                      <Video size={40} style={{ opacity: 0.2, color: '#00f2fe' }} />
-                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                      <Video size={40} style={{ opacity: 0.2, color: 'var(--capture-banner-color)' }} />
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 500 }}>
                         Iniciando flujo de video...
                       </span>
                     </>
@@ -407,7 +407,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
             {/* Selector de cámara */}
             {videoDevices.length > 1 && streamActive && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
-                <label style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Seleccionar Cámara
                 </label>
                 <div style={{ position: 'relative', width: '100%' }}>
@@ -416,11 +416,11 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                     onChange={handleCameraChange}
                     style={{
                       width: '100%',
-                      backgroundColor: 'rgba(10, 12, 22, 0.9)',
-                      border: '1px solid rgba(0, 242, 254, 0.3)',
+                      backgroundColor: 'var(--capture-select-bg)',
+                      border: '1px solid var(--capture-select-border)',
                       borderRadius: '10px',
                       padding: '10px 14px',
-                      color: '#fff',
+                      color: 'var(--capture-select-color)',
                       fontSize: '13px',
                       fontWeight: 600,
                       outline: 'none',
@@ -441,7 +441,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                     top: '50%',
                     transform: 'translateY(-50%)',
                     pointerEvents: 'none',
-                    color: '#00f2fe',
+                    color: 'var(--capture-banner-color)',
                     fontSize: '10px'
                   }}>
                     ▼
@@ -461,7 +461,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                color: '#ff8a93',
+                color: 'var(--danger)',
                 width: '100%',
                 boxSizing: 'border-box'
               }}>
@@ -473,7 +473,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
             {/* Muestras guardadas */}
             {isEnrolment && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Muestras Guardadas ({capturedPhotos.length}/3)
                 </span>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', width: '100%' }}>
@@ -482,8 +482,8 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                     const isActive = enrolStep === step && streamActive;
                     return (
                       <div key={step} style={{
-                        backgroundColor: 'rgba(10, 12, 22, 0.6)',
-                        border: isActive ? '2px solid #00f2fe' : '1px solid rgba(255,255,255,0.06)',
+                        backgroundColor: 'var(--capture-card-bg)',
+                        border: isActive ? '2px solid var(--capture-banner-color)' : '1px solid var(--capture-card-border)',
                         borderRadius: '12px',
                         padding: '6px',
                         display: 'flex',
@@ -492,15 +492,15 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                         gap: '6px',
                         position: 'relative',
                         transition: 'all 0.2s',
-                        boxShadow: isActive ? '0 0 10px rgba(0, 242, 254, 0.15)' : 'none'
+                        boxShadow: isActive ? '0 0 10px var(--capture-input-shadow)' : 'none'
                       }}>
                         <div style={{
                           width: '50px',
                           height: '50px',
                           borderRadius: '50%',
                           overflow: 'hidden',
-                          background: 'rgba(255,255,255,0.02)',
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          background: 'var(--capture-btn-bg)',
+                          border: '1px solid var(--capture-card-border)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center'
@@ -511,7 +511,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                             <Camera size={14} style={{ opacity: 0.15 }} />
                           )}
                         </div>
-                        <span style={{ fontSize: '9px', fontWeight: 700, color: photo ? '#2ecc71' : 'rgba(255,255,255,0.4)', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '9px', fontWeight: 700, color: photo ? '#2ecc71' : 'var(--capture-text-light)', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           {step === 1 ? '1. Frente' : step === 2 ? '2. Izq' : '3. Der'}
                         </span>
                         {photo && (
@@ -547,7 +547,7 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
             )}
 
             {/* Controles de Acción */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid var(--border-color)' }}>
               
               {/* Botón Principal (Tomar Captura o Confirmar) */}
               {streamActive && ((isEnrolment && capturedPhotos.length < 3) || (!isEnrolment && !singlePhoto)) && (
@@ -615,11 +615,11 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                     type="button"
                     onClick={handleReset}
                     style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      backgroundColor: 'var(--capture-btn-bg)',
+                      border: '1px solid var(--capture-card-border)',
                       borderRadius: '10px',
                       padding: '10px',
-                      color: '#ff8a93',
+                      color: 'var(--danger)',
                       fontSize: '12px',
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -640,11 +640,11 @@ export default function CaptureModal({ isOpen, onClose, onConfirm, isEnrolment =
                   type="button"
                   onClick={() => { stopCamera(); onClose(); }}
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    backgroundColor: 'var(--capture-btn-bg)',
+                    border: '1px solid var(--capture-card-border)',
                     borderRadius: '10px',
                     padding: '10px',
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: 'var(--text-secondary)',
                     fontSize: '12px',
                     fontWeight: 700,
                     cursor: 'pointer',

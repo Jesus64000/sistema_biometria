@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Instalación - Sistema Biométrico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Sutiles luces de fondo de modo claro -->
+    <div class="glow-bg">
+        <div class="blob blob-purple"></div>
+        <div class="blob blob-cyan"></div>
+    </div>
+
+    <!-- Contenedor principal de la presentación -->
+    <main class="presentation-container">
+        <!-- Encabezado superior -->
+        <header class="presentation-header">
+            <div class="logo-area">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">Sistema<span>Biométrico</span></span>
+            </div>
+
+            <!-- Pestañas de Selección de Manual -->
+            <div class="manual-tabs">
+                <a href="index.html" class="manual-tab-btn" id="tabUsuario">📖 Manual de Usuario</a>
+                <a href="instalacion.html" class="manual-tab-btn active" id="tabInstalacion">⚙️ Manual de Instalación</a>
+            </div>
+
+            <div class="header-tag">MANUAL DE INSTALACIÓN • TESIS</div>
+            <div class="header-actions" style="display: flex; gap: 12px;">
+                <button class="view-mode-toggle" id="viewModeToggle" title="Cambiar a vista de impresión / lista continua">
+                    <span class="icon">📋</span> Vista Lista
+                </button>
+                <button class="pdf-export-btn" id="pdfExportBtn" title="Guardar manual completo como PDF">
+                    <span class="icon">📥</span> Guardar como PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenedor de diapositivas -->
+        <div class="slides-wrapper" id="slidesWrapper">
+
+            <!-- Slide 1: Portada Instalación -->
+            <section class="slide active" id="slide-1" data-image="portada_instalacion">
+                <div class="slide-cover">
+                    <div class="cover-content">
+                        <span class="cover-tag">GUÍA DE PREPARACIÓN Y PUESTA EN MARCHA</span>
+                        <h1 class="cover-title">MANUAL DE INSTALACIÓN</h1>
+                        <p class="cover-subtitle">Manual técnico de configuración de servidores locales, base de datos MySQL e Inteligencia Artificial</p>
+                        <div class="divider"></div>
+                        <div class="project-title">SISTEMA BIOMÉTRICO FACIAL</div>
+                        <p class="author-info">Trabajo de Grado • Ingeniería de Sistemas</p>
+                        <p class="author-info">Br. Luis Ramos • Cabimas, Venezuela</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 2: Arquitectura Tecnológica -->
+            <section class="slide" id="slide-2" data-image="arquitectura">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Técnico 02 / 06</span>
+                        <h2 class="slide-title">Arquitectura Distribuida del Sistema</h2>
+                        <p class="slide-desc">
+                            El ecosistema biométrico se compone de tres módulos modulares integrados en red local que se comunican de forma asíncrona:
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">⚛️</div>
+                                <div class="feature-text">
+                                    <h3>Frontend (React + Vite)</h3>
+                                    <p>Aplicación de interfaz de usuario reactiva, visor de cámara web y retroalimentación binaural mediante Web Audio API en el puerto <code>5173</code>.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">🟢</div>
+                                <div class="feature-text">
+                                    <h3>Backend (Node.js + Express)</h3>
+                                    <p>Servidor de API REST de negocios, conector inteligente a MySQL y gestor de subida de imágenes (Multer) corriendo en el puerto <code>3000</code>.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">🐍</div>
+                                <div class="feature-text">
+                                    <h3>Motor Biométrico (Python Flask)</h3>
+                                    <p>Servicio de visión artificial. Utiliza Haar Cascades para recortar rostros y LBPH (OpenCV) para entrenamiento y reconocimiento en el puerto <code>5000</code>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:3000/api/docs</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/arquitectura.png" class="screenshot-img" alt="Arquitectura de Capas" onerror="showPlaceholder(this, 'arquitectura.png', 'Toma una captura o guarda el diagrama de la Arquitectura de 3 Capas, donde se observe el flujo de comunicación entre Frontend, Backend, Base de Datos y Motor Python.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Requisitos del Sistema -->
+            <section class="slide" id="slide-3" data-image="requisitos">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Técnico 03 / 06</span>
+                        <h2 class="slide-title">Requisitos del Entorno (Windows)</h2>
+                        <p class="slide-desc">
+                            Antes de iniciar el sistema, asegúrese de tener configurados los siguientes componentes de hardware y software en su equipo Windows:
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">💻</div>
+                                <div class="feature-text">
+                                    <h3>Hardware Mínimo Requerido</h3>
+                                    <p>Procesador Intel Core i3 (4ta Gen) o AMD Ryzen 3, 8 GB de memoria RAM y Cámara Web USB HD (mínimo 720p) con buena iluminación facial.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">⚙️</div>
+                                <div class="feature-text">
+                                    <h3>Servidores Locales y Runtimes</h3>
+                                    <p>XAMPP instalado (con MySQL activo en puerto 3306), Node.js (versión LTS 18 o superior) y Python (versión 3.9 o superior).</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📦</div>
+                                <div class="feature-text">
+                                    <h3>Bibliotecas de Visión Artificial</h3>
+                                    <p>Módulos de Python requeridos para el motor biométrico: <code>opencv-contrib-python</code> (LBPH), <code>Flask</code> y <code>numpy</code>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">sistema/requisitos</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/requisitos.png" class="screenshot-img" alt="Requisitos de Software" onerror="showPlaceholder(this, 'requisitos.png', 'Toma una captura de pantalla que muestre los runtimes necesarios instalados en Windows (por ejemplo, el cmd con node -v y python --version) o el esquema de requisitos.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Preparación de Base de Datos -->
+            <section class="slide" id="slide-4" data-image="database">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Técnico 04 / 06</span>
+                        <h2 class="slide-title">Preparación de MySQL en XAMPP</h2>
+                        <p class="slide-desc">
+                            El sistema utiliza una base de datos relacional para el control financiero, histórico de check-ins y registros de auditoría.
+                        </p>
+                        
+                        <div class="steps-list">
+                            <div class="step-card">
+                                <div class="step-num">1</div>
+                                <div class="step-content">
+                                    <h3>Iniciar MySQL</h3>
+                                    <p>Abra el panel de control de <strong>XAMPP</strong> y haga clic en "Start" junto a MySQL (debe encenderse en verde en el puerto 3306).</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">2</div>
+                                <div class="step-content">
+                                    <h3>Creación Automática de Tablas</h3>
+                                    <p>No es necesario crear la base de datos manualmente. Al arrancar el Backend de Node.js por primera vez, este creará de forma automatizada las tablas y relaciones.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">3</div>
+                                <div class="step-content">
+                                    <h3>Sembrar Registros Demo</h3>
+                                    <p>Abra una consola en <code>backend/</code> y ejecute el seeder: <br>
+                                    <code class="url-code">npm run seed</code> <br>
+                                    Esto poblará la BD con 5 socios muestra, registros de check-in e inicios de sesión administrativos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost/phpmyadmin</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/database.png" class="screenshot-img" alt="Configuración MySQL" onerror="showPlaceholder(this, 'database.png', 'Toma una captura de pantalla de phpMyAdmin mostrando la base de datos creada, o del panel de XAMPP con los servicios encendidos.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Ejecución del Sistema -->
+            <section class="slide" id="slide-5" data-image="despliegue">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Técnico 05 / 06</span>
+                        <h2 class="slide-title">Despliegue y Puesta en Marcha</h2>
+                        <p class="slide-desc">
+                            Para facilitar el encendido del ecosistema de software y evitar la apertura manual de consolas, se provee un script de arranque automatizado.
+                        </p>
+                        
+                        <div class="steps-list">
+                            <div class="step-card">
+                                <div class="step-num">1</div>
+                                <div class="step-content">
+                                    <h3>Ejecutar iniciar_sistema.bat</h3>
+                                    <p>Haga doble clic en el archivo <code>iniciar_sistema.bat</code> ubicado en la raíz del proyecto para iniciar las 3 capas del sistema.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">2</div>
+                                <div class="step-content">
+                                    <h3>Las 3 Capas en Segundo Plano</h3>
+                                    <p>Se abrirán tres consolas de comando de Windows independientes que levantarán el Frontend (React), el Backend (Node.js) y el Motor de IA (Python Flask).</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">3</div>
+                                <div class="step-content">
+                                    <h3>Abrir el Navegador</h3>
+                                    <p>Ingrese al navegador de su preferencia y acceda a la dirección local del Frontend: <br>
+                                    <code class="url-code">http://localhost:5173</code></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">iniciar_sistema.bat</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/despliegue.png" class="screenshot-img" alt="Script de Despliegue" onerror="showPlaceholder(this, 'despliegue.png', 'Toma una captura de pantalla de las tres terminales CMD ejecutándose en paralelo tras ejecutar el archivo .bat.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Troubleshooting de Instalación -->
+            <section class="slide" id="slide-6" data-image="troubleshooting">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Técnico 06 / 06</span>
+                        <h2 class="slide-title">Guía de Solución de Problemas</h2>
+                        <p class="slide-desc">
+                            Errores técnicos comunes de primer despliegue y sus respectivas soluciones paso a paso:
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">⚠️</div>
+                                <div class="feature-text">
+                                    <h3>Conflicto de Puertos (3000 / 5000 / 3306)</h3>
+                                    <p>Si alguna consola indica "Port already in use", verifique que no posea otra terminal, instancia de base de datos o aplicación levantada en el mismo puerto.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">🔌</div>
+                                <div class="feature-text">
+                                    <h3>Error de Comunicación con el Motor</h3>
+                                    <p>Si el Frontend no detecta la cámara o arroja error del reconocedor, confirme que el motor de Python Flask en el puerto <code>5000</code> esté corriendo e instalado con <code>opencv-contrib-python</code>.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">🗄️</div>
+                                <div class="feature-text">
+                                    <h3>MySQL Connection Refused</h3>
+                                    <p>Verifique en el panel de XAMPP que MySQL esté de color verde. Confirme que la contraseña y usuario en el archivo de entorno del backend coincidan con los de su base de datos local.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">sistema/soporte</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/troubleshooting.png" class="screenshot-img" alt="Solución de Problemas" onerror="showPlaceholder(this, 'troubleshooting.png', 'Toma una captura de la consola o la pantalla de soporte de red mostrando chequeo de los puertos y estados de conexión.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Barra de controles inferior -->
+        <footer class="presentation-controls" id="presentationControls">
+            <div class="controls-left">
+                <button class="control-btn" id="prevBtn" title="Diapositiva Anterior (Flecha Izquierda / Backspace)">← Anterior</button>
+            </div>
+            
+            <div class="controls-center">
+                <!-- Indicador de barra de progreso -->
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+                <div class="slide-indicator" id="slideIndicator">Diapositiva 1 de 6</div>
+            </div>
+            
+            <div class="controls-right">
+                <button class="control-btn btn-primary" id="nextBtn" title="Siguiente Diapositiva (Flecha Derecha / Espacio)">Siguiente →</button>
+            </div>
+        </footer>
+
+        <!-- Selector rápido de diapositivas (Navegación por miniaturas) -->
+        <div class="thumbnails-bar" id="thumbnailsBar">
+            <button class="thumb-btn active" data-slide="1">1. Portada</button>
+            <button class="thumb-btn" data-slide="2">2. Arquitectura</button>
+            <button class="thumb-btn" data-slide="3">3. Requisitos</button>
+            <button class="thumb-btn" data-slide="4">4. Base de Datos</button>
+            <button class="thumb-btn" data-slide="5">5. Despliegue</button>
+            <button class="thumb-btn" data-slide="6">6. Troubleshooting</button>
+        </div>
+    </main>
+
+    <!-- Instrucciones rápidas de teclado -->
+    <div class="keyboard-shortcuts-hint" id="keyboardHint">
+        <span>⌨️ Usa <strong>←</strong> y <strong>→</strong> (o <strong>Espacio</strong>) para navegar. Pulsa <strong>F11</strong> para Pantalla Completa.</span>
+        <button class="close-hint-btn" id="closeHintBtn">×</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -98,6 +98,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
   const [config, setConfig] = useState({
     tasa_cambio: 114.00,
+    cuota_semanal: 10.00,
     cuota_mensual: 30.00,
     cuota_trimestral: 80.00,
     cuota_anual: 300.00,
@@ -123,7 +124,8 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
 
   const calculateTotalPayment = (tipo, incIns, incReac, customConfig = config) => {
     let base = parseFloat(customConfig.cuota_mensual !== undefined ? customConfig.cuota_mensual : 30.00);
-    if (tipo === 'trimestral') base = parseFloat(customConfig.cuota_trimestral !== undefined ? customConfig.cuota_trimestral : 80.00);
+    if (tipo === 'semanal') base = parseFloat(customConfig.cuota_semanal !== undefined ? customConfig.cuota_semanal : 10.00);
+    else if (tipo === 'trimestral') base = parseFloat(customConfig.cuota_trimestral !== undefined ? customConfig.cuota_trimestral : 80.00);
     else if (tipo === 'anual') base = parseFloat(customConfig.cuota_anual !== undefined ? customConfig.cuota_anual : 300.00);
 
     if (incIns && customConfig.cobra_inscripcion === 1) base += parseFloat(customConfig.cuota_inscripcion !== undefined ? customConfig.cuota_inscripcion : 10.00);
@@ -1258,6 +1260,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
                     {config.solo_mensual !== 1 && (
                       <>
+                        <option value="semanal">Semanal (${parseFloat(config.cuota_semanal || 10).toFixed(2)})</option>
                         <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
                         <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
                       </>
@@ -1464,6 +1467,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
                     <option value="mensual">Mensual (${parseFloat(config.cuota_mensual || 20).toFixed(2)})</option>
                     {config.solo_mensual !== 1 && (
                       <>
+                        <option value="semanal">Semanal (${parseFloat(config.cuota_semanal || 10).toFixed(2)})</option>
                         <option value="trimestral">Trimestral (${parseFloat(config.cuota_trimestral || 80).toFixed(2)})</option>
                         <option value="anual">Anual (${parseFloat(config.cuota_anual || 300).toFixed(2)})</option>
                       </>

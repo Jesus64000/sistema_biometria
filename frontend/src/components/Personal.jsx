@@ -705,7 +705,7 @@ export default function Personal({ activeGym = 'RamosGym', tasaCambio = 114.00 }
               }}>
                 <span style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 800, letterSpacing: '0.5px' }}>CONVERSIÓN TASA OFICIAL BCV</span>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                  <span style={{ fontSize: '20px', fontWeight: 800, color: '#f8fafc' }}>
+                  <span style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)' }}>
                     Bs. {(parseFloat(payFormData.monto || 0) * tasaCambio).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>

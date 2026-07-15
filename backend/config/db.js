@@ -138,6 +138,7 @@ async function checkAndCreateTables() {
         \`tasa_cambio\` DECIMAL(10, 2) NOT NULL DEFAULT 114.00,
         \`logo_url\` VARCHAR(255) DEFAULT NULL,
         \`bcv_last_update\` TIMESTAMP NULL DEFAULT NULL,
+        \`cuota_semanal\` DECIMAL(10, 2) NOT NULL DEFAULT 10.00,
         \`cuota_mensual\` DECIMAL(10, 2) NOT NULL DEFAULT 30.00,
         \`cuota_trimestral\` DECIMAL(10, 2) NOT NULL DEFAULT 80.00,
         \`cuota_anual\` DECIMAL(10, 2) NOT NULL DEFAULT 300.00,
@@ -230,6 +231,7 @@ async function checkAndCreateTables() {
 
     // MIGRACIÓN: Añadir columnas de tarifas a configuracion si no existen (Migración automática incremental)
     const configPriceColumns = [
+      { name: 'cuota_semanal', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 10.00' },
       { name: 'cuota_mensual', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 30.00' },
       { name: 'cuota_trimestral', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 80.00' },
       { name: 'cuota_anual', type: 'DECIMAL(10, 2) NOT NULL DEFAULT 300.00' },

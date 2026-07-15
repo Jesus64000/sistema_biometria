@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Sistema Biométrico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Sutiles luces de fondo de modo claro -->
+    <div class="glow-bg">
+        <div class="blob blob-purple"></div>
+        <div class="blob blob-cyan"></div>
+    </div>
+
+    <!-- Contenedor principal de la presentación -->
+    <main class="presentation-container">
+        <!-- Encabezado superior -->
+        <header class="presentation-header">
+            <div class="logo-area">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">Sistema<span>Biométrico</span></span>
+            </div>
+
+            <!-- Pestañas de Selección de Manual -->
+            <div class="manual-tabs">
+                <a href="index.html" class="manual-tab-btn active" id="tabUsuario">📖 Manual de Usuario</a>
+                <a href="instalacion.html" class="manual-tab-btn" id="tabInstalacion">⚙️ Manual de Instalación</a>
+            </div>
+
+            <div class="header-tag">MANUAL DE USUARIO • TESIS</div>
+            <div class="header-actions" style="display: flex; gap: 12px;">
+                <button class="view-mode-toggle" id="viewModeToggle" title="Cambiar a vista de impresión / lista continua">
+                    <span class="icon">📋</span> Vista Lista
+                </button>
+                <button class="pdf-export-btn" id="pdfExportBtn" title="Guardar manual completo como PDF">
+                    <span class="icon">📥</span> Guardar como PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenedor de diapositivas -->
+        <div class="slides-wrapper" id="slidesWrapper">
+            
+            <!-- Slide 1: Portada Usuario -->
+            <section class="slide active" id="slide-1" data-image="portada_usuario">
+                <div class="slide-cover">
+                    <div class="cover-content">
+                        <span class="cover-tag">MANUAL DE OPERACIÓN Y ADMINISTRACIÓN</span>
+                        <h1 class="cover-title">MANUAL DE USUARIO</h1>
+                        <p class="cover-subtitle">Guía interactiva para la gestión de accesos y administración financiera</p>
+                        <div class="divider"></div>
+                        <div class="project-title">SISTEMA BIOMÉTRICO FACIAL</div>
+                        <p class="author-info">Trabajo de Grado • Ingeniería de Sistemas</p>
+                        <p class="author-info">Br. Luis Ramos • Cabimas, Venezuela</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 2: Control de Acceso (Login) -->
+            <section class="slide" id="slide-2" data-image="login">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 02 / 08</span>
+                        <h2 class="slide-title">Control de Acceso y Roles (RBAC)</h2>
+                        <p class="slide-desc">
+                            Compuerta de inicio de sesión segura con control estricto de roles administrativos (RBAC) y segmentación de datos por sucursales.
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">🔑</div>
+                                <div class="feature-text">
+                                    <h3>Administrador General</h3>
+                                    <p>Acceso total. Posee un selector desbloqueado para auditar y alternar entre todas las sedes del municipio Cabimas.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">👤</div>
+                                <div class="feature-text">
+                                    <h3>Personal de Recepción</h3>
+                                    <p>Acceso limitado. Vista bloqueada y restringida estrictamente a los cobros, socios y asistencias de la sucursal asignada.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">⚡</div>
+                                <div class="feature-text">
+                                    <h3>Demostración Rápida 1-Clic</h3>
+                                    <p>La pantalla de Login incluye botones de acceso directo para cargar las credenciales de demostración instantáneamente ante el jurado.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/login</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/login.png" class="screenshot-img" alt="Inicio de Sesión" onerror="showPlaceholder(this, 'login.png', 'Toma una captura de la pantalla de Login en modo claro, donde se muestren los campos de usuario/contraseña y los botones de simulación rápida en la parte inferior.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3: Registro y Enrolamiento Facial -->
+            <section class="slide" id="slide-3" data-image="enrolamiento">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 03 / 08</span>
+                        <h2 class="slide-title">Registro y Enrolamiento Facial</h2>
+                        <p class="slide-desc">
+                            Flujo secuencial para registrar los datos básicos de un socio y entrenar sus patrones biométricos en el motor de Inteligencia Artificial.
+                        </p>
+                        
+                        <div class="steps-list">
+                            <div class="step-card">
+                                <div class="step-num">1</div>
+                                <div class="step-content">
+                                    <h3>Registro Físico</h3>
+                                    <p>Ingrese al menú "Socios", haga clic en "Nuevo Socio" y complete los datos (Cédula, Nombre, Teléfono, Correo).</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">2</div>
+                                <div class="step-content">
+                                    <h3>Captura Biométrica Angular</h3>
+                                    <p>Presione "Enrolar Rostro" para abrir la cámara web y capture tres poses: Frente, Perfil Izquierdo y Perfil Derecho.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-num">3</div>
+                                <div class="step-content">
+                                    <h3>Entrenamiento del Modelo LBPH</h3>
+                                    <p>Presione "Confirmar y Entrenar". El motor actualizará localmente el archivo de pesos <code>model.yml</code> en 2-5 segundos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/socios?action=enrolar</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/enrolamiento.png" class="screenshot-img" alt="Enrolamiento Facial" onerror="showPlaceholder(this, 'enrolamiento.png', 'Toma una captura de la interfaz de Enrolamiento Facial de un socio, donde se aprecien las capturas angulares de las tres poses y los recuadros verdes de confirmación de rostros.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Cobro y Facturación de Membresías -->
+            <section class="slide" id="slide-4" data-image="pagos">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 04 / 08</span>
+                        <h2 class="slide-title">Cobro de Membresías y Solvencias</h2>
+                        <p class="slide-desc">
+                            El estado de solvencia es el factor lógico determinante en la puerta de entrada. Su registro se realiza de forma directa en el módulo financiero.
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">💰</div>
+                                <div class="feature-text">
+                                    <h3>Pasarela Multidivisa (USD / Bs.)</h3>
+                                    <p>Permite cobros en Bolívares o Dólares. Si se cancela en bolívares, el sistema realiza la conversión automática según la tasa configurada.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📈</div>
+                                <div class="feature-text">
+                                    <h3>Actualización de Solvencia Inmediata</h3>
+                                    <p>Al procesarse el pago, la membresía del socio se extiende por 30 días calendario y su estatus cambia instantáneamente a "Solvente" en la base de datos MySQL.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📋</div>
+                                <div class="feature-text">
+                                    <h3>Métodos de Pago</h3>
+                                    <p>Soporte para Pago Móvil, Efectivo Divisas, Efectivo Bolívares, Punto de Venta y Transferencia Bancaria.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/pagos</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/pagos.png" class="screenshot-img" alt="Registro de Pagos" onerror="showPlaceholder(this, 'pagos.png', 'Toma una captura de la interfaz de Registro de Pagos, donde se vea el buscador de socios por cédula, los inputs para el monto en bolívares/dólares, método de pago y referencia.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Kiosko de Control de Acceso -->
+            <section class="slide" id="slide-5" data-image="kiosko">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 05 / 08</span>
+                        <h2 class="slide-title">Kiosko de Control de Acceso</h2>
+                        <p class="slide-desc">
+                            Módulo automatizado a pantalla completa ubicado en el acceso físico del recinto. Valida la identidad y solvencia en milisegundos.
+                        </p>
+                        
+                        <div class="card-bullets">
+                            <div class="bullet-point">
+                                <span class="bullet-icon">🟢</span>
+                                <div>
+                                    <h4>Acceso Autorizado (Verde Esmeralda)</h4>
+                                    <p>Socio registrado y solvente. Emite un chime de dos tonos armónicos (C5 -> E5), registra el check-in en BD y permite la entrada.</p>
+                                </div>
+                            </div>
+                            <div class="bullet-point">
+                                <span class="bullet-icon">🔴</span>
+                                <div>
+                                    <h4>Acceso Denegado (Rojo Carmesí)</h4>
+                                    <p>Socio insolvente (membresía vencida) o rostro no registrado. Emite un zumbido grave de rechazo y bloquea el ingreso.</p>
+                                </div>
+                            </div>
+                            <div class="bullet-point">
+                                <span class="bullet-icon">⌨️</span>
+                                <div>
+                                    <h4>Simulador y Entrada Manual</h4>
+                                    <p>En caso de fallas de luz o cámara, el recepcionista posee botones en el lateral para simular accesos o digitar la Cédula manualmente.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/recepcion</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/kiosko.png" class="screenshot-img" alt="Kiosko de Acceso" onerror="showPlaceholder(this, 'kiosko.png', 'Toma una captura de la pantalla de Acceso Recepción en modo claro, donde se vea el recuadro de la cámara con el escáner holográfico activo y el panel simulador a un lado.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Dashboard de Analíticas -->
+            <section class="slide" id="slide-6" data-image="dashboard">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 06 / 08</span>
+                        <h2 class="slide-title">Dashboard Analítico de Negocios</h2>
+                        <p class="slide-desc">
+                            El centro de mando para que los administradores analicen en tiempo real la afluencia, ingresos y estado de solvencia de las sedes.
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">📊</div>
+                                <div class="feature-text">
+                                    <h3>Gráfico de Horas Pico</h3>
+                                    <p>Representación interactiva construida en CSS que mide el volumen de check-ins por hora para identificar las horas pico de afluencia.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">💵</div>
+                                <div class="feature-text">
+                                    <h3>KPIs Financieros y Operativos</h3>
+                                    <p>Tarjetas dinámicas que muestran la recaudación de caja del día, total de socios solventes e insolventes activos en tiempo real.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📡</div>
+                                <div class="feature-text">
+                                    <h3>Feed de Transacciones Recientes</h3>
+                                    <p>Panel con los últimos accesos autorizados de la sede con fotografía, nombre del socio y hora de check-in.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/dashboard</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/dashboard.png" class="screenshot-img" alt="Dashboard Principal" onerror="showPlaceholder(this, 'dashboard.png', 'Toma una captura de pantalla del Dashboard principal en modo claro, donde se vea el gráfico de horas pico de afluencia, las tarjetas de KPI superiores y el feed de ingresos recientes.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 7: Analíticas y Reportes de Afluencia -->
+            <section class="slide" id="slide-7" data-image="analiticas">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 07 / 08</span>
+                        <h2 class="slide-title">Analíticas y Estadísticas de Afluencia</h2>
+                        <p class="slide-desc">
+                            Módulo de analítica avanzada para evaluar el flujo de asistencia histórica, permitiendo optimizar la distribución de recursos en los centros deportivos.
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">📈</div>
+                                <div class="feature-text">
+                                    <h3>Análisis de Horas Pico</h3>
+                                    <p>Interpretación del gráfico de tráfico para determinar los horarios con mayor concurrencia de socios. Permite planificar el personal necesario.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📊</div>
+                                <div class="feature-text">
+                                    <h3>Ratios de Solvencia y Asistencia</h3>
+                                    <p>Métricas consolidadas de la relación entre socios solventes y deudores insolventes, ayudando en la toma de decisiones administrativas.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📋</div>
+                                <div class="feature-text">
+                                    <h3>Generación de Reportes</h3>
+                                    <p>Consolidación de la data de asistencias, pagos y auditoría, con filtros cronológicos para la exportación de reportes de gestión.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/dashboard?tab=analitica</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/analiticas.png" class="screenshot-img" alt="Estadísticas y Analíticas" onerror="showPlaceholder(this, 'analiticas.png', 'Toma una captura enfocando los gráficos estadísticos detallados de afluencia o el módulo de analítica general en modo claro.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 8: Configuración General y Parámetros -->
+            <section class="slide" id="slide-8" data-image="configuracion">
+                <div class="slide-grid">
+                    <div class="slide-info">
+                        <span class="slide-badge">Módulo 08 / 08</span>
+                        <h2 class="slide-title">Parámetros, Gastos y Nómina</h2>
+                        <p class="slide-desc">
+                            Módulo administrativo centralizado para controlar los parámetros financieros del negocio, registrar gastos operativos y nómina del personal.
+                        </p>
+                        
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <div class="feature-icon">⚙️</div>
+                                <div class="feature-text">
+                                    <h3>Tasa de Cambio y Membresía</h3>
+                                    <p>Defina la tasa oficial del día de Bolívares por Dólar y configure el costo mensual estándar de la membresía en divisas.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">👤</div>
+                                <div class="feature-text">
+                                    <h3>Gestión de Personal y Nómina</h3>
+                                    <p>Administración del staff e instructores del centro. Permite fijar salarios en dólares que se convierten a la tasa del día de forma transparente.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">📉</div>
+                                <div class="feature-text">
+                                    <h3>Balance Neto y Egresos</h3>
+                                    <p>Registro de gastos del centro deportivo (electricidad, mantenimiento). El sistema resta los egresos de la recaudación para reportar la utilidad neta.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide-visual">
+                        <div class="browser-mockup">
+                            <div class="browser-bar">
+                                <div class="browser-dots">
+                                    <span class="dot-red"></span>
+                                    <span class="dot-yellow"></span>
+                                    <span class="dot-green"></span>
+                                </div>
+                                <div class="browser-url">http://localhost:5173/configuracion</div>
+                            </div>
+                            <div class="browser-content">
+                                <img src="assets/images/configuracion.png" class="screenshot-img" alt="Configuración General" onerror="showPlaceholder(this, 'configuracion.png', 'Toma una captura del panel de Configuración en modo claro, mostrando los inputs de Tasa de Cambio y Membresía, la tabla de registro de Gastos y el control del Personal.')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Barra de controles inferior -->
+        <footer class="presentation-controls" id="presentationControls">
+            <div class="controls-left">
+                <button class="control-btn" id="prevBtn" title="Diapositiva Anterior (Flecha Izquierda / Backspace)">← Anterior</button>
+            </div>
+            
+            <div class="controls-center">
+                <!-- Indicador de barra de progreso -->
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+                <div class="slide-indicator" id="slideIndicator">Diapositiva 1 de 8</div>
+            </div>
+            
+            <div class="controls-right">
+                <button class="control-btn btn-primary" id="nextBtn" title="Siguiente Diapositiva (Flecha Derecha / Espacio)">Siguiente →</button>
+            </div>
+        </footer>
+
+        <!-- Selector rápido de diapositivas (Navegación por miniaturas) -->
+        <div class="thumbnails-bar" id="thumbnailsBar">
+            <button class="thumb-btn active" data-slide="1">1. Portada</button>
+            <button class="thumb-btn" data-slide="2">2. Login y Roles</button>
+            <button class="thumb-btn" data-slide="3">3. Enrolamiento</button>
+            <button class="thumb-btn" data-slide="4">4. Facturación</button>
+            <button class="thumb-btn" data-slide="5">5. Kiosko Acceso</button>
+            <button class="thumb-btn" data-slide="6">6. Dashboard</button>
+            <button class="thumb-btn" data-slide="7">7. Analíticas</button>
+            <button class="thumb-btn" data-slide="8">8. Configuración</button>
+        </div>
+    </main>
+
+    <!-- Instrucciones rápidas de teclado -->
+    <div class="keyboard-shortcuts-hint" id="keyboardHint">
+        <span>⌨️ Usa <strong>←</strong> y <strong>→</strong> (o <strong>Espacio</strong>) para navegar. Pulsa <strong>F11</strong> para Pantalla Completa.</span>
+        <button class="close-hint-btn" id="closeHintBtn">×</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

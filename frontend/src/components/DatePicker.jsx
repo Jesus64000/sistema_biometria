@@ -144,7 +144,7 @@ function DatePicker({ value, onChange, max, min, placeholder = 'Seleccionar fech
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
             <button
               type="button"
-              onClick={mode === 'years' ? () => setMode('days') : prevMonth}
+              onClick={mode === 'years' ? () => setViewYear(y => y - 12) : prevMonth}
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '6px', display:'flex',alignItems:'center' }}
             >
               <ChevronLeft size={16} />

@@ -407,7 +407,16 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       
       // 2. Filtro Solvencia
       if (filterSolvency === 'solvent' && m.membresia_solvencia !== 1) return false;
-      if (filterSolvency === 'insolvent' && m.membresia_solvencia !== 0) return false;
+      if (filterSolvency === 'insolvent') {
+        let isExpired = m.membresia_solvencia === 0;
+        if (m.membresia_fin) {
+          const hoy = new Date();
+          hoy.setHours(0,0,0,0);
+          const fin = new Date(m.membresia_fin);
+          if (fin < hoy) isExpired = true;
+        }
+        if (!isExpired) return false;
+      }
       
       // 3. Filtro Estatus
       if (filterStatus === 'activo' && m.status !== 'activo') return false;

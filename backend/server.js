@@ -25,8 +25,12 @@ app.use('/uploads', express.static(uploadsDir));
 
 // Inicialización de la Base de Datos
 initDB()
-  .then(() => {
+  .then(async () => {
     console.log('🚀 Base de datos inicializada de forma segura.');
+    
+    // Sincronizar tasa BCV al inicio
+    const { performBcvSyncInternal } = require('./controllers/configController');
+    await performBcvSyncInternal();
     
     // Importación de rutas
     const memberRoutes = require('./routes/members');

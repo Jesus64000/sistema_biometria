@@ -595,7 +595,7 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           </div>
         </div>
 
-        <div className="stat-card danger" id="stat-expired" onClick={() => onNavigate('members', { status: 'all', solvency: 'insolvent', expiringSoon: false })} style={{ cursor: 'pointer' }}>
+        <div className="stat-card danger" id="stat-expired" onClick={() => onNavigate('members', { status: 'activo', solvency: 'insolvent', expiringSoon: false })} style={{ cursor: 'pointer' }}>
           <div className="stat-icon">
             <AlertTriangle size={20} />
           </div>

@@ -1,0 +1,65 @@
+{
+  "name": "ramos-gym-biometria",
+  "version": "1.0.0",
+  "description": "Sistema de Control Biométrico y Gestión Deportiva - Ramos Gym",
+  "main": "electron/main.js",
+  "author": "Luis Ramos",
+  "scripts": {
+    "build:frontend": "npm run build --prefix frontend",
+    "build:biometrics": "cd biometrics && python -m PyInstaller --noconfirm --onedir --name biometrics --add-data \"haarcascade_frontalface_default.xml;.\" --hidden-import cv2 --hidden-import flask --hidden-import flask_cors --hidden-import numpy app.py",
+    "start": "electron .",
+    "build:exe": "npm run build:frontend && npm run build:biometrics && electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.ramosgym.biometria",
+    "productName": "Ramos Gym",
+    "directories": {
+      "output": "dist_installer"
+    },
+    "asarUnpack": [
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "node_modules/**/*"
+    ],
+    "files": [
+      "electron/**/*",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "database/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "biometrics/dist/biometrics",
+        "to": "biometrics",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ramos Gym - Biometria"
+    }
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.7"
+  },
+  "devDependencies": {
+    "electron": "^30.0.9",
+    "electron-builder": "^24.13.3"
+  }
+}

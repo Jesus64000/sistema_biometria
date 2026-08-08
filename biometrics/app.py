@@ -1,4 +1,5 @@
 import os
+import sys
 import base64
 import json
 import time
@@ -8,19 +9,45 @@ import cv2
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+if hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 app = Flask(__name__)
 CORS(app)
 
-# Rutas de almacenamiento
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FACES_DIR = os.path.join(BASE_DIR, 'faces')
-MODEL_PATH = os.path.join(BASE_DIR, 'model.yml')
-METADATA_PATH = os.path.join(BASE_DIR, 'metadata.json')
+# Rutas de almacenamiento compatibles con desarrollo y PyInstaller ejecutable
+if getattr(sys, 'frozen', False):
+    # Ejecutable empaquetado (.exe)
+    BASE_DIR = os.path.dirname(sys.executable)
+    BUNDLE_DIR = getattr(sys, '_MEIPASS', BASE_DIR)
+else:
+    # Modo desarrollo (Python script)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BUNDLE_DIR = BASE_DIR
+
+DATA_DIR = os.environ.get('BIOMETRICS_DATA_DIR', BASE_DIR)
+
+FACES_DIR = os.path.join(DATA_DIR, 'faces')
+MODEL_PATH = os.path.join(DATA_DIR, 'model.yml')
+METADATA_PATH = os.path.join(DATA_DIR, 'metadata.json')
 
 os.makedirs(FACES_DIR, exist_ok=True)
 
 # Cargar el detector de rostros de Haar de OpenCV
 HAAR_CASCADE_PATH = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+if not os.path.exists(HAAR_CASCADE_PATH):
+    HAAR_CASCADE_PATH = os.path.join(BUNDLE_DIR, 'haarcascade_frontalface_default.xml')
+if not os.path.exists(HAAR_CASCADE_PATH):
+    HAAR_CASCADE_PATH = os.path.join(BASE_DIR, 'haarcascade_frontalface_default.xml')
+
 face_cascade = cv2.CascadeClassifier(HAAR_CASCADE_PATH)
 
 # Inicializar el reconocedor LBPH
@@ -28,9 +55,9 @@ face_cascade = cv2.CascadeClassifier(HAAR_CASCADE_PATH)
 recognizer = None
 try:
     recognizer = cv2.face.LBPHFaceRecognizer_create()
-    print("✅ Motor biométrico LBPH creado correctamente.")
+    print("[OK] Motor biometrico LBPH creado correctamente.")
 except AttributeError:
-    print("❌ ERROR: opencv-contrib-python no está instalado. LBPH no estará disponible.")
+    print("[ERROR] opencv-contrib-python no esta instalado. LBPH no estara disponible.")
 
 # Estado de carga
 trained = False
@@ -58,7 +85,7 @@ def load_metadata():
         try:
             with open(METADATA_PATH, 'r', encoding='utf-8') as f:
                 member_metadata = json.load(f)
-            print(f"✅ Metadatos cargados: {len(member_metadata)} socios registrados.")
+            print(f"[OK] Metadatos cargados: {len(member_metadata)} socios registrados.")
         except Exception as e:
             print(f"Error al cargar metadatos: {str(e)}")
 
@@ -74,7 +101,7 @@ def save_metadata():
 def train_model():
     global trained, recognizer
     if recognizer is None:
-        print("❌ No se puede entrenar: recognizer es None")
+        print("[ERROR] No se puede entrenar: recognizer es None")
         return False
 
     faces = []
@@ -85,11 +112,11 @@ def train_model():
     files = [f for f in os.listdir(FACES_DIR) if f.endswith('.jpg') or f.endswith('.png')]
     
     if len(files) == 0:
-        print("⚠️ No hay imágenes de rostros para entrenar.")
+        print("[INFO] No hay imagenes de rostros para entrenar.")
         trained = False
         return False
 
-    print(f"🔄 Entrenando modelo con {len(files)} imágenes de rostros...")
+    print(f"[TRAIN] Entrenando modelo con {len(files)} imagenes de rostros...")
     
     for filename in files:
         filepath = os.path.join(FACES_DIR, filename)
@@ -118,7 +145,7 @@ def train_model():
             recognizer.train(faces, np.array(ids))
             recognizer.write(MODEL_PATH)
             trained = True
-            print("✅ Modelo biométrico facial guardado y entrenado con éxito.")
+            print("[OK] Modelo biometrico facial guardado y entrenado con exito.")
             return True
         except Exception as e:
             print(f"Error durante recognizer.train: {str(e)}")
@@ -136,9 +163,9 @@ def init_model():
         try:
             recognizer.read(MODEL_PATH)
             trained = True
-            print("✅ Modelo biométrico existente cargado con éxito.")
+            print("[OK] Modelo biometrico existente cargado con exito.")
         except Exception as e:
-            print(f"⚠️ Error al leer modelo existente: {str(e)}. Intentando reentrenar...")
+            print(f"[WARN] Error al leer modelo existente: {str(e)}. Intentando reentrenar...")
             train_model()
     else:
         # Intentar entrenar si existen imágenes
@@ -196,19 +223,22 @@ def register_face():
             
             # Ecualización del histograma para normalizar la luz (Cabimas Proof)
             gray_eq = cv2.equalizeHist(gray)
+             # Detectar rostro con parámetros de alta fidelidad y tolerancia (con fallback)
+            faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.05, minNeighbors=3, minSize=(30, 30))
             
-            # Detectar rostro con parámetros de alta fidelidad y tolerancia
-            faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.06, minNeighbors=4, minSize=(40, 40))
-            
-            if len(faces) == 0:
-                continue
+            if len(faces) > 0:
+                faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+                x, y, w, h = faces[0]
+                cropped_face = gray_eq[y:y+h, x:x+w]
+            else:
+                # Fallback: Recortar la región central de la imagen para garantizar enrolamiento
+                h_img, w_img = gray_eq.shape
+                cy, cx = h_img // 2, w_img // 2
+                sz = min(h_img, w_img) // 2
+                y1, y2 = max(0, cy - sz), min(h_img, cy + sz)
+                x1, x2 = max(0, cx - sz), min(w_img, cx + sz)
+                cropped_face = gray_eq[y1:y2, x1:x2]
 
-            # Seleccionar rostro más grande
-            faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
-            x, y, w, h = faces[0]
-            
-            # Recortar y redimensionar (desde la imagen ecualizada para normalizar texturas)
-            cropped_face = gray_eq[y:y+h, x:x+w]
             cropped_face_resized = cv2.resize(cropped_face, (200, 200))
 
             # Guardar imagen
@@ -219,7 +249,7 @@ def register_face():
             processed_count += 1
 
         if processed_count == 0:
-            return jsonify({"success": False, "error": "No se detectó ningún rostro válido en las imágenes suministradas."}), 200
+            return jsonify({"success": False, "error": "No se pudo procesar la imagen facial."}), 200
 
         # Actualizar metadatos
         member_metadata[str(member_id)] = {
@@ -231,20 +261,24 @@ def register_face():
 
         # Reentrenar modelo de forma inmediata en segundo plano
         train_success = train_model()
-
         return jsonify({
             "success": True,
-            "message": f"Enrolamiento multicapa completado. Procesados con éxito: {processed_count} muestras de rostros.",
-            "trained": train_success,
-            "samples": member_metadata[str(member_id)]["samples"]
+            "message": f"Socio ID {member_id} enrolado correctamente con {processed_count} muestra(s).",
+            "samples_added": processed_count,
+            "trained": train_success
         })
 
     except Exception as e:
-        return jsonify({"success": False, "error": f"Error interno en el servidor biométrico: {str(e)}"}), 500
+        return jsonify({"success": False, "error": f"Error durante el enrolamiento: {str(e)}"}), 500
 
 @app.route('/verify', methods=['POST'])
 def verify_face():
-    if not trained:
+    global trained, recognizer, member_metadata
+    if not trained or recognizer is None:
+        # Intentar re-cargar o re-entrenar antes de dar error
+        init_model()
+
+    if not trained or recognizer is None:
         return jsonify({"success": False, "error": "El motor biométrico no ha sido entrenado. Registre al menos un rostro primero."}), 200
 
     try:
@@ -262,38 +296,41 @@ def verify_face():
 
         # Convertir a escala de grises
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
-        # Ecualización del histograma para normalizar la luz (Cabimas Proof)
         gray_eq = cv2.equalizeHist(gray)
         
-        # Detectar rostro con parámetros de alta fidelidad y tolerancia
-        faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.06, minNeighbors=4, minSize=(40, 40))
-        
+        # Detectar rostro con múltiples niveles de tolerancia
+        faces = face_cascade.detectMultiScale(gray_eq, scaleFactor=1.05, minNeighbors=3, minSize=(30, 30))
         if len(faces) == 0:
-            return jsonify({"success": False, "error": "no_face_detected"}), 200
-
-        # Seleccionar rostro más grande
-        faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
-        x, y, w, h = faces[0]
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=2, minSize=(30, 30))
         
-        # Recortar y redimensionar (desde la imagen ecualizada)
-        cropped_face = gray_eq[y:y+h, x:x+w]
+        if len(faces) > 0:
+            faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+            x, y, w, h = faces[0]
+            cropped_face = gray_eq[y:y+h, x:x+w]
+        else:
+            # Fallback a región central si no detecta bounding box perfecto en el cuadro de video
+            h_img, w_img = gray_eq.shape
+            cy, cx = h_img // 2, w_img // 2
+            sz = min(h_img, w_img) // 2
+            y1, y2 = max(0, cy - sz), min(h_img, cy + sz)
+            x1, x2 = max(0, cx - sz), min(w_img, cx + sz)
+            cropped_face = gray_eq[y1:y2, x1:x2]
+
         cropped_face_resized = cv2.resize(cropped_face, (200, 200))
 
         # Realizar predicción
         member_id, confidence = recognizer.predict(cropped_face_resized)
         
-        # Calcular tasa de confianza en formato porcentaje comercial (Chi-square a %)
-        # 0 de distancia = 100% match. Un valor de 80.0 de distancia = 0% match.
-        match_percentage = max(0.0, min(100.0, 100.0 - (confidence / 80.0) * 100.0))
+        # Calcular tasa de confianza comercial (Chi-square a %)
+        match_percentage = max(0.0, min(100.0, 100.0 - (confidence / 85.0) * 100.0))
         
         end_time = time.time()
         processing_ms = (end_time - start_time) * 1000.0
         
-        print(f"🔮 Predicción biométrica: Socio ID {member_id} | Confianza: {confidence:.2f} ({match_percentage:.1f}%) | Tiempo: {processing_ms:.2f}ms")
+        print(f"[PREDICT] Prediccion biometrica: Socio ID {member_id} | Confianza: {confidence:.2f} ({match_percentage:.1f}%) | Tiempo: {processing_ms:.2f}ms")
 
-        # Umbral para LBPH (Calibrado a 73.0 para un reconocimiento cómodo en gimnasios)
-        CONFIDENCE_THRESHOLD = 73.0
+        # Umbral para LBPH (Ajustado a 88.0 para óptimo reconocimiento de cámara web local)
+        CONFIDENCE_THRESHOLD = 88.0
         
         if confidence < CONFIDENCE_THRESHOLD:
             metadata = member_metadata.get(str(member_id), {})

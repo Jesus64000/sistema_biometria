@@ -16,11 +16,29 @@ const databaseName = process.env.DB_NAME || 'sistema_biometria';
 let pool;
 
 async function initDB() {
-  try {
-    // 1. Conectar al servidor MySQL (sin especificar DB todavía)
-    const connection = await mysql.createConnection(dbConfig);
-    console.log('✅ Conectado al servidor de bases de datos de XAMPP MySQL.');
+  const maxRetries = 5;
+  let attempt = 0;
+  let connection;
 
+  while (attempt < maxRetries) {
+    try {
+      attempt++;
+      console.log(`📡 Intentando conectar a MySQL (Intento ${attempt}/${maxRetries})...`);
+      connection = await mysql.createConnection(dbConfig);
+      console.log('✅ Conectado al servidor de bases de datos MySQL.');
+      break;
+    } catch (error) {
+      console.warn(`⚠️ Intento ${attempt} fallido al conectar con MySQL (${dbConfig.host}:${dbConfig.port}): ${error.message}`);
+      if (attempt >= maxRetries) {
+        console.error('❌ Error fatal de conexión con MySQL tras varios intentos.');
+        console.log('💡 Sugerencia: Asegúrate de que XAMPP esté abierto y el módulo de MySQL esté activo (botón "Start").');
+        throw error;
+      }
+      await new Promise((res) => setTimeout(res, 2000));
+    }
+  }
+
+  try {
     // 2. Crear base de datos si no existe
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${databaseName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
     console.log(`✅ Base de datos \`${databaseName}\` verificada/creada.`);
@@ -40,8 +58,7 @@ async function initDB() {
 
     return pool;
   } catch (error) {
-    console.error('❌ Error de conexión con XAMPP MySQL:', error.message);
-    console.log('💡 Sugerencia: Asegúrate de que XAMPP esté abierto y el módulo de MySQL esté activo (botón "Start").');
+    console.error('❌ Error inicializando tablas o base de datos:', error.message);
     throw error;
   }
 }

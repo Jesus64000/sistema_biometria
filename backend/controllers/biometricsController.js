@@ -190,12 +190,19 @@ async function verifyFace(req, res) {
     if (socio.status !== 'activo') {
       allowed = false;
       reason = 'Socio desactivado por administración.';
-    } else if (new Date(socio.fecha_fin) < new Date()) {
-      allowed = false;
-      reason = 'Membresía vencida.';
-      // Actualizar solvencia a 0 de forma automática
-      await db.query('UPDATE membresias SET solvencia = 0 WHERE socio_id = ?', [socio.id]);
-      socio.solvencia = 0;
+    } else if (socio.fecha_fin) {
+      const fechaFinDate = new Date(socio.fecha_fin);
+      fechaFinDate.setHours(23, 59, 59, 999);
+      if (fechaFinDate < new Date()) {
+        allowed = false;
+        reason = 'Membresía vencida.';
+        // Actualizar solvencia a 0 de forma automática
+        await db.query('UPDATE membresias SET solvencia = 0 WHERE socio_id = ?', [socio.id]);
+        socio.solvencia = 0;
+      } else if (socio.solvencia === 0) {
+        allowed = false;
+        reason = 'Socio insolvente. Registro de pago pendiente.';
+      }
     } else if (socio.solvencia === 0) {
       allowed = false;
       reason = 'Socio insolvente. Registro de pago pendiente.';

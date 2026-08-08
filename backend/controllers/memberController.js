@@ -8,24 +8,39 @@ function saveBase64Image(base64Data, cedula) {
     if (Array.isArray(base64Data)) {
       base64Data = base64Data[0];
     }
-    if (!base64Data) {
+    if (!base64Data || typeof base64Data !== 'string') {
       return null;
     }
-    // Limpiar cabecera del base64 (ej: "data:image/jpeg;base64,")
-    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      throw new Error('Formato Base64 inválido');
+
+    let extension = 'jpg';
+    let base64String = base64Data;
+
+    if (base64Data.includes(';base64,')) {
+      const parts = base64Data.split(';base64,');
+      if (parts[0].includes('image/png')) extension = 'png';
+      else if (parts[0].includes('image/webp')) extension = 'webp';
+      base64String = parts[1];
     }
 
-    const imageBuffer = Buffer.from(matches[2], 'base64');
-    const extension = matches[1].split('/')[1] || 'jpg';
-    const filename = `socio_${cedula}_${Date.now()}.${extension}`;
-    const filePath = path.join(__dirname, '..', 'uploads', filename);
+    const imageBuffer = Buffer.from(base64String, 'base64');
+    if (!imageBuffer || imageBuffer.length === 0) {
+      return null;
+    }
 
+    const cleanCedula = String(cedula).replace(/[^a-zA-Z0-9_-]/g, '');
+    const filename = `socio_${cleanCedula}_${Date.now()}.${extension}`;
+    const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, '..', 'uploads');
+
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadsDir, filename);
     fs.writeFileSync(filePath, imageBuffer);
+    console.log(`✅ Foto guardada con éxito en: ${filePath}`);
     return `/uploads/${filename}`;
   } catch (error) {
-    console.error('Error al guardar imagen Base64:', error.message);
+    console.error('❌ Error al guardar imagen Base64:', error.message);
     return null;
   }
 }
@@ -123,10 +138,20 @@ async function createMember(req, res) {
       fechaFin.setFullYear(fechaFin.getFullYear() + 1);
     }
 
+    const formatDateStr = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    const strFechaInicio = formatDateStr(fechaInicio);
+    const strFechaFin = formatDateStr(fechaFin);
+
     // Insertar membresía inicial (asumimos solvente al crearse por defecto en esta gestión escolar)
     await connection.query(
       'INSERT INTO membresias (socio_id, tipo, fecha_inicio, fecha_fin, solvencia) VALUES (?, ?, ?, ?, ?)',
-      [socioId, tipo, fechaInicio, fechaFin, 1]
+      [socioId, tipo, strFechaInicio, strFechaFin, 1]
     );
 
     await connection.commit();

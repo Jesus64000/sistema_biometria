@@ -17,6 +17,7 @@ jspm_packages/
 
 # Carpetas de Compilación y Distribución
 dist/
+dist_installer/
 build/
 out/
 .next/

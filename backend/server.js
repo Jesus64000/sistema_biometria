@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
 // Crear carpetas de almacenamiento para subida de fotos
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -64,6 +64,19 @@ initDB()
         timestamp: new Date()
       });
     });
+
+    // Servir Frontend compilado (dist) en producción/escritorio
+    const frontendDist = path.join(__dirname, '../frontend/dist');
+    if (fs.existsSync(frontendDist)) {
+      app.use(express.static(frontendDist));
+      app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+          return next();
+        }
+        res.sendFile(path.join(frontendDist, 'index.html'));
+      });
+      console.log(`🌐 Frontend compilado vinculado y servido en http://localhost:${PORT}`);
+    }
 
     // Iniciar servidor
     app.listen(PORT, () => {

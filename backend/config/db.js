@@ -147,6 +147,18 @@ async function checkAndCreateTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    // Auto-crear usuario administrador por defecto si la tabla usuarios está vacía
+    const [userRows] = await connection.query("SELECT COUNT(*) as count FROM `usuarios`");
+    if (userRows[0].count === 0) {
+      const bcrypt = require('bcryptjs');
+      const hash = bcrypt.hashSync('admin123', 10);
+      await connection.query(
+        "INSERT INTO `usuarios` (username, password, role, nombre, apellido, gym_sede) VALUES ('admin', ?, 'admin', 'Luis', 'Ramos', 'RamosGym')",
+        [hash]
+      );
+      console.log('✅ Usuario Administrador por defecto auto-creado: (admin / admin123)');
+    }
+
     // Tabla de Configuración Global [NUEVA]
     await connection.query(`
       CREATE TABLE IF NOT EXISTS \`configuracion\` (

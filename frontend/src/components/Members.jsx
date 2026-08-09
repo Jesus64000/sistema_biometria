@@ -406,16 +406,13 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       if (!matchesSearch) return false;
       
       // 2. Filtro Solvencia
-      if (filterSolvency === 'solvent' && m.membresia_solvencia !== 1) return false;
+      if (filterSolvency === 'solvent') {
+        const isSolvent = (m.solvencia === 1 || m.solvencia === '1' || m.solvencia === true) && (!m.fecha_fin || new Date(m.fecha_fin) >= new Date());
+        if (!isSolvent) return false;
+      }
       if (filterSolvency === 'insolvent') {
-        let isExpired = m.membresia_solvencia === 0;
-        if (m.membresia_fin) {
-          const hoy = new Date();
-          hoy.setHours(0,0,0,0);
-          const fin = new Date(m.membresia_fin);
-          if (fin < hoy) isExpired = true;
-        }
-        if (!isExpired) return false;
+        const isInsolvent = (m.solvencia === 0 || m.solvencia === '0' || m.solvencia === false || !m.solvencia) || (m.fecha_fin && new Date(m.fecha_fin) < new Date());
+        if (!isInsolvent) return false;
       }
       
       // 3. Filtro Estatus
@@ -424,10 +421,11 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       
       // 3.5 Filtro Vencen pronto (3 días)
       if (expiringSoon) {
-        if (!m.membresia_fin) return false;
+        const finFecha = m.fecha_fin || m.membresia_fin;
+        if (!finFecha) return false;
         const hoy = new Date();
         hoy.setHours(0,0,0,0);
-        const fin = new Date(m.membresia_fin);
+        const fin = new Date(finFecha);
         const diffDays = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
         if (diffDays < 0 || diffDays > 3 || m.status !== 'activo') return false;
       }
@@ -490,6 +488,7 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
             <input 
               id="search-input"
               type="text" 
+              autoFocus
               placeholder="Buscar socio por Cédula, Nombre o Apellido..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -845,6 +844,7 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
                   <input 
                     type="text" 
                     required
+                    autoFocus
                     placeholder="Ej: 25123456"
                     value={formData.cedula}
                     onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '').slice(0, 8) }))}

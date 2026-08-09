@@ -303,19 +303,12 @@ def verify_face():
         if len(faces) == 0:
             faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=2, minSize=(30, 30))
         
-        if len(faces) > 0:
-            faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
-            x, y, w, h = faces[0]
-            cropped_face = gray_eq[y:y+h, x:x+w]
-        else:
-            # Fallback a región central si no detecta bounding box perfecto en el cuadro de video
-            h_img, w_img = gray_eq.shape
-            cy, cx = h_img // 2, w_img // 2
-            sz = min(h_img, w_img) // 2
-            y1, y2 = max(0, cy - sz), min(h_img, cy + sz)
-            x1, x2 = max(0, cx - sz), min(w_img, cx + sz)
-            cropped_face = gray_eq[y1:y2, x1:x2]
+        if len(faces) == 0:
+            return jsonify({"success": False, "error": "no_face_detected", "reason": "no_face_detected"}), 200
 
+        faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
+        x, y, w, h = faces[0]
+        cropped_face = gray_eq[y:y+h, x:x+w]
         cropped_face_resized = cv2.resize(cropped_face, (200, 200))
 
         # Realizar predicción

@@ -8,7 +8,7 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -17,7 +17,7 @@ class ErrorBoundary extends React.Component {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, errorInfo: null });
+    this.setState({ hasError: false, error: null, errorInfo: null });
     if (this.props.onReset) {
       this.props.onReset();
     }
@@ -51,9 +51,15 @@ class ErrorBoundary extends React.Component {
             Inconveniente Inesperado en este Módulo
           </h2>
 
-          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 20px auto', lineHeight: '1.6' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 12px auto', lineHeight: '1.6' }}>
             Ocurrió un evento no contemplado al procesar la vista. La aplicación continuará funcionando en los demás módulos.
           </p>
+
+          {this.state.error && (
+            <p style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--danger)', backgroundColor: 'rgba(230, 57, 70, 0.1)', padding: '8px 12px', borderRadius: '6px', margin: '0 auto 20px auto', maxWidth: '500px', wordBreak: 'break-word' }}>
+              {String(this.state.error.message || this.state.error)}
+            </p>
+          )}
 
           <button 
             onClick={this.handleReset}

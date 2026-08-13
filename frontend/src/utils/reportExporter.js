@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 /**
  * Exporta un arreglo de datos a un archivo Excel (.xlsx)
@@ -114,7 +114,7 @@ export const exportToPdf = (data, columns, title = 'Reporte del Sistema', fileNa
     });
 
     // Renderizar Tabla
-    doc.autoTable({
+    autoTable(doc, {
       startY: 34,
       head: tableHeaders,
       body: tableRows,

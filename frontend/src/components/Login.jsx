@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Key, User, Dumbbell, LogIn, UserPlus, HelpCircle, ArrowLeft } from 'lucide-react';
+import { Shield, Key, User, Dumbbell, LogIn, UserPlus, HelpCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 function Login({ onLoginSuccess, isKiosk }) {
   const [view, setView] = useState('login'); // 'login' | 'register' | 'recover'
+  const [showPassword, setShowPassword] = useState(false);
   
   // Setup Status (Seguridad: Bloquear registro público si ya hay un usuario)
   const [setupRequired, setSetupRequired] = useState(false);
@@ -260,15 +261,37 @@ function Login({ onLoginSuccess, isKiosk }) {
               <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Key size={13} color="var(--primary)" /> Contraseña
               </label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-              />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-control"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  style={{ paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px'
+                  }}
+                  title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
             <button

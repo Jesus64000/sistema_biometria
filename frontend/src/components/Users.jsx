@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 export default function Users({ activeGym = 'RamosGym' }) {
   const [users, setUsers] = useState([]);
@@ -169,28 +170,61 @@ export default function Users({ activeGym = 'RamosGym' }) {
             Controla quién accede a la plataforma de {activeGym} y define sus permisos operativos.
           </p>
         </div>
-        <button 
-          onClick={openCreateModal}
-          style={{
-            backgroundColor: 'var(--btn-primary-bg)',
-            color: 'var(--btn-primary-text)',
-            border: 'none',
-            borderRadius: '10px',
-            padding: '12px 20px',
-            fontSize: '13px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            boxShadow: 'var(--btn-primary-shadow)',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'none'}
-        >
-          ➕ Nuevo Usuario
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            className="btn btn-secondary" 
+            style={{ fontSize: '11px', padding: '8px 14px', gap: '6px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'ID', key: 'id' },
+                { header: 'Usuario', key: 'username' },
+                { header: 'Nombre', key: u => `${u.nombre} ${u.apellido}` },
+                { header: 'Rol', key: 'role' },
+                { header: 'Gimnasio', key: u => u.gym_sede || activeGym }
+              ];
+              exportToExcel(users, cols, 'Reporte_Usuarios_Sistema', 'Usuarios');
+            }}
+          >
+            🟢 Excel
+          </button>
+          <button 
+            className="btn btn-secondary" 
+            style={{ fontSize: '11px', padding: '8px 14px', gap: '6px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'Usuario', key: 'username' },
+                { header: 'Nombre', key: u => `${u.nombre} ${u.apellido}` },
+                { header: 'Rol', key: 'role' },
+                { header: 'Gimnasio', key: u => u.gym_sede || activeGym }
+              ];
+              exportToPdf(users, cols, 'Reporte de Usuarios y Permisos del Sistema', 'Reporte_Usuarios_PDF', activeGym);
+            }}
+          >
+            🔴 PDF
+          </button>
+          <button 
+            onClick={openCreateModal}
+            style={{
+              backgroundColor: 'var(--btn-primary-bg)',
+              color: 'var(--btn-primary-text)',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '12px 20px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: 'var(--btn-primary-shadow)',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
+            onMouseUp={(e) => e.currentTarget.style.transform = 'none'}
+          >
+            ➕ Nuevo Usuario
+          </button>
+        </div>
       </div>
 
       {loading ? (

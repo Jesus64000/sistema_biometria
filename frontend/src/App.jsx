@@ -30,6 +30,7 @@ import Personal from './components/Personal';
 import UsersManager from './components/Users';
 import KioskStatus from './components/KioskStatus';
 import Settings from './components/Settings';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
 
@@ -137,6 +138,7 @@ function App() {
     setUser(null);
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('active_user');
+    sessionStorage.removeItem('has_shown_dash_toasts');
     
     const isKioskMode = window.location.search.includes('kiosk=true') || window.location.hash === '#kiosk';
     setCurrentView(isKioskMode ? 'kiosk' : 'dashboard');
@@ -423,41 +425,83 @@ function App() {
           </div>
         </header>
 
-        {/* Vista Renderizada */}
+        {/* Vista Renderizada con Error Boundary Integrado */}
         <div className="view-container">
-          {currentView === 'dashboard' && (
-            <Dashboard 
-              activeGym={gymName} 
-              tasaCambio={tasaCambio} 
-              onNavigate={(view, filters) => navigate(view, filters)} 
-              user={user}
-            />
-          )}
-          {currentView === 'members' && (
-            <Members 
-              activeGym={gymName} 
-              user={user} 
-              initialFilters={membersFilter} 
-            />
-          )}
-          {currentView === 'analytics' && <Analytics />}
-          {currentView === 'access' && <BiometricAccess activeGym={gymName} isKiosk={false} />}
-          {currentView === 'payments' && <Members activeGym={gymName} initialTab="payments" user={user} />}
-          {currentView === 'expenses' && <Expenses user={user} />}
-          {currentView === 'notes' && <Notes />}
-          {currentView === 'trainers' && <Personal activeGym={gymName} tasaCambio={tasaCambio} />}
-          {currentView === 'users' && <UsersManager activeGym={gymName} />}
-          {currentView === 'settings' && (
-            <Settings 
-              gymName={gymName} 
-              tasaCambio={tasaCambio} 
-              onUpdate={() => {
-                fetchGlobalConfig();
-              }} 
-            />
-          )}
+          <ErrorBoundary key={currentView} onReset={() => checkTelemetry()}>
+            {currentView === 'dashboard' && (
+              <Dashboard 
+                activeGym={gymName} 
+                tasaCambio={tasaCambio} 
+                onNavigate={(view, filters) => navigate(view, filters)} 
+                user={user}
+              />
+            )}
+            {currentView === 'members' && (
+              <Members 
+                activeGym={gymName} 
+                user={user} 
+                initialFilters={membersFilter} 
+              />
+            )}
+            {currentView === 'analytics' && <Analytics />}
+            {currentView === 'access' && <BiometricAccess activeGym={gymName} isKiosk={false} />}
+            {currentView === 'payments' && <Members activeGym={gymName} initialTab="payments" user={user} />}
+            {currentView === 'expenses' && <Expenses user={user} />}
+            {currentView === 'notes' && <Notes />}
+            {currentView === 'trainers' && <Personal activeGym={gymName} tasaCambio={tasaCambio} />}
+            {currentView === 'users' && <UsersManager activeGym={gymName} />}
+            {currentView === 'settings' && (
+              <Settings 
+                gymName={gymName} 
+                tasaCambio={tasaCambio} 
+                onUpdate={() => {
+                  fetchGlobalConfig();
+                }} 
+              />
+            )}
+          </ErrorBoundary>
         </div>
       </main>
+
+      {/* Banner Flotante de Desconexión de Servidor */}
+      {nodeStatus === 'offline' && token && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 99999,
+          backgroundColor: 'rgba(26, 26, 26, 0.96)',
+          border: '1px solid rgba(230, 57, 70, 0.4)',
+          borderRadius: 'var(--border-radius-md)',
+          padding: '14px 18px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          maxWidth: '420px',
+          backdropFilter: 'blur(10px)',
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          <div style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center' }}>
+            <SettingsIcon size={24} className="animate-spin" />
+          </div>
+          <div style={{ flexGrow: 1 }}>
+            <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#ffffff', margin: 0 }}>
+              Servidor Backend Desconectado
+            </h4>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+              Sin respuesta en el puerto 3000. Reintentando conexión...
+            </p>
+          </div>
+          <button 
+            className="btn btn-secondary" 
+            style={{ fontSize: '11px', padding: '6px 12px' }}
+            onClick={checkTelemetry}
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
     </div>
   );
 }

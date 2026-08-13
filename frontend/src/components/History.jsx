@@ -10,8 +10,10 @@ import {
   XCircle,
   HelpCircle,
   TrendingDown,
-  UserCheck
+  UserCheck,
+  FileSpreadsheet
 } from 'lucide-react';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 function History({ activeGym }) {
   const [logs, setLogs] = useState([]);
@@ -184,6 +186,44 @@ function History({ activeGym }) {
             title="Limpiar filtros"
           >
             Limpiar
+          </button>
+
+          <button 
+            className="btn btn-secondary" 
+            style={{ height: '38px', gap: '6px', fontSize: '11px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'ID', key: 'id' },
+                { header: 'Socio', key: l => `${l.nombre || ''} ${l.apellido || ''}` },
+                { header: 'Cédula', key: 'cedula' },
+                { header: 'Fecha y Hora', key: l => l.fecha_hora ? String(l.fecha_hora).slice(0, 19).replace('T', ' ') : '' },
+                { header: 'Método Acceso', key: 'metodo' },
+                { header: 'Estado Acceso', key: l => l.status_acceso === 'permitido' ? 'Permitido' : 'Denegado' },
+                { header: 'Razón Denegación', key: l => l.razon_denegacion || 'N/A' }
+              ];
+              exportToExcel(filteredLogs, cols, 'Historial_Asistencias', 'Accesos');
+            }}
+          >
+            <FileSpreadsheet size={14} color="var(--success)" />
+            <span>Excel</span>
+          </button>
+
+          <button 
+            className="btn btn-secondary" 
+            style={{ height: '38px', gap: '6px', fontSize: '11px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'Socio', key: l => `${l.nombre || ''} ${l.apellido || ''}` },
+                { header: 'Cédula', key: 'cedula' },
+                { header: 'Fecha y Hora', key: l => l.fecha_hora ? String(l.fecha_hora).slice(0, 19).replace('T', ' ') : '' },
+                { header: 'Método', key: 'metodo' },
+                { header: 'Estado', key: l => l.status_acceso === 'permitido' ? 'Permitido' : 'Denegado' }
+              ];
+              exportToPdf(filteredLogs, cols, 'Historial de Registro de Asistencias Biométricas', 'Historial_Asistencias_PDF', activeGym);
+            }}
+          >
+            <Printer size={14} color="var(--danger)" />
+            <span>PDF</span>
           </button>
 
           <button className="btn btn-secondary" style={{ height: '38px', gap: '6px' }} onClick={handlePrint}>

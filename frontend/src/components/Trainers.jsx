@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Dumbbell, Plus, Trash2, Tag, Calendar, User, Edit, X } from 'lucide-react';
+import { Dumbbell, Plus, Trash2, Tag, Calendar, User, Edit, X, Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 function Trainers({ user }) {
   const [trainers, setTrainers] = useState(() => {
@@ -171,8 +172,42 @@ function Trainers({ user }) {
 
       {/* Columna derecha - Listado de Entrenadores */}
       <section className="glass-card" style={{ padding: 0 }}>
-        <div style={{ padding: '20px 24px 8px' }}>
+        <div style={{ padding: '20px 24px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 800 }}>Staff Técnico de Instructores</h3>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              className="btn btn-secondary" 
+              style={{ fontSize: '11px', padding: '6px 12px', gap: '6px', fontWeight: 700 }}
+              onClick={() => {
+                const cols = [
+                  { header: 'ID', key: 'id' },
+                  { header: 'Nombre', key: t => `${t.nombre} ${t.apellido}` },
+                  { header: 'Especialidad', key: 'especialidad' },
+                  { header: 'Teléfono', key: 'telefono' },
+                  { header: 'Horario', key: 'horario' }
+                ];
+                exportToExcel(trainers, cols, 'Reporte_Entrenadores', 'Instructores');
+              }}
+            >
+              <FileSpreadsheet size={13} color="var(--success)" /> Excel
+            </button>
+
+            <button 
+              className="btn btn-secondary" 
+              style={{ fontSize: '11px', padding: '6px 12px', gap: '6px', fontWeight: 700 }}
+              onClick={() => {
+                const cols = [
+                  { header: 'Nombre', key: t => `${t.nombre} ${t.apellido}` },
+                  { header: 'Especialidad', key: 'especialidad' },
+                  { header: 'Teléfono', key: 'telefono' },
+                  { header: 'Horario', key: 'horario' }
+                ];
+                exportToPdf(trainers, cols, 'Staff Técnico de Instructores', 'Reporte_Entrenadores_PDF');
+              }}
+            >
+              <FileText size={13} color="var(--danger)" /> PDF
+            </button>
+          </div>
         </div>
         
         <div className="table-container" style={{ border: 'none', marginTop: 0 }}>

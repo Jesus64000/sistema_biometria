@@ -168,22 +168,26 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
     }
   };
 
-  // Cargar notas y lanzar notificaciones Toasts para Prioridad Alta
+  // Cargar notas y lanzar notificaciones Toasts para Prioridad Alta al iniciar sesión
   const loadDashNotes = () => {
     const saved = localStorage.getItem('gym_notes');
     if (saved) {
       const parsed = JSON.parse(saved);
       setDashNotes(parsed);
       
-      // Mostrar Toasts únicamente al iniciar de notas de prioridad ALTA no archivadas
-      const altaNotes = parsed.filter(n => n.prioridad === 'alta' && !n.archivada);
-      if (altaNotes.length > 0) {
-        setActiveToasts(altaNotes.map(n => ({
-          id: n.id,
-          titulo: n.titulo,
-          contenido: n.contenido,
-          autor: n.autor || 'Sistema'
-        })));
+      // Mostrar Toasts únicamente al iniciar sesión / abrir el sistema por primera vez
+      const hasShownToasts = sessionStorage.getItem('has_shown_dash_toasts');
+      if (!hasShownToasts) {
+        const altaNotes = parsed.filter(n => n.prioridad === 'alta' && !n.archivada);
+        if (altaNotes.length > 0) {
+          setActiveToasts(altaNotes.map(n => ({
+            id: n.id,
+            titulo: n.titulo,
+            contenido: n.contenido,
+            autor: n.autor || 'Sistema'
+          })));
+        }
+        sessionStorage.setItem('has_shown_dash_toasts', 'true');
       }
     }
   };
@@ -552,6 +556,49 @@ function Dashboard({ activeGym, tasaCambio, onNavigate, user }) {
           <span>Pantalla Acceso</span>
         </button>
       </div>
+
+      {/* Widget de Notificaciones y Reportes del Administrador */}
+      {!isReceptionist && (stats.vencen_pronto > 0 || stats.insolventes > 0) && (
+        <div className="glass-card" style={{ 
+          marginBottom: '24px', 
+          padding: '16px 20px', 
+          borderLeft: '4px solid var(--warning)',
+          backgroundColor: 'rgba(245, 158, 11, 0.05)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <AlertTriangle size={20} color="var(--warning)" style={{ flexShrink: 0 }} />
+            <div>
+              <h4 style={{ fontSize: '13px', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                📢 Resumen de Alertas y Reportes del Sistema
+              </h4>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
+                Se detectan <strong>{stats.vencen_pronto} clientes próximos a vencer</strong> en 3 días y <strong>{stats.insolventes} clientes insolventes</strong> requiriendo atención cobratoria.
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => onNavigate('members', { status: 'activo', solvency: 'all', expiringSoon: true })} 
+              className="btn btn-secondary"
+              style={{ fontSize: '11px', padding: '6px 12px', fontWeight: 700 }}
+            >
+              Ver Vencimientos
+            </button>
+            <button 
+              onClick={() => onNavigate('members', { status: 'activo', solvency: 'insolvent', expiringSoon: false })} 
+              className="btn btn-primary"
+              style={{ fontSize: '11px', padding: '6px 12px', fontWeight: 700 }}
+            >
+              Gestionar Cobros
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Contadores Estadísticos Premium Deportivos y Minimalistas */}
       <div className="grid-stats">

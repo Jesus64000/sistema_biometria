@@ -31,16 +31,22 @@ function Analytics() {
   const [regTrendPeriod, setRegTrendPeriod] = useState('monthly'); // monthly, weekly
   const [attTrendPeriod, setAttTrendPeriod] = useState('monthly'); // monthly, weekly
 
+  const [errorMsg, setErrorMsg] = useState(null);
+
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
+      setErrorMsg(null);
       const res = await fetch(`http://localhost:3000/api/dashboard/analytics?t=${Date.now()}`);
       const result = await res.json();
-      if (!result.error) {
+      if (res.ok && !result.error) {
         setData(result);
+      } else {
+        setErrorMsg(result.error || 'No se pudieron procesar las métricas de analítica.');
       }
     } catch (error) {
       console.error('Error cargando analíticas:', error.message);
+      setErrorMsg('No se pudo establecer comunicación con el servidor backend.');
     } finally {
       setLoading(false);
     }
@@ -64,19 +70,26 @@ function Analytics() {
     );
   }
 
-  if (!data) {
+  if (!data || errorMsg) {
     return (
-      <div className="glass-card" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-        <AlertTriangle size={32} style={{ color: 'var(--danger)', marginBottom: '12px' }} />
-        <p style={{ fontWeight: 700 }}>No se pudieron cargar los indicadores analíticos.</p>
-        <button className="btn btn-primary" style={{ marginTop: '14px' }} onClick={fetchAnalytics}>
-          Reintentar Carga
+      <div className="glass-card" style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-muted)', maxWidth: '600px', margin: '40px auto' }}>
+        <div style={{ display: 'inline-flex', padding: '16px', borderRadius: '50%', backgroundColor: 'rgba(230, 57, 70, 0.1)', color: 'var(--danger)', marginBottom: '16px' }}>
+          <AlertTriangle size={36} />
+        </div>
+        <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
+          No se pudieron cargar las analíticas
+        </h3>
+        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+          {errorMsg || 'La base de datos no devolvió respuesta para la consulta de estadísticas.'}
+        </p>
+        <button className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', fontWeight: 700 }} onClick={fetchAnalytics}>
+          <RefreshCw size={15} /> Reintentar Carga
         </button>
       </div>
     );
   }
 
-  const { generoData, inscripcionesMes, inscripcionesDia, asistenciasMes, asistenciasDia, metricasRetencion } = data;
+  const { generoData, inscripcionesMes, inscripcionesDia, asistenciasMes, asistenciasDia, asistenciasHoras, metricasRetencion } = data;
 
   // Mapear días de la semana en español
   const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -89,24 +102,23 @@ function Analytics() {
   const mascPct = totalGenero > 0 ? ((masculinoVal / totalGenero) * 100).toFixed(1) : 0;
   const femPct = totalGenero > 0 ? ((femeninoVal / totalGenero) * 100).toFixed(1) : 0;
 
-  // Asistencia Horaria Mock para asegurar que la afluencia por horas siempre se dibuje preciosa
-  // (Inspirado en el endpoint /hours del servidor)
-  const horasAfluencia = [
-    { hora: '06:00', afluencia: 15 },
-    { hora: '07:00', afluencia: 42 },
-    { hora: '08:00', afluencia: 38 },
-    { hora: '09:00', afluencia: 20 },
-    { hora: '10:00', afluencia: 12 },
-    { hora: '12:00', afluencia: 18 },
-    { hora: '14:00', afluencia: 10 },
-    { hora: '16:00', afluencia: 25 },
-    { hora: '17:00', afluencia: 48 },
-    { hora: '18:00', afluencia: 55 },
-    { hora: '19:00', afluencia: 50 },
-    { hora: '20:00', afluencia: 35 },
-    { hora: '21:00', afluencia: 16 },
-    { hora: '22:00', afluencia: 5 },
+  // Asistencia Horaria 100% Dinámica desde la Base de Datos
+  const horasAfluencia = asistenciasHoras && asistenciasHoras.length > 0 ? asistenciasHoras : [
+    { hora: '06:00', afluencia: 0 },
+    { hora: '07:00', afluencia: 0 },
+    { hora: '08:00', afluencia: 0 },
+    { hora: '09:00', afluencia: 0 },
+    { hora: '10:00', afluencia: 0 },
+    { hora: '12:00', afluencia: 0 },
+    { hora: '14:00', afluencia: 0 },
+    { hora: '16:00', afluencia: 0 },
+    { hora: '18:00', afluencia: 0 },
+    { hora: '20:00', afluencia: 0 }
   ];
+
+  const peakItem = horasAfluencia.length > 0
+    ? [...horasAfluencia].sort((a, b) => b.afluencia - a.afluencia)[0]
+    : { hora: '07:00', afluencia: 0 };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -363,7 +375,7 @@ function Analytics() {
             }}>
               <AlertTriangle size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                <strong>Análisis Operativo Inteligente</strong>: Se registran dos picos severos de asistencia: en la mañana (**7:00 AM**) y en la tarde (**5:00 PM a 7:00 PM**). Recomendamos ubicar al personal técnico/entrenadores demo en el gimnasio principalmente en estas franjas para maximizar el soporte y evitar aglomeraciones en las máquinas de fuerza.
+                <strong>Análisis Operativo Inteligente</strong>: La hora de mayor afluencia en el gimnasio es a las <strong>{format12h(peakItem?.hora)}</strong> ({peakItem?.afluencia || 0} ingresos registrados). Recomendamos ubicar al personal técnico y entrenadores principalmente en este horario para maximizar el soporte al cliente.
               </div>
             </div>
 

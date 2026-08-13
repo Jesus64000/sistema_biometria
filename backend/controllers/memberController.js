@@ -71,11 +71,19 @@ async function getMembers(req, res) {
         s.*, 
         m.id as membresia_id, 
         m.tipo as membresia_tipo, 
+        m.fecha_inicio,
         m.fecha_inicio as membresia_inicio, 
+        m.fecha_fin,
         m.fecha_fin as membresia_fin, 
+        m.solvencia,
         m.solvencia as membresia_solvencia
       FROM socios s
-      LEFT JOIN membresias m ON s.id = m.socio_id
+      LEFT JOIN (
+        SELECT m1.* FROM membresias m1
+        INNER JOIN (
+          SELECT socio_id, MAX(id) as max_id FROM membresias GROUP BY socio_id
+        ) m2 ON m1.id = m2.max_id
+      ) m ON s.id = m.socio_id
     `;
     
     const params = [];

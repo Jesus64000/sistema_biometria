@@ -14,11 +14,15 @@ import {
   Calendar,
   AlertCircle,
   Edit,
-  Trash2
+  Trash2,
+  Download,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 import CaptureModal from './CaptureModal';
 import DatePicker from './DatePicker';
 import MemberProfileDrawer from './MemberProfileDrawer';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 function Members({ activeGym, initialTab, user, initialFilters }) {
   const [members, setMembers] = useState([]);
@@ -132,16 +136,22 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
     }
   };
 
+  const [fetchError, setFetchError] = useState(null);
+
   const fetchMembers = async () => {
     try {
       setLoading(true);
+      setFetchError(null);
       const res = await fetch('http://localhost:3000/api/members');
       const data = await res.json();
-      if (!data.error) {
-        setMembers(data);
+      if (res.ok && !data.error) {
+        setMembers(Array.isArray(data) ? data : []);
+      } else {
+        setFetchError(data.error || 'No se pudieron consultar los expedientes de socios.');
       }
     } catch (error) {
       console.error('Error al cargar socios:', error.message);
+      setFetchError('Error de red al consultar el servidor backend local.');
     } finally {
       setLoading(false);
     }
@@ -632,10 +642,153 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
               <option value="asc">Ascendente</option>
             </select>
 
-            <div style={{ display: 'flex', gap: '6px', marginLeft: '10px' }}>
+             <div style={{ display: 'flex', gap: '6px', marginLeft: '10px', position: 'relative' }}>
               <button id="btn-refresh" className="btn btn-secondary" style={{ height: '32px', width: '32px', padding: 0, justifyContent: 'center' }} onClick={fetchMembers} title="Actualizar Socios">
                 <RefreshCw size={12} />
               </button>
+              
+              {/* Botón de Exportar Reportes (Excel / PDF) */}
+              <div style={{ position: 'relative' }}>
+                <button 
+                  className="btn btn-secondary" 
+                  style={{ height: '32px', gap: '6px', fontSize: '11px', padding: '0 12px', fontWeight: 700 }}
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                >
+                  <Download size={13} color="var(--primary)" />
+                  <span>Exportar Reporte</span>
+                </button>
+
+                {showExportMenu && (
+                  <div className="glass-card" style={{
+                    position: 'absolute',
+                    top: '38px',
+                    right: 0,
+                    zIndex: 1100,
+                    width: '240px',
+                    padding: '8px',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                  }}>
+                    <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-secondary)', padding: '4px 8px', textTransform: 'uppercase' }}>
+                      🟢 Exportar a Excel (.xlsx)
+                    </span>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'ID', key: 'id' },
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Estatus', key: m => m.status === 'activo' ? 'Activo' : 'Inactivo' },
+                          { header: 'Solvencia', key: m => m.solvencia === 1 ? 'Solvente' : 'Insolvente' },
+                          { header: 'Fin Membresía', key: m => m.fecha_fin ? String(m.fecha_fin).slice(0, 10) : 'Sin fecha' },
+                          { header: 'Último Acceso', key: m => m.ultima_asistencia ? String(m.ultima_asistencia).slice(0, 19) : 'Sin accesos' }
+                        ];
+                        exportToExcel(filteredMembers, cols, 'Socios_Filtrados', 'Clientes');
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileSpreadsheet size={13} color="var(--success)" /> Lista Actual Filtrada
+                    </button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'ID', key: 'id' },
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Fin Membresía', key: m => m.fecha_fin ? String(m.fecha_fin).slice(0, 10) : 'N/A' },
+                          { header: 'Última Asistencia', key: m => m.ultima_asistencia ? String(m.ultima_asistencia).slice(0, 19) : 'Sin accesos' }
+                        ];
+                        exportToExcel(members.filter(m => m.ultima_asistencia), cols, 'Clientes_Que_Asisten', 'Asistentes');
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileSpreadsheet size={13} color="var(--primary)" /> Clientes que Asisten
+                    </button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'ID', key: 'id' },
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Estatus', key: 'status' }
+                        ];
+                        exportToExcel(members.filter(m => m.status === 'activo' && !m.ultima_asistencia), cols, 'Clientes_No_Asisten_Riesgo', 'Sin_Asistencia');
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileSpreadsheet size={13} color="var(--danger)" /> Clientes que NO Asisten (Riesgo)
+                    </button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'ID', key: 'id' },
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Fin Membresía', key: m => m.fecha_fin ? String(m.fecha_fin).slice(0, 10) : 'Vencido' }
+                        ];
+                        exportToExcel(members.filter(m => m.solvencia === 0), cols, 'Clientes_Insolventes', 'Insolventes');
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileSpreadsheet size={13} color="var(--warning)" /> Clientes Insolventes / Vencidos
+                    </button>
+
+                    <div style={{ height: '1px', backgroundColor: 'var(--border-color)', margin: '4px 0' }} />
+
+                    <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-secondary)', padding: '4px 8px', textTransform: 'uppercase' }}>
+                      🔴 Exportar a PDF (.pdf)
+                    </span>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Estatus', key: m => m.status === 'activo' ? 'Activo' : 'Inactivo' },
+                          { header: 'Solvencia', key: m => m.solvencia === 1 ? 'Solvente' : 'Insolvente' },
+                          { header: 'Fin Membresía', key: m => m.fecha_fin ? String(m.fecha_fin).slice(0, 10) : 'Sin fecha' }
+                        ];
+                        exportToPdf(filteredMembers, cols, 'Reporte General de Clientes', 'Reporte_Clientes_PDF', activeGym);
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileText size={13} color="var(--danger)" /> Descargar PDF Completo
+                    </button>
+                    <button 
+                      className="btn btn-secondary" 
+                      style={{ justifyContent: 'flex-start', fontSize: '11px', padding: '6px 10px', gap: '8px' }}
+                      onClick={() => {
+                        const cols = [
+                          { header: 'Cédula', key: 'cedula' },
+                          { header: 'Nombre', key: m => `${m.nombre} ${m.apellido}` },
+                          { header: 'Teléfono', key: m => m.telefono || 'N/A' },
+                          { header: 'Estatus', key: m => m.status === 'activo' ? 'Activo' : 'Inactivo' }
+                        ];
+                        exportToPdf(members.filter(m => m.status === 'activo' && !m.ultima_asistencia), cols, 'Reporte de Clientes sin Asistencia Reciente (En Riesgo)', 'Clientes_Sin_Asistencia_PDF', activeGym);
+                        setShowExportMenu(false);
+                      }}
+                    >
+                      <FileText size={13} color="var(--warning)" /> Descargar PDF Inasistentes
+                    </button>
+                  </div>
+                )}
+              </div>
               
               {isAdmin && (
                 <button id="btn-add-member" className="btn btn-primary" style={{ height: '32px', gap: '4px', fontSize: '11px', padding: '0 12px' }} onClick={() => setShowAddModal(true)}>
@@ -654,6 +807,14 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '260px', color: 'var(--text-secondary)' }}>
           <RefreshCw size={28} className="animate-spin" />
           <span style={{ marginLeft: '10px', fontWeight: 600, fontSize: '13px' }}>Cargando expediente de socios de {activeGym}...</span>
+        </div>
+      ) : fetchError ? (
+        <div className="glass-card" style={{ textAlign: 'center', padding: '40px', margin: '20px 0', color: 'var(--text-muted)' }}>
+          <AlertTriangle size={32} style={{ color: 'var(--danger)', marginBottom: '12px' }} />
+          <p style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{fetchError}</p>
+          <button className="btn btn-primary" style={{ marginTop: '14px', display: 'inline-flex', alignItems: 'center', gap: '8px' }} onClick={fetchMembers}>
+            <RefreshCw size={14} /> Reintentar Carga
+          </button>
         </div>
       ) : (
         <div className="table-container" style={{ marginTop: 0 }}>

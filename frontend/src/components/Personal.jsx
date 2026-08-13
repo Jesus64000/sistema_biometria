@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from './DatePicker';
 import PersonalProfileDrawer from './PersonalProfileDrawer';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 export default function Personal({ activeGym = 'RamosGym', tasaCambio = 114.00 }) {
   const [staff, setStaff] = useState([]);
@@ -271,30 +272,65 @@ export default function Personal({ activeGym = 'RamosGym', tasaCambio = 114.00 }
             Gestiona a los entrenadores, personal de limpieza y personal administrativo de {activeGym}.
           </p>
         </div>
-        {isAdmin && (
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button 
-            onClick={openCreateModal}
-            style={{
-              backgroundColor: 'var(--btn-primary-bg)',
-              color: 'var(--btn-primary-text)',
-              border: 'none',
-              borderRadius: '10px',
-              padding: '12px 20px',
-              fontSize: '13px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: 'var(--btn-primary-shadow)',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
+            className="btn btn-secondary" 
+            style={{ fontSize: '11px', padding: '8px 14px', gap: '6px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'ID', key: 'id' },
+                { header: 'Cédula', key: 'cedula' },
+                { header: 'Nombre', key: s => `${s.nombre} ${s.apellido}` },
+                { header: 'Cargo', key: 'cargo' },
+                { header: 'Sueldo USD', key: s => `$${parseFloat(s.sueldo || 0).toFixed(2)}` },
+                { header: 'Estatus', key: s => s.activo === 1 ? 'Activo' : 'Inactivo' }
+              ];
+              exportToExcel(staff, cols, 'Reporte_Personal_Gimnasio', 'Personal');
             }}
-            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'none'}
           >
-            💪 Contratar Personal
+            🟢 Excel
           </button>
-        )}
+          <button 
+            className="btn btn-secondary" 
+            style={{ fontSize: '11px', padding: '8px 14px', gap: '6px', fontWeight: 700 }}
+            onClick={() => {
+              const cols = [
+                { header: 'Cédula', key: 'cedula' },
+                { header: 'Nombre', key: s => `${s.nombre} ${s.apellido}` },
+                { header: 'Cargo', key: 'cargo' },
+                { header: 'Sueldo USD', key: s => `$${parseFloat(s.sueldo || 0).toFixed(2)}` },
+                { header: 'Estatus', key: s => s.activo === 1 ? 'Activo' : 'Inactivo' }
+              ];
+              exportToPdf(staff, cols, 'Reporte General de Personal', 'Reporte_Personal_PDF', activeGym);
+            }}
+          >
+            🔴 PDF
+          </button>
+          {isAdmin && (
+            <button 
+              onClick={openCreateModal}
+              style={{
+                backgroundColor: 'var(--btn-primary-bg)',
+                color: 'var(--btn-primary-text)',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '12px 20px',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: 'var(--btn-primary-shadow)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+              onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
+              onMouseUp={(e) => e.currentTarget.style.transform = 'none'}
+            >
+              💪 Contratar Personal
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (

@@ -203,8 +203,31 @@ async function getAnalytics(req, res) {
       ) as t
     `);
 
-    // Calcular tasa de retención estimada
-    const retencionRate = total_socios > 0 ? ((solventes_activos / total_socios) * 100).toFixed(1) : 0;
+    // G. Distribución de asistencias por hora (horas pico) para analíticas
+    const [rowsHoras] = await db.query(`
+      SELECT HOUR(fecha_hora) as hora, COUNT(*) as cantidad 
+      FROM registro_asistencias 
+      WHERE fecha_hora >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      GROUP BY HOUR(fecha_hora) 
+      ORDER BY hora
+    `);
+
+    const hourMap = {};
+    for (let h = 6; h <= 22; h++) {
+      hourMap[h] = 0;
+    }
+    rowsHoras.forEach(row => {
+      if (row.hora >= 6 && row.hora <= 22) {
+        hourMap[row.hora] = row.cantidad;
+      }
+    });
+
+    const asistenciasHoras = Object.keys(hourMap).map(h => ({
+      hora: `${h.padStart(2, '0')}:00`,
+      afluencia: hourMap[h]
+    }));
+
+    const retencionRate = total_socios > 0 ? ((activos / total_socios) * 100).toFixed(1) : 100.0;
 
     res.json({
       generoData,
@@ -212,6 +235,7 @@ async function getAnalytics(req, res) {
       inscripcionesDia,
       asistenciasMes,
       asistenciasDia,
+      asistenciasHoras,
       metricasRetencion: {
         total_socios,
         activos,

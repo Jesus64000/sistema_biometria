@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, FileText, Trash2, Plus, Calendar, Tag } from 'lucide-react';
+import { DollarSign, FileText, Trash2, Plus, Calendar, Tag, Download, FileSpreadsheet } from 'lucide-react';
+import { exportToExcel, exportToPdf } from '../utils/reportExporter';
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
@@ -144,8 +145,42 @@ function Expenses() {
 
         {/* Tabla */}
         <div className="glass-card" style={{ padding: 0 }}>
-          <div style={{ padding: '20px 24px 8px' }}>
+          <div style={{ padding: '20px 24px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 800 }}>Historial de Gastos</h3>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                className="btn btn-secondary" 
+                style={{ fontSize: '11px', padding: '6px 12px', gap: '6px', fontWeight: 700 }}
+                onClick={() => {
+                  const cols = [
+                    { header: 'ID', key: 'id' },
+                    { header: 'Descripción', key: 'descripcion' },
+                    { header: 'Categoría', key: 'categoria' },
+                    { header: 'Monto ($)', key: e => `$${parseFloat(e.monto || 0).toFixed(2)}` },
+                    { header: 'Fecha', key: e => e.fecha ? String(e.fecha).slice(0, 10) : '' }
+                  ];
+                  exportToExcel(expenses, cols, 'Reporte_Gastos_Gimnasio', 'Gastos');
+                }}
+              >
+                <FileSpreadsheet size={13} color="var(--success)" /> Excel
+              </button>
+
+              <button 
+                className="btn btn-secondary" 
+                style={{ fontSize: '11px', padding: '6px 12px', gap: '6px', fontWeight: 700 }}
+                onClick={() => {
+                  const cols = [
+                    { header: 'Descripción', key: 'descripcion' },
+                    { header: 'Categoría', key: 'categoria' },
+                    { header: 'Monto USD', key: e => `$${parseFloat(e.monto || 0).toFixed(2)}` },
+                    { header: 'Fecha', key: e => e.fecha ? String(e.fecha).slice(0, 10) : '' }
+                  ];
+                  exportToPdf(expenses, cols, 'Reporte de Gastos Operacionales', 'Reporte_Gastos_PDF');
+                }}
+              >
+                <FileText size={13} color="var(--danger)" /> PDF
+              </button>
+            </div>
           </div>
           
           {loading ? (

@@ -81,12 +81,18 @@ function App() {
 
   const [nodeStatus, setNodeStatus] = useState('checking');
   const [pythonStatus, setPythonStatus] = useState('checking');
+  const [isInitialBoot, setIsInitialBoot] = useState(true);
 
   const checkTelemetry = async () => {
     try {
       const res = await fetch('http://localhost:3000/api/config');
-      if (res.ok) setNodeStatus('online');
-      else setNodeStatus('offline');
+      if (res.ok) {
+        setNodeStatus('online');
+        setIsInitialBoot(false); // El backend respondio exitosamente
+        fetchGlobalConfig();
+      } else {
+        setNodeStatus('offline');
+      }
     } catch (e) {
       setNodeStatus('offline');
     }
@@ -101,9 +107,10 @@ function App() {
 
   useEffect(() => {
     checkTelemetry();
-    const interval = setInterval(checkTelemetry, 10000);
+    // Bucle rapido de 800ms durante el arranque inicial, luego cada 10s
+    const interval = setInterval(checkTelemetry, isInitialBoot ? 800 : 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isInitialBoot]);
 
   // Manejar el toggle de modo Claro/Oscuro
   useEffect(() => {
@@ -194,6 +201,77 @@ function App() {
           }} 
           onLogout={handleLogout}
         />
+      </div>
+    );
+  }
+
+  // 🚀 PANTALLA DE CÓMPUTO E INICIALIZACIÓN: Esperar conexión limpia con el servidor backend
+  if (isInitialBoot && !isKioskStatusPage) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: '#0a0d14',
+        zIndex: 999999,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#ffffff',
+        fontFamily: 'Outfit, sans-serif'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          marginBottom: '24px'
+        }}>
+          <div style={{
+            width: '52px',
+            height: '52px',
+            borderRadius: '14px',
+            backgroundColor: 'var(--primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 30px rgba(15, 98, 254, 0.6)'
+          }}>
+            <Dumbbell size={30} color="#ffffff" />
+          </div>
+          <div>
+            <h1 style={{ fontSize: '28px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>RamosGym</h1>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: 0, fontWeight: 700, letterSpacing: '1px' }}>
+              BIOMETRÍA Y GESTIÓN DEPORTIVA
+            </p>
+          </div>
+        </div>
+
+        <div className="glass-card" style={{
+          padding: '24px 36px',
+          borderRadius: 'var(--border-radius-lg)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '12px',
+          border: '1px solid rgba(255,255,255,0.08)',
+          backgroundColor: 'rgba(20, 20, 20, 0.8)',
+          maxWidth: '420px',
+          width: '90%'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--primary)' }}>
+            <SettingsIcon size={20} className="animate-spin" />
+            <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>
+              Iniciando servidor local...
+            </span>
+          </div>
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', margin: 0 }}>
+            Conectando con la base de datos y servicios en segundo plano. Por favor, espere un momento.
+          </p>
+        </div>
+
+        <p style={{ position: 'absolute', bottom: '24px', fontSize: '10px', color: 'var(--text-muted)' }}>
+          Tesis Luis Ramos • Cabimas, Venezuela
+        </p>
       </div>
     );
   }

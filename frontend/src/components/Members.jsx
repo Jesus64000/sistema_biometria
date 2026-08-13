@@ -42,6 +42,7 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [selectedSocio, setSelectedSocio] = useState(null);
 
   // Ficha del socio (drawer)

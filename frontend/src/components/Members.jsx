@@ -407,21 +407,30 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
     }
   };
 
-  // Filtrado dinámico
-  const filteredMembers = members
+  // Filtrado dinámico seguro
+  const safeMembers = Array.isArray(members) ? members : [];
+  const filteredMembers = safeMembers
     .filter(m => {
+      if (!m) return false;
+      const nombreStr = m.nombre || '';
+      const apellidoStr = m.apellido || '';
+      const cedulaStr = m.cedula || '';
+      
       // 1. Buscador texto
-      const searchString = `${m.nombre} ${m.apellido} ${m.cedula}`.toLowerCase();
+      const searchString = `${nombreStr} ${apellidoStr} ${cedulaStr}`.toLowerCase();
       const matchesSearch = searchString.includes(searchQuery.toLowerCase());
       if (!matchesSearch) return false;
       
+      const solvenciaVal = m.solvencia !== undefined ? m.solvencia : m.membresia_solvencia;
+      const fechaFinVal = m.fecha_fin || m.membresia_fin;
+
       // 2. Filtro Solvencia
       if (filterSolvency === 'solvent') {
-        const isSolvent = (m.solvencia === 1 || m.solvencia === '1' || m.solvencia === true) && (!m.fecha_fin || new Date(m.fecha_fin) >= new Date());
+        const isSolvent = (solvenciaVal === 1 || solvenciaVal === '1' || solvenciaVal === true) && (!fechaFinVal || new Date(fechaFinVal) >= new Date());
         if (!isSolvent) return false;
       }
       if (filterSolvency === 'insolvent') {
-        const isInsolvent = (m.solvencia === 0 || m.solvencia === '0' || m.solvencia === false || !m.solvencia) || (m.fecha_fin && new Date(m.fecha_fin) < new Date());
+        const isInsolvent = (solvenciaVal === 0 || solvenciaVal === '0' || solvenciaVal === false || !solvenciaVal) || (fechaFinVal && new Date(fechaFinVal) < new Date());
         if (!isInsolvent) return false;
       }
       
@@ -431,11 +440,10 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       
       // 3.5 Filtro Vencen pronto (3 días)
       if (expiringSoon) {
-        const finFecha = m.fecha_fin || m.membresia_fin;
-        if (!finFecha) return false;
+        if (!fechaFinVal) return false;
         const hoy = new Date();
         hoy.setHours(0,0,0,0);
-        const fin = new Date(finFecha);
+        const fin = new Date(fechaFinVal);
         const diffDays = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
         if (diffDays < 0 || diffDays > 3 || m.status !== 'activo') return false;
       }
@@ -446,13 +454,13 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       
       // 5. Filtro Rango de Fechas (Fecha de registro)
       if (startDate) {
-        const regDate = new Date(m.fecha_registro);
+        const regDate = new Date(m.fecha_registro || 0);
         const sDate = new Date(startDate);
         sDate.setHours(0,0,0,0);
         if (regDate < sDate) return false;
       }
       if (endDate) {
-        const regDate = new Date(m.fecha_registro);
+        const regDate = new Date(m.fecha_registro || 0);
         const eDate = new Date(endDate);
         eDate.setHours(23,59,59,999);
         if (regDate > eDate) return false;
@@ -461,19 +469,22 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
       return true;
     })
     .sort((a, b) => {
+      if (!a || !b) return 0;
       // 6. Ordenamiento Dinámico
       let valueA, valueB;
+      const finA = a.fecha_fin || a.membresia_fin;
+      const finB = b.fecha_fin || b.membresia_fin;
       
       if (sortBy === 'fecha_registro') {
         valueA = new Date(a.fecha_registro || 0).getTime();
         valueB = new Date(b.fecha_registro || 0).getTime();
       } else if (sortBy === 'membresia_fin') {
-        valueA = new Date(a.membresia_fin || 0).getTime();
-        valueB = new Date(b.membresia_fin || 0).getTime();
+        valueA = new Date(finA || 0).getTime();
+        valueB = new Date(finB || 0).getTime();
       } else {
         // Alfabético por nombre
-        valueA = `${a.nombre} ${a.apellido}`.toLowerCase();
-        valueB = `${b.nombre} ${b.apellido}`.toLowerCase();
+        valueA = `${a.nombre || ''} ${a.apellido || ''}`.toLowerCase();
+        valueB = `${b.nombre || ''} ${b.apellido || ''}`.toLowerCase();
       }
       
       if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
@@ -855,15 +866,15 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                           ) : (
-                            member.nombre[0]
+                            (member.nombre && member.nombre.length > 0) ? member.nombre[0].toUpperCase() : 'S'
                           )}
                         </div>
                         <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                          {member.nombre} {member.apellido}
+                          {member.nombre || 'Sin nombre'} {member.apellido || ''}
                         </span>
                       </div>
                     </td>
-                    <td style={{ fontFamily: 'Outfit', fontWeight: 600 }}>{member.cedula}</td>
+                    <td style={{ fontFamily: 'Outfit', fontWeight: 600 }}>{member.cedula || 'N/A'}</td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '11px', color: 'var(--text-secondary)' }}>
                         {member.telefono && <span><Phone size={8} /> {member.telefono}</span>}
@@ -885,12 +896,20 @@ function Members({ activeGym, initialTab, user, initialFilters }) {
                       </button>
                     </td>
                     <td>
-                      <span className={`badge ${member.membresia_solvencia === 1 ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '10px', padding: '2px 8px' }}>
-                        {member.membresia_solvencia === 1 ? 'Solvente' : 'Insolvente'}
-                      </span>
+                      {(() => {
+                        const isSolvent = (member.solvencia === 1 || member.solvencia === '1' || member.membresia_solvencia === 1 || member.membresia_solvencia === '1');
+                        return (
+                          <span className={`badge ${isSolvent ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '10px', padding: '2px 8px' }}>
+                            {isSolvent ? 'Solvente' : 'Insolvente'}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                      {member.membresia_fin ? new Date(member.membresia_fin).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin registro'}
+                      {(() => {
+                        const fFin = member.fecha_fin || member.membresia_fin;
+                        return fFin ? new Date(fFin).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' }) : 'Sin registro';
+                      })()}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
